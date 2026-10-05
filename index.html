@@ -145,6 +145,24 @@ footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted)
 .privacy{font-size:.8rem;color:var(--muted);max-width:70ch}
 @media (max-width:980px){.menuBtn{display:inline-block}.exp{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:640px){.exp,.rfp .g2{grid-template-columns:1fr}.lang{padding:6px 9px}}
+
+.founder{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:22px;align-items:start}
+.fcard{background:#071b2b;color:#fff;border-radius:18px;padding:28px;display:grid;gap:12px}
+.fcard .nm{font-family:var(--f-display);font-size:1.5rem;font-weight:700}
+.fcard .role{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.12em;color:#7fe3f5;direction:ltr;text-align:start}
+.fcard .yrs{display:flex;align-items:baseline;gap:10px}
+.fcard .yrs b{font-family:"Readex Pro",sans-serif;font-size:3.2rem;line-height:1;background:linear-gradient(90deg,#16b9e0,#1db57a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.fcard ul{margin:0;padding-inline-start:18px;display:grid;gap:4px;opacity:.9;font-size:.95rem}
+.cases{display:grid;gap:14px}
+.case{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;gap:10px}
+.case .top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.case h3{font-size:1.12rem}
+.case .who{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.1em;color:var(--water);direction:ltr}
+.case p{font-size:.94rem;color:var(--ink-2)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{font-family:var(--f-mono);font-size:.72rem;padding:3px 9px;border-radius:99px;background:var(--bg);border:1px solid var(--line);direction:ltr}
+.fnote{font-size:.8rem;color:var(--muted);margin-top:10px}
+@media (max-width:860px){.founder{grid-template-columns:1fr}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gDrop" x1="25" y1="85" x2="72" y2="30" gradientUnits="userSpaceOnUse">
@@ -170,6 +188,7 @@ footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted)
       <a href="#services"><span class="ar">خدماتنا</span><span class="en">Services</span></a>
       <a href="#plants"><span class="ar">المحطات</span><span class="en">Plants</span></a>
       <a href="#tools"><span class="ar">أدوات مجانية</span><span class="en">Free tools</span></a>
+      <a href="#founder"><span class="ar">خبرتنا</span><span class="en">Track record</span></a>
       <a href="#about"><span class="ar">من نحن</span><span class="en">About</span></a>
     </div>
     <button type="button" class="lang" id="langBtn" aria-label="Switch language">EN</button><button type="button" class="menuBtn" id="menuBtn" aria-expanded="false" aria-controls="mnav" aria-label="Menu">≡</button>
@@ -179,6 +198,7 @@ footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted)
     <a href="#services"><span class="ar">خدماتنا</span><span class="en">Services</span></a>
     <a href="#plants"><span class="ar">المحطات</span><span class="en">Plants</span></a>
     <a href="#tools"><span class="ar">أدوات مجانية</span><span class="en">Free tools</span></a>
+    <a href="#founder"><span class="ar">خبرتنا</span><span class="en">Track record</span></a>
     <a href="#about"><span class="ar">من نحن</span><span class="en">About</span></a>
     <a href="#contact"><span class="ar">تواصل معنا</span><span class="en">Contact</span></a>
   </div>
@@ -224,6 +244,37 @@ footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted)
       <div class="pl"><svg viewBox="0 0 80 80"><circle cx="40" cy="42" r="20" fill="none" stroke="#1268d3" stroke-width="5"/><path d="M40 42 L56 28" stroke="#1db57a" stroke-width="5" stroke-linecap="round"/><path d="M4 42 H20 M60 42 H76" stroke="#16b9e0" stroke-width="5" stroke-linecap="round"/></svg><b>Pumping</b><span><span class="ar">محطات الضخ والرفع والخزانات</span><span class="en">Pumping, lift stations and reservoirs</span></span></div>
       <div class="pl"><svg viewBox="0 0 80 80"><path d="M8 70 V36 L28 46 V36 L48 46 V20 H64 V70 Z" fill="none" stroke="#1268d3" stroke-width="5" stroke-linejoin="round"/><rect x="54" y="8" width="6" height="12" fill="#e08a00"/></svg><b>Industrial</b><span><span class="ar">المعالجة الصناعية وإعادة الاستخدام</span><span class="en">Industrial treatment and reuse</span></span></div>
     </div>
+  </div>
+</section>
+
+<section class="s alt" id="founder">
+  <div class="container">
+    <div class="sh"><span class="mono">Founder &amp; track record</span><h2><span class="ar">خبرة حقيقية في محطات حقيقية</span><span class="en">Real experience on real plants</span></h2></div>
+    <div class="founder">
+      <div class="fcard">
+        <span class="role">Founder · Lead automation &amp; commissioning engineer</span>
+        <span class="nm"><span class="ar">م. السيد محمد حرفوش</span><span class="en">Eng. Elsaied Mohamed Harfoush</span></span>
+        <div class="yrs"><b class="ltr">5+</b><span><span class="ar">سنوات في أتمتة وتشغيل محطات المياه في المملكة</span><span class="en">years automating and commissioning water plants in the Kingdom</span></span></div>
+        <ul>
+          <li><span class="ar">تصميم وبرمجة أنظمة Siemens S7-1500 والأنظمة المزدوجة R/H</span><span class="en">Siemens S7-1500 and redundant R/H system design and programming</span></li>
+          <li><span class="ar">شاشات WinCC Unified وأنظمة SCADA مع التشخيص والتقارير</span><span class="en">WinCC Unified HMI and SCADA with diagnostics and reports</span></li>
+          <li><span class="ar">تشغيل محطات MBR والتحلية بالتناضح العكسي</span><span class="en">Commissioning of MBR and reverse-osmosis plants</span></li>
+          <li><span class="ar">مكتبة برمجية قياسية تختصر وقت البرمجة من أسابيع إلى أيام</span><span class="en">A standard software library that cuts programming from weeks to days</span></li>
+        </ul>
+      </div>
+      <div class="cases">
+        <article class="case"><div class="top"><h3><span class="ar">محطة معالجة صرف صحي MBR في مدينة صناعية بجدة</span><span class="en">MBR sewage treatment plant, industrial city, Jeddah</span></h3><span class="who">OWNER · MODON</span></div>
+          <p><span class="ar">نظام تحكم مزدوج S7-1500R/H، وشاشات WinCC Unified ونظام SCADA، وتشخيص للعتاد بالصور، وتحليل للإنذارات مع أول إنذار ومساعدة المشغّل، وتسجيل الأحداث بتسلسلها الزمني، وربط بنظام SCADA مركزي عبر 4G، وفلسفة تحكم ودليل تشغيل بالعربية والإنجليزية، ومحاكي لتدريب المشغّلين.</span><span class="en">Redundant S7-1500R/H control, WinCC Unified HMI and SCADA, hardware diagnostics with pictures, alarm analysis with first-out and operator help, sequence-of-events logging, a 4G link to a central SCADA, EN/AR control philosophy and manuals, and an operator training simulator.</span></p>
+          <div class="tags"><span>S7-1500R/H</span><span>WinCC Unified</span><span>Modbus TCP</span><span>4G remote</span><span>SOE</span><span>EN/AR</span></div></article>
+        <article class="case"><div class="top"><h3><span class="ar">محطة MBR بسعة 2 × 150 م³/يوم</span><span class="en">MBR STP, 2 × 150 m³/day</span></h3><span class="who">CORPORATE CAMPUS</span></div>
+          <p><span class="ar">بناء نظام التحكم من الصفر: PLC وشاشة محلية وSCADA على الكمبيوتر، و236 إنذاراً بتعليمات للمشغّل، ودفتر تشغيل، وفلسفة تحكم ودليل تشغيل بالعربية والإنجليزية.</span><span class="en">Control system built from scratch: PLC, local HMI and PC SCADA, 236 alarms with operator help, a commissioning workbook, and EN/AR control philosophy and manual.</span></p>
+          <div class="tags"><span>S7-1511</span><span>Unified HMI</span><span>PC SCADA</span><span>236 alarms</span></div></article>
+        <article class="case"><div class="top"><h3><span class="ar">ربط محطة قائمة بنظام إدارة المبنى</span><span class="en">Running plant integrated with the BMS</span></h3><span class="who">LIVE PLANT</span></div>
+          <p><span class="ar">جعل وحدة Schneider M251 خادم Modbus TCP لنظام إدارة المبنى، مع محاكاة واختبار كامل قبل التنفيذ دون إيقاف المحطة.</span><span class="en">A Schneider M251 turned into a Modbus TCP server for the building management system, fully simulated and tested before cut-over without stopping the plant.</span></p>
+          <div class="tags"><span>Modicon M251</span><span>Modbus TCP</span><span>BMS</span><span>Zero downtime</span></div></article>
+      </div>
+    </div>
+    <p class="fnote"><span class="ar">مشاريع نفّذها مؤسس الشركة بصفته مهندس الأتمتة والتشغيل المسؤول.</span><span class="en">Projects delivered by our founder as the lead automation and commissioning engineer.</span></p>
   </div>
 </section>
 
