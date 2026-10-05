@@ -1,5 +1,19 @@
 <!doctype html><html lang="ar"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>TrueLoop</title>
 <meta name="description" content="TrueLoop engineers intelligent water: control systems, commissioning, field calibration and digital services for desalination, water and wastewater plants in Saudi Arabia.">
+<meta name="theme-color" content="#071b2b">
+<link rel="canonical" href="https://elsaiedharfoush14.github.io/trueloop/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TrueLoop">
+<meta property="og:title" content="TrueLoop · Engineering intelligent water">
+<meta property="og:description" content="Control systems, commissioning, field calibration and digital services for desalination, water and wastewater plants in Saudi Arabia.">
+<meta property="og:url" content="https://elsaiedharfoush14.github.io/trueloop/">
+<meta property="og:image" content="https://elsaiedharfoush14.github.io/trueloop/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://elsaiedharfoush14.github.io/trueloop/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"TrueLoop","alternateName":"ترو لوب","url":"https://elsaiedharfoush14.github.io/trueloop/","logo":"https://elsaiedharfoush14.github.io/trueloop/favicon.svg","slogan":"Engineering intelligent water","telephone":"+966560861304","address":{"@type":"PostalAddress","addressLocality":"Riyadh","addressCountry":"SA"},"areaServed":"SA","knowsAbout":["Industrial automation","SCADA","PLC","Commissioning","Instrument calibration","Reverse osmosis","Wastewater treatment"]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -107,6 +121,30 @@ footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:
 @media (max-width:760px){.hero .container{grid-template-columns:1fr}.tools,.vm,.why,.contact{grid-template-columns:1fr}}
 @media (max-width:520px){.svc,.plants,.steps{grid-template-columns:1fr}.wa-btn .ar,.wa-btn .en{display:none!important}.wa-btn::after{content:"WhatsApp"}}
 @media (prefers-reduced-motion:reduce){.tool{transition:none}}
+
+.menuBtn{display:none;font:600 1.3rem var(--f-mono);border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:10px;width:42px;height:38px;cursor:pointer}
+.mnav{display:none;border-top:1px solid var(--line);background:var(--paper)}
+.mnav a{display:block;padding:12px 20px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+.mnav.open{display:block}
+@media (min-width:981px){.mnav{display:none!important}}
+.exp{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ex{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--paper);display:grid;gap:4px}
+.ex b{font-family:var(--f-display);font-size:1.02rem}
+.ex span{font-size:.88rem;color:var(--ink-2)}
+.faq{display:grid;gap:10px;max-width:860px}
+.faq details{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+.faq summary{cursor:pointer;font-family:var(--f-display);font-weight:600;font-size:1.02rem}
+.faq p{margin-top:8px;color:var(--ink-2)}
+.rfp{display:grid;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:18px}
+.rfp label{font-size:.8rem;opacity:.8}
+.rfp input,.rfp select,.rfp textarea{font:inherit;font-size:.95rem;width:100%;padding:9px 11px;border-radius:9px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff}
+.rfp select option{color:#071b2b}
+.rfp .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dl{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.35);color:#fff;text-decoration:none;border-radius:10px;padding:10px 16px;font-weight:600}
+footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted);text-decoration:none} footer .fl a:hover{color:var(--water)}
+.privacy{font-size:.8rem;color:var(--muted);max-width:70ch}
+@media (max-width:980px){.menuBtn{display:inline-block}.exp{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.exp,.rfp .g2{grid-template-columns:1fr}.lang{padding:6px 9px}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gDrop" x1="25" y1="85" x2="72" y2="30" gradientUnits="userSpaceOnUse">
@@ -134,8 +172,15 @@ footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:
       <a href="#tools"><span class="ar">أدوات مجانية</span><span class="en">Free tools</span></a>
       <a href="#about"><span class="ar">من نحن</span><span class="en">About</span></a>
     </div>
-    <button type="button" class="lang" id="langBtn" aria-label="Switch language">EN</button>
+    <button type="button" class="lang" id="langBtn" aria-label="Switch language">EN</button><button type="button" class="menuBtn" id="menuBtn" aria-expanded="false" aria-controls="mnav" aria-label="Menu">≡</button>
     <a class="wa-btn" href="https://wa.me/966560861304" target="_blank" rel="noopener"><span class="ar">تواصل معنا</span><span class="en">Contact us</span></a>
+  </div>
+<div class="mnav" id="mnav">
+    <a href="#services"><span class="ar">خدماتنا</span><span class="en">Services</span></a>
+    <a href="#plants"><span class="ar">المحطات</span><span class="en">Plants</span></a>
+    <a href="#tools"><span class="ar">أدوات مجانية</span><span class="en">Free tools</span></a>
+    <a href="#about"><span class="ar">من نحن</span><span class="en">About</span></a>
+    <a href="#contact"><span class="ar">تواصل معنا</span><span class="en">Contact</span></a>
   </div>
 </nav>
 
@@ -152,7 +197,7 @@ footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:
       </div>
       <div class="chips"><span class="chip">S7-1500 · R/H</span><span class="chip">WinCC Unified</span><span class="chip">PROFINET</span><span class="chip">Modbus TCP</span><span class="chip">OPC UA</span><span class="chip">SWRO · BWRO · MBR</span></div>
     </div>
-    <div class="vid"><video src="TrueLoop_promo.mp4" poster="TrueLoop_promo_poster.jpg" controls muted playsinline preload="metadata" aria-label="TrueLoop introduction video"></video></div>
+    <div class="vid"><video src="TrueLoop_promo.mp4" poster="TrueLoop_promo_poster.jpg" controls muted playsinline preload="none" aria-label="TrueLoop introduction video"></video></div>
   </div>
 </header>
 
@@ -182,7 +227,23 @@ footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:
   </div>
 </section>
 
-<section class="s">
+<section class="s" id="experience">
+  <div class="container">
+    <div class="sh"><span class="mono">Team experience</span><h2><span class="ar">خبرة فريقنا في الميدان</span><span class="en">Our team's field experience</span></h2><p><span class="ar">مشاريع نفّذها فريقنا في المملكة على مدى سنوات، في محطات بأحجام وتقنيات مختلفة.</span><span class="en">Projects our team has delivered across the Kingdom over the years, across many plant sizes and technologies.</span></p></div>
+    <div class="exp">
+      <div class="ex"><b>MBR · STP</b><span><span class="ar">محطات معالجة صرف صحي بالأغشية، بأنظمة PLC عادية ومزدوجة R/H</span><span class="en">Membrane sewage plants on standard and redundant R/H PLCs</span></span></div>
+      <div class="ex"><b>SWRO · BWRO</b><span><span class="ar">تحلية مياه البحر والمياه الجوفية، وتشغيل الأغشية</span><span class="en">Seawater and brackish water desalination, membrane start-up</span></span></div>
+      <div class="ex"><b>Grey water · Reuse</b><span><span class="ar">معالجة المياه الرمادية وإعادة استخدامها</span><span class="en">Grey water treatment and reuse</span></span></div>
+      <div class="ex"><b>Pumping · Lift</b><span><span class="ar">محطات الضخ والرفع والخزانات</span><span class="en">Booster, lift stations and reservoirs</span></span></div>
+      <div class="ex"><b>Filtration · Softening</b><span><span class="ar">الترشيح والتيسير وأنظمة الحقن الكيميائي</span><span class="en">Filtration, softeners and chemical dosing</span></span></div>
+      <div class="ex"><b>Chlorination</b><span><span class="ar">أنظمة التعقيم بالكلور والتحكم بالمتبقي</span><span class="en">Chlorination and residual control</span></span></div>
+      <div class="ex"><b>Siemens · Schneider</b><span><span class="ar">S7-1200/1500/R-H وWinCC وModicon</span><span class="en">S7-1200/1500/R-H, WinCC and Modicon</span></span></div>
+      <div class="ex"><b>BMS · SCADA</b><span><span class="ar">ربط المحطات بأنظمة إدارة المباني وغرف التحكم</span><span class="en">Plant integration with BMS and control rooms</span></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="s alt">
   <div class="container">
     <div class="sh"><span class="mono">How we deliver</span><h2><span class="ar">من التصميم إلى شهادة الاستلام</span><span class="en">From design review to handover certificate</span></h2></div>
     <ol class="steps">
@@ -197,7 +258,7 @@ footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:
   </div>
 </section>
 
-<section class="s alt" id="tools">
+<section class="s" id="tools">
   <div class="container">
     <div class="sh"><span class="mono">Free engineering tools</span><h2><span class="ar">أدوات مجانية لمهندسي المحطات</span><span class="en">Free tools for plant engineers</span></h2><p><span class="ar">نستخدمها في مشاريعنا، ونتيحها لكل مهندس مجاناً.</span><span class="en">We use them on our own projects, and they are free for every engineer.</span></p></div>
     <div class="tools">
@@ -222,6 +283,19 @@ footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:
   </div>
 </section>
 
+<section class="s alt" id="faq">
+  <div class="container">
+    <div class="sh"><span class="mono">FAQ</span><h2><span class="ar">أسئلة شائعة</span><span class="en">Frequently asked questions</span></h2></div>
+    <div class="faq">
+      <details><summary><span class="ar">هل تعملون مع المقاولين كمقاول باطن؟</span><span class="en">Do you work with contractors as a subcontractor?</span></summary><p><span class="ar">نعم. نعمل مع المقاولين ومصنّعي اللوحات والمشغّلين، كما نعمل مباشرة مع ملّاك المحطات.</span><span class="en">Yes. We work with EPC contractors, panel builders and operators, and directly with plant owners.</span></p></details>
+      <details><summary><span class="ar">ما الأنظمة التي تبرمجونها؟</span><span class="en">Which control platforms do you program?</span></summary><p><span class="ar">بشكل أساسي Siemens S7-1200 وS7-1500 وأنظمة R/H المزدوجة مع TIA Portal وWinCC، إضافة إلى Schneider Modicon، والربط عبر PROFINET وModbus TCP وOPC UA.</span><span class="en">Mainly Siemens S7-1200, S7-1500 and redundant R/H systems with TIA Portal and WinCC, plus Schneider Modicon, integrated over PROFINET, Modbus TCP and OPC UA.</span></p></details>
+      <details><summary><span class="ar">هل تصدرون شهادات معايرة؟</span><span class="en">Do you issue calibration certificates?</span></summary><p><span class="ar">نعم، لكل جهاز شهادة بالقراءات قبل المعايرة وبعدها، وبيانات الجهاز المرجعي وشهادته، وفق إجرائنا TL-CP-001.</span><span class="en">Yes. Every instrument gets a certificate with as-found and as-left readings and the reference standard and its certificate, under our procedure TL-CP-001.</span></p></details>
+      <details><summary><span class="ar">ما نطاق عملكم الجغرافي؟</span><span class="en">Where do you work?</span></summary><p><span class="ar">مقرنا الرياض، ونعمل في جميع مناطق المملكة.</span><span class="en">We are based in Riyadh and work across the Kingdom.</span></p></details>
+      <details><summary><span class="ar">هل الأدوات المجانية تحفظ بياناتي؟</span><span class="en">Do the free tools store my data?</span></summary><p><span class="ar">لا. الأدوات تعمل بالكامل داخل متصفحك، ولا تُرسل أي بيانات إلينا أو إلى أي خادم.</span><span class="en">No. The tools run entirely in your browser and send no data to us or to any server.</span></p></details>
+    </div>
+  </div>
+</section>
+
 <section class="s" id="contact" style="padding-top:0">
   <div class="container">
     <div class="contact">
@@ -231,7 +305,12 @@ footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:
         <p><span class="ar">راسلنا على واتساب، ونرد عليك خلال يوم عمل.</span><span class="en">Message us on WhatsApp and we will reply within one working day.</span></p>
         <div class="ph"><span class="ltr">+966 56 086 1304</span></div>
         <p><span class="ar">الرياض، المملكة العربية السعودية</span><span class="en">Riyadh, Kingdom of Saudi Arabia</span></p>
-        <div><a class="btn pri" style="background:#1db57a" href="https://wa.me/966560861304" target="_blank" rel="noopener"><span class="ar">ابدأ المحادثة على واتساب</span><span class="en">Start a WhatsApp chat</span></a></div>
+        <form class="rfp" id="rfp" autocomplete="on">
+          <div class="g2"><div><label for="rName"><span class="ar">الاسم</span><span class="en">Name</span></label><input id="rName" name="name"></div><div><label for="rCo"><span class="ar">الشركة</span><span class="en">Company</span></label><input id="rCo" name="organization"></div></div>
+          <div><label for="rType"><span class="ar">نوع العمل</span><span class="en">What do you need?</span></label><select id="rType"><option>Automation / PLC / SCADA</option><option>Commissioning</option><option>Field calibration</option><option>RO / membrane support</option><option>Digital / remote monitoring</option><option>Other</option></select></div>
+          <div><label for="rMsg"><span class="ar">نبذة عن المشروع</span><span class="en">About the project</span></label><textarea id="rMsg" rows="3"></textarea></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn pri" id="rSend" style="background:#1db57a" href="https://wa.me/966560861304" target="_blank" rel="noopener"><span class="ar">أرسل الطلب على واتساب</span><span class="en">Send request on WhatsApp</span></a><a class="dl" href="files/TrueLoop_Company_Profile.pdf" target="_blank" rel="noopener"><span class="ar">تحميل ملف الشركة PDF</span><span class="en">Company profile PDF</span></a></div>
+        </form>
       </div>
       <div class="qr" aria-label="WhatsApp QR code"><svg viewBox="0 0 33 33" class="segno"><path class="qrline" stroke="#071b2b" d="M0 0.5h7m1 0h1m3 0h1m1 0h2m1 0h1m3 0h4m1 0h7m-33 1h1m5 0h1m1 0h2m1 0h1m2 0h2m1 0h3m1 0h3m2 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m1 0h1m3 0h1m1 0h1m1 0h1m3 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h3m2 0h2m5 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m1 0h1m1 0h2m1 0h3m1 0h1m1 0h1m3 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h2m3 0h2m2 0h1m1 0h2m2 0h1m2 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-21 1h2m4 0h1m2 0h1m2 0h1m-22 1h1m2 0h1m2 0h5m1 0h4m1 0h3m4 0h3m1 0h2m-32 1h3m3 0h1m2 0h2m3 0h2m4 0h2m3 0h1m4 0h2m-32 1h2m1 0h1m1 0h1m2 0h3m2 0h1m1 0h1m2 0h2m8 0h2m1 0h1m-32 1h5m2 0h1m2 0h1m3 0h2m1 0h2m1 0h2m3 0h1m-27 1h1m1 0h1m3 0h2m2 0h1m1 0h3m2 0h1m1 0h1m2 0h1m2 0h5m1 0h2m-33 1h1m1 0h2m1 0h1m1 0h3m4 0h1m5 0h1m5 0h4m2 0h1m-32 1h1m1 0h4m3 0h2m1 0h3m1 0h1m3 0h1m1 0h1m2 0h6m-32 1h1m2 0h1m1 0h1m1 0h6m1 0h2m1 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h2m-32 1h1m1 0h1m1 0h2m1 0h1m2 0h2m2 0h7m1 0h1m1 0h4m1 0h2m-30 1h3m3 0h3m2 0h2m1 0h3m2 0h1m1 0h1m3 0h1m2 0h3m-33 1h1m2 0h4m1 0h4m1 0h1m1 0h2m2 0h3m3 0h1m2 0h1m1 0h1m1 0h1m-31 1h1m1 0h1m2 0h1m1 0h1m1 0h1m3 0h1m1 0h2m1 0h3m3 0h3m-29 1h3m2 0h2m7 0h2m1 0h1m2 0h4m1 0h2m4 0h1m-23 1h3m5 0h2m2 0h3m1 0h1m3 0h1m2 0h1m-33 1h3m1 0h1m1 0h1m2 0h4m4 0h2m1 0h1m4 0h2m1 0h5m-32 1h4m2 0h1m2 0h1m1 0h2m2 0h2m3 0h1m3 0h2m1 0h1m2 0h1m-32 1h1m1 0h2m1 0h2m2 0h2m2 0h3m1 0h2m2 0h2m1 0h5m2 0h2m-25 1h2m1 0h1m1 0h1m1 0h1m2 0h3m3 0h1m3 0h1m2 0h2m-33 1h7m4 0h1m2 0h1m2 0h2m1 0h2m2 0h1m1 0h1m1 0h2m1 0h1m-32 1h1m5 0h1m3 0h1m4 0h2m3 0h1m2 0h2m3 0h2m2 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m3 0h1m3 0h2m2 0h1m1 0h6m-30 1h1m1 0h3m1 0h1m1 0h2m2 0h6m1 0h2m3 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h2m1 0h1m1 0h3m1 0h2m1 0h1m1 0h3m1 0h2m3 0h1m-33 1h1m5 0h1m2 0h1m1 0h4m1 0h1m1 0h1m1 0h1m1 0h4m1 0h2m1 0h1m-31 1h7m4 0h3m2 0h2m1 0h1m3 0h3m1 0h5"/></svg><span class="ql"><svg><use href="#mark"/></svg></span></div>
     </div>
@@ -242,7 +321,9 @@ footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:
   <div class="container">
     <a class="logo" href="#top"><svg aria-hidden="true"><use href="#mark"/></svg><span><span class="lt">True</span>Loop</span></a>
     <span class="mono">Engineering intelligent water</span>
+    <div class="fl"><a href="tools/loop-check.html">Loop Check</a><a href="tools/ro-normalization.html">RO Normalization</a><a href="tools/calibration-certificate.html">Calibration Certificate</a><a href="files/TrueLoop_Company_Profile.pdf">Company profile</a></div>
     <span>© 2026 TrueLoop · Riyadh</span>
+    <p class="privacy" style="flex-basis:100%"><span class="ar">لا يستخدم هذا الموقع ملفات تتبّع، والأدوات المجانية تعمل داخل متصفحك دون إرسال بيانات.</span><span class="en">This site uses no tracking cookies, and the free tools run in your browser without sending data anywhere.</span></p>
   </div>
 </footer>
 </div>
@@ -254,6 +335,14 @@ footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:
   var saved=null;try{saved=localStorage.getItem("tl-lang");}catch(e){}
   setLang(saved==="en"?"en":"ar");
   btn.addEventListener("click",function(){setLang(site.getAttribute("data-lang")==="ar"?"en":"ar");});
+  var mb=document.getElementById("menuBtn"),mn=document.getElementById("mnav");
+  mb.addEventListener("click",function(){var o=mn.classList.toggle("open");mb.setAttribute("aria-expanded",o);});
+  mn.addEventListener("click",function(e){if(e.target.closest("a")){mn.classList.remove("open");mb.setAttribute("aria-expanded","false");}});
+  function comp(){var v=function(i){return (document.getElementById(i).value||"").trim();};
+    var txt="TrueLoop request\nName: "+v("rName")+"\nCompany: "+v("rCo")+"\nNeed: "+v("rType")+(v("rMsg")?"\nProject: "+v("rMsg"):"");
+    document.getElementById("rSend").href="https://wa.me/966560861304?text="+encodeURIComponent(txt);}
+  ["rName","rCo","rType","rMsg"].forEach(function(i){var e=document.getElementById(i);e.addEventListener("input",comp);e.addEventListener("change",comp);});
+  document.getElementById("rfp").addEventListener("submit",function(e){e.preventDefault();});comp();
   var c=document.getElementById("net");if(!c||!c.getContext)return;
   var ctx=c.getContext("2d"),W,H,pts=[],reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
   function size(){var r=c.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);W=r.width;H=r.height;c.width=W*d;c.height=H*d;ctx.setTransform(d,0,0,d,0,0);}
