@@ -1,0 +1,269 @@
+<!doctype html><html lang="ar"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>TrueLoop</title>
+<meta name="description" content="TrueLoop engineers intelligent water: control systems, commissioning, field calibration and digital services for desalination, water and wastewater plants in Saudi Arabia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: corporate one-pager. Sticky nav, light network hero with video, then alternating calm sections; language toggle swaps AR/EN and direction. */
+:root{
+  --bg:#f3f7fa; --paper:#ffffff; --ink:#071b2b; --ink-2:#24394a; --muted:#5b6f7c; --line:#d4e0e7;
+  --water:#1268d3; --aqua:#16b9e0; --green:#1db57a; --amp:#e08a00; --night:#071b2b;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-en:"IBM Plex Sans",system-ui,"Segoe UI",sans-serif; --f-ar:"IBM Plex Sans Arabic",Tahoma,sans-serif; --f-mono:"IBM Plex Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#06121b;--paper:#0b1f2d;--ink:#e4eef4;--ink-2:#c3d3dd;--muted:#93a9b7;--line:#1c3a4c;--water:#5aa2f0;--amp:#ffb21e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#06121b;--paper:#0b1f2d;--ink:#e4eef4;--ink-2:#c3d3dd;--muted:#93a9b7;--line:#1c3a4c;--water:#5aa2f0;--amp:#ffb21e;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0}
+#site{font-family:var(--f-ar);font-size:16.5px;line-height:1.8}
+#site[data-lang="en"]{font-family:var(--f-en);line-height:1.65}
+#site[data-lang="ar"] .en{display:none!important} #site[data-lang="en"] .ar{display:none!important}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.25;text-wrap:balance}
+p{margin:0} a{color:var(--water)}
+.container{max-width:1120px;margin-inline:auto;padding-inline:20px}
+.mono{font-family:var(--f-mono);letter-spacing:.12em;text-transform:uppercase;font-size:.78rem}
+.ltr{direction:ltr;unicode-bidi:isolate}
+/* nav */
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav.top .container{display:flex;align-items:center;gap:18px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);direction:ltr}
+.logo svg{width:36px;height:38px}
+.logo span{font-family:"Readex Pro",sans-serif;font-weight:700;font-size:1.35rem}.logo .lt{font-weight:300}
+.links{display:flex;gap:20px;margin-inline-start:auto}
+.links a{color:var(--ink-2);text-decoration:none;font-size:.95rem}
+.links a:hover{color:var(--water)}
+.lang{font:600 .85rem var(--f-mono);border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:99px;padding:6px 12px;cursor:pointer}
+.wa-btn{background:var(--green);color:#fff;text-decoration:none;border-radius:99px;padding:8px 16px;font-weight:600;font-size:.9rem;white-space:nowrap}
+:focus-visible{outline:2px solid var(--water);outline-offset:2px}
+/* hero */
+.hero{position:relative;overflow:hidden;background:radial-gradient(120% 90% at 80% 0%,#ffffff 0%,#eef6fb 50%,#dcedf7 100%);color:#071b2b;border-bottom:1px solid #d4e3ec}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero .container{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:40px;align-items:center;padding-block:64px 70px}
+.hero h1{font-size:clamp(2.3rem,5.6vw,4rem);font-weight:700;line-height:1.12}
+.hero h1 b{background:linear-gradient(90deg,#1268d3,#16b9e0 55%,#1db57a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lead{font-size:1.15rem;color:#24394a;max-width:56ch;margin-top:18px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:12px 20px;font-weight:600;text-decoration:none;font-size:1rem}
+.btn.pri{background:#1268d3;color:#fff} .btn.sec{background:#fff;color:#071b2b;border:1px solid #c9dbe6}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.chip{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.06em;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.8);border:1px solid #d4e3ec;color:#24394a;direction:ltr}
+.vid{justify-self:center;width:min(100%,330px);aspect-ratio:9/16;max-width:100%;border-radius:22px;overflow:hidden;box-shadow:0 30px 70px rgba(7,27,43,.22);background:#0b2a40;border:6px solid #fff}
+.vid video{width:100%;height:100%;object-fit:cover;display:block}
+/* sections */
+section.s{padding-block:76px}
+section.s.alt{background:var(--paper);border-block:1px solid var(--line)}
+.sh{display:grid;gap:10px;margin-bottom:34px;max-width:720px}
+.sh .mono{color:var(--water)}
+.sh h2{font-size:clamp(1.6rem,3.6vw,2.4rem)}
+.sh p{color:var(--ink-2);font-size:1.05rem}
+.svc{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.sv{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:10px;align-content:start;border-top:4px solid var(--c)}
+section.alt .sv{background:var(--bg)}
+.sv .nm{font-family:"Readex Pro",sans-serif;font-size:.95rem;direction:ltr;text-align:start;color:var(--muted)} .sv .nm b{color:var(--ink)}
+.sv h3{font-size:1.12rem}
+.sv p{font-size:.93rem;color:var(--ink-2)}
+.sv ul{margin:0;padding-inline-start:18px;font-size:.88rem;color:var(--ink-2);display:grid;gap:2px}
+.plants{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.pl{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:8px;align-content:start}
+.pl svg{width:46px;height:46px}
+.pl b{font-family:"Readex Pro",sans-serif;font-size:1.05rem;direction:ltr;text-align:start}
+.pl span{font-size:.9rem;color:var(--ink-2)}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;gap:8px;align-content:start;padding-top:46px;position:relative}
+.steps li::before{content:counter(s);position:absolute;top:0;inset-inline-start:0;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-mono);font-weight:500;background:var(--paper);border:2px solid var(--water);color:var(--water)}
+.steps li:last-child::before{background:var(--green);border-color:var(--green);color:#fff}
+.steps li::after{content:"";position:absolute;top:17px;inset-inline-start:40px;inset-inline-end:-6px;height:2px;background:var(--line)}
+.steps li:last-child::after{display:none}
+.steps b{font-family:var(--f-display);font-size:.98rem}
+.steps span{font-size:.86rem;color:var(--ink-2)}
+.tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.tool{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px;display:grid;gap:12px;align-content:start;text-decoration:none;color:var(--ink);transition:transform .15s ease, box-shadow .15s ease}
+.tool:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(7,27,43,.10)}
+.tool .tg{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.12em;color:var(--water)}
+.tool h3{font-size:1.2rem;direction:ltr;text-align:start}
+.tool p{font-size:.94rem;color:var(--ink-2)}
+.tool .go{font-weight:600;color:var(--water)}
+.free{display:inline-block;background:var(--green);color:#fff;font-size:.72rem;font-weight:700;border-radius:99px;padding:2px 10px;width:fit-content}
+.vm{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.vmc{border-radius:18px;padding:30px;display:grid;gap:12px;align-content:start}
+.vmc.v{background:#071b2b;color:#fff} .vmc.m{background:linear-gradient(120deg,#0d4fa6,#1268d3 50%,#16b9e0);color:#fff}
+.vmc .mono{opacity:.75}
+.vmc p.big{font-family:var(--f-display);font-size:1.45rem;font-weight:600;line-height:1.45}
+.why{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.wy{border-top:3px solid var(--c);padding-top:14px;display:grid;gap:6px}
+.wy h3{font-size:1.25rem;color:var(--water)}
+.wy p{color:var(--ink-2)}
+.contact{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:30px;align-items:center;background:#071b2b;color:#fff;border-radius:22px;padding:clamp(24px,5vw,48px)}
+.contact h2{font-size:clamp(1.6rem,3.6vw,2.3rem)}
+.contact p{opacity:.88}
+.contact .ph{font-family:"Readex Pro",sans-serif;font-size:1.6rem;font-weight:700}
+.qr{width:170px;height:170px;background:#fff;border-radius:16px;padding:12px;position:relative}
+.qr>svg{width:100%;height:100%;display:block}
+.qr .ql{position:absolute;left:50%;top:50%;width:40px;height:40px;transform:translate(-50%,-50%);background:#fff;border-radius:9px;display:grid;place-items:center}
+.qr .ql svg{width:33px;height:34px}
+footer{padding-block:34px;color:var(--muted);font-size:.88rem}
+footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+@media (max-width:980px){.svc,.plants{grid-template-columns:repeat(2,minmax(0,1fr))}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.steps li::after{display:none}.links{display:none}}
+@media (max-width:760px){.hero .container{grid-template-columns:1fr}.tools,.vm,.why,.contact{grid-template-columns:1fr}}
+@media (max-width:520px){.svc,.plants,.steps{grid-template-columns:1fr}.wa-btn .ar,.wa-btn .en{display:none!important}.wa-btn::after{content:"WhatsApp"}}
+@media (prefers-reduced-motion:reduce){.tool{transition:none}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gDrop" x1="25" y1="85" x2="72" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1268d3"/><stop offset=".5" stop-color="#16b9e0"/><stop offset=".78" stop-color="#16b9e0"/><stop offset="1" stop-color="#ffb21e"/>
+    </linearGradient>
+    <linearGradient id="gBolt" x1="66" y1="2" x2="66" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe066"/><stop offset=".55" stop-color="#ffb21e"/><stop offset="1" stop-color="#ff8a00"/>
+    </linearGradient>
+    <filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <symbol id="mark" viewBox="0 -4 100 104">
+      <path d="M50 9 C50 9 21 43 21 61 A29 29 0 0 0 79 61 C79 55 77 49 74 44" fill="none" stroke="url(#gDrop)" stroke-width="7" stroke-linecap="round"/>
+      <path d="M70 2 L54 26 L64 26 L58 44 L80 18 L69 18 L76 2 Z" fill="url(#gBolt)" stroke="#ff9f0a" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M37.3 62.3 L45 70 L59.7 55.3" fill="none" stroke="#1db57a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="33" cy="58" r="4.5" fill="none" stroke="#1db57a" stroke-width="3"/>
+      <circle cx="64" cy="51" r="4.5" fill="none" stroke="#1db57a" stroke-width="3"/>
+    </symbol></defs></svg>
+
+<div id="site" data-lang="ar" dir="rtl" lang="ar">
+<nav class="top" aria-label="Main">
+  <div class="container">
+    <a class="logo" href="#top"><svg aria-hidden="true"><use href="#mark"/></svg><span><span class="lt">True</span>Loop</span></a>
+    <div class="links">
+      <a href="#services"><span class="ar">خدماتنا</span><span class="en">Services</span></a>
+      <a href="#plants"><span class="ar">المحطات</span><span class="en">Plants</span></a>
+      <a href="#tools"><span class="ar">أدوات مجانية</span><span class="en">Free tools</span></a>
+      <a href="#about"><span class="ar">من نحن</span><span class="en">About</span></a>
+    </div>
+    <button type="button" class="lang" id="langBtn" aria-label="Switch language">EN</button>
+    <a class="wa-btn" href="https://wa.me/966560861304" target="_blank" rel="noopener"><span class="ar">تواصل معنا</span><span class="en">Contact us</span></a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <canvas id="net" aria-hidden="true"></canvas>
+  <div class="container">
+    <div>
+      <div class="mono" style="color:#1268d3;direction:ltr;text-align:start">Automation · Commissioning · Calibration · Digital</div>
+      <h1 style="margin-top:14px"><span class="ar">نبني <b>المياه الذكية</b><br>في المملكة.</span><span class="en">Engineering <b>intelligent water</b> for the Kingdom.</span></h1>
+      <p class="lead"><span class="ar">نصمّم أنظمة التحكم لمحطات التحلية والمياه والصرف الصحي، ونعاير أجهزتها، ونشغّلها ونسلّمها في موعدها، ثم نرافقها بالبيانات طوال عمرها.</span><span class="en">We engineer control systems for desalination, water and wastewater plants, calibrate their instruments, commission and hand them over on time, then stay with them through data for life.</span></p>
+      <div class="ctas">
+        <a class="btn pri" href="https://wa.me/966560861304" target="_blank" rel="noopener"><span class="ar">ناقش مشروعك معنا</span><span class="en">Discuss your project</span></a>
+        <a class="btn sec" href="#tools"><span class="ar">جرّب أدواتنا المجانية</span><span class="en">Try our free tools</span></a>
+      </div>
+      <div class="chips"><span class="chip">S7-1500 · R/H</span><span class="chip">WinCC Unified</span><span class="chip">PROFINET</span><span class="chip">Modbus TCP</span><span class="chip">OPC UA</span><span class="chip">SWRO · BWRO · MBR</span></div>
+    </div>
+    <div class="vid"><video src="TrueLoop_promo.mp4" poster="TrueLoop_promo_poster.jpg" controls muted playsinline preload="metadata" aria-label="TrueLoop introduction video"></video></div>
+  </div>
+</header>
+
+<section class="s" id="services">
+  <div class="container">
+    <div class="sh"><span class="mono">Services</span><h2><span class="ar">خمسة خطوط أعمال، ومعيار واحد</span><span class="en">Five business lines. One standard.</span></h2><p><span class="ar">من أول إشارة في الموقع حتى البيانات الذكية في غرفة التحكم.</span><span class="en">From the first field signal to intelligent data in the control room.</span></p></div>
+    <div class="svc">
+      <div class="sv" style="--c:var(--water)"><div class="nm">TrueLoop <b>Automation</b></div><h3><span class="ar">هندسة الأتمتة</span><span class="en">Automation engineering</span></h3><p><span class="ar">برمجة PLC وأنظمة R/H وشاشات SCADA بمكتبة قياسية مُجرّبة، مع تشخيص وتقارير.</span><span class="en">PLC, redundant R/H and SCADA on a proven standard library, with diagnostics and reports.</span></p></div>
+      <div class="sv" style="--c:var(--green)"><div class="nm">TrueLoop <b>Commissioning</b></div><h3><span class="ar">التشغيل والتسليم</span><span class="en">Commissioning &amp; handover</span></h3><p><span class="ar">FAT وSAT وفحص الحلقات والتشغيل الحيوي وتشغيل الأغشية واختبار الأداء.</span><span class="en">FAT, SAT, loop checks, biological and membrane start-up, performance tests.</span></p></div>
+      <div class="sv" style="--c:#7c3aed"><div class="nm">TrueLoop <b>Calibration</b></div><h3><span class="ar">المعايرة الميدانية</span><span class="en">Field calibration</span></h3><p><span class="ar">التدفق والمنسوب والضغط والمحللات: pH والتوصيلية والكلور الحر والكلي والعكارة.</span><span class="en">Flow, level, pressure and analysers: pH, conductivity, free and total chlorine, turbidity.</span></p></div>
+      <div class="sv" style="--c:var(--aqua)"><div class="nm">TrueLoop <b>Digital</b></div><h3><span class="ar">المياه الرقمية</span><span class="en">Digital water</span></h3><p><span class="ar">مراقبة عن بُعد، ومؤشرات الطاقة، وتقارير صحة الأغشية، وعقود دعم سنوية.</span><span class="en">Remote monitoring, energy KPIs, membrane health reports and annual support.</span></p></div>
+      <div class="sv" style="--c:var(--amp)"><div class="nm">TrueLoop <b>Academy</b></div><h3><span class="ar">الأكاديمية</span><span class="en">Academy</span></h3><p><span class="ar">تدريب المشغّلين والمهندسين السعوديين على المحاكي، بشهادات تشغيل.</span><span class="en">Simulator-based training and certificates for operators and Saudi engineers.</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="s alt" id="plants">
+  <div class="container">
+    <div class="sh"><span class="mono">Plants we serve</span><h2><span class="ar">من التحلية إلى معالجة الصرف</span><span class="en">From desalination to wastewater</span></h2></div>
+    <div class="plants">
+      <div class="pl"><svg viewBox="0 0 80 80"><rect x="8" y="22" width="64" height="46" rx="6" fill="none" stroke="#1268d3" stroke-width="5"/><rect x="12" y="38" width="56" height="26" fill="#16b9e0" opacity=".5"/><circle cx="26" cy="46" r="3" fill="#fff"/><circle cx="40" cy="52" r="3" fill="#fff"/><circle cx="54" cy="44" r="3" fill="#fff"/></svg><b>STP · MBR</b><span><span class="ar">معالجة الصرف الصحي والأغشية</span><span class="en">Sewage treatment and membrane bioreactors</span></span></div>
+      <div class="pl"><svg viewBox="0 0 80 80"><rect x="10" y="28" width="60" height="24" rx="12" fill="none" stroke="#1268d3" stroke-width="5"/><path d="M4 40 H18 M62 40 H76" stroke="#16b9e0" stroke-width="5" stroke-linecap="round"/><path d="M40 52 V70" stroke="#1db57a" stroke-width="5" stroke-linecap="round"/><path d="M34 64 L40 70 L46 64" fill="none" stroke="#1db57a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>RO · SWRO · BWRO</b><span><span class="ar">تحلية مياه البحر والمياه الجوفية</span><span class="en">Seawater and brackish water desalination</span></span></div>
+      <div class="pl"><svg viewBox="0 0 80 80"><rect x="16" y="10" width="48" height="60" rx="6" fill="none" stroke="#1268d3" stroke-width="5"/><path d="M20 30 H60 M20 44 H60" stroke="#16b9e0" stroke-width="5"/><path d="M20 58 H60" stroke="#e08a00" stroke-width="5"/></svg><b>WTP · UF</b><span><span class="ar">معالجة وترشيح المياه</span><span class="en">Water treatment and ultrafiltration</span></span></div>
+      <div class="pl"><svg viewBox="0 0 80 80"><circle cx="40" cy="42" r="20" fill="none" stroke="#1268d3" stroke-width="5"/><path d="M40 42 L56 28" stroke="#1db57a" stroke-width="5" stroke-linecap="round"/><path d="M4 42 H20 M60 42 H76" stroke="#16b9e0" stroke-width="5" stroke-linecap="round"/></svg><b>Pumping</b><span><span class="ar">محطات الضخ والرفع والخزانات</span><span class="en">Pumping, lift stations and reservoirs</span></span></div>
+      <div class="pl"><svg viewBox="0 0 80 80"><path d="M8 70 V36 L28 46 V36 L48 46 V20 H64 V70 Z" fill="none" stroke="#1268d3" stroke-width="5" stroke-linejoin="round"/><rect x="54" y="8" width="6" height="12" fill="#e08a00"/></svg><b>Industrial</b><span><span class="ar">المعالجة الصناعية وإعادة الاستخدام</span><span class="en">Industrial treatment and reuse</span></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="s">
+  <div class="container">
+    <div class="sh"><span class="mono">How we deliver</span><h2><span class="ar">من التصميم إلى شهادة الاستلام</span><span class="en">From design review to handover certificate</span></h2></div>
+    <ol class="steps">
+      <li><b><span class="ar">مراجعة التصميم</span><span class="en">Design review</span></b><span><span class="ar">P&amp;ID وقائمة الإشارات وفلسفة التحكم</span><span class="en">P&amp;ID, I/O list, control philosophy</span></span></li>
+      <li><b><span class="ar">البرمجة</span><span class="en">Programming</span></b><span><span class="ar">PLC وSCADA بمكتبتنا القياسية</span><span class="en">PLC and SCADA on our library</span></span></li>
+      <li><b>FAT</b><span><span class="ar">اختبار كامل قبل الموقع</span><span class="en">Full test before site</span></span></li>
+      <li><b><span class="ar">المعايرة وفحص الحلقات</span><span class="en">Calibration &amp; loops</span></b><span><span class="ar">كل جهاز وكل إشارة</span><span class="en">Every instrument, every signal</span></span></li>
+      <li><b><span class="ar">التشغيل بالمياه</span><span class="en">Wet commissioning</span></b><span><span class="ar">تشغيل المعدات بالتسلسل</span><span class="en">Equipment in sequence</span></span></li>
+      <li><b><span class="ar">تشغيل العملية</span><span class="en">Process start-up</span></b><span><span class="ar">حيوي أو أغشية واختبار الأداء</span><span class="en">Biology or membranes, performance test</span></span></li>
+      <li><b><span class="ar">التسليم</span><span class="en">Handover</span></b><span><span class="ar">ملف كامل عربي وإنجليزي وتدريب</span><span class="en">Full EN/AR pack and training</span></span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="s alt" id="tools">
+  <div class="container">
+    <div class="sh"><span class="mono">Free engineering tools</span><h2><span class="ar">أدوات مجانية لمهندسي المحطات</span><span class="en">Free tools for plant engineers</span></h2><p><span class="ar">نستخدمها في مشاريعنا، ونتيحها لكل مهندس مجاناً.</span><span class="en">We use them on our own projects, and they are free for every engineer.</span></p></div>
+    <div class="tools">
+      <a class="tool" href="tools/loop-check.html" target="_blank" rel="noopener"><span class="free">FREE</span><span class="tg">COMMISSIONING</span><h3>Loop Check &amp; FAT Generator</h3><p><span class="ar">الصق قائمة الإشارات، واحصل على نماذج فحص الحلقات وقائمة FAT خلال ثوانٍ.</span><span class="en">Paste your I/O list and get loop check sheets and a FAT checklist in seconds.</span></p><span class="go"><span class="ar">افتح الأداة ←</span><span class="en">Open tool →</span></span></a>
+      <a class="tool" href="tools/ro-normalization.html" target="_blank" rel="noopener"><span class="free">FREE</span><span class="tg">RO · DESALINATION</span><h3>RO Normalization</h3><p><span class="ar">الحالة الحقيقية للأغشية بعد تصحيح الحرارة والضغط والملوحة، وموعد الغسيل الكيميائي الصحيح.</span><span class="en">True membrane condition after correcting for temperature, pressure and salinity, and when CIP is really due.</span></p><span class="go"><span class="ar">افتح الأداة ←</span><span class="en">Open tool →</span></span></a>
+      <a class="tool" href="tools/calibration-certificate.html" target="_blank" rel="noopener"><span class="free">FREE</span><span class="tg">CALIBRATION</span><h3>Calibration Certificate</h3><p><span class="ar">أدخل القراءات، واحصل على شهادة معايرة جاهزة مع حساب الخطأ والنتيجة.</span><span class="en">Enter your readings and get a ready certificate with error and pass / fail worked out.</span></p><span class="go"><span class="ar">افتح الأداة ←</span><span class="en">Open tool →</span></span></a>
+    </div>
+  </div>
+</section>
+
+<section class="s" id="about">
+  <div class="container">
+    <div class="vm">
+      <div class="vmc v"><span class="mono"><span class="ar">رؤيتنا</span><span class="en">Our vision</span></span><p class="big"><span class="ar">أن تعمل كل محطة مياه في المملكة بذكاء: بكفاءة أعلى، وطاقة أقل، وقرارات مبنية على البيانات.</span><span class="en">Every water plant in the Kingdom running intelligently: more efficient, using less energy, managed by data.</span></p></div>
+      <div class="vmc m"><span class="mono"><span class="ar">رسالتنا</span><span class="en">Our mission</span></span><p><span class="ar">نصمّم ونبني ونشغّل ونعاير أنظمة التحكم والأجهزة لمحطات التحلية والمياه والصرف الصحي بمعيار عالمي واحد، ونسلّمها في موعدها، ونرافق عملاءنا بالبيانات والدعم طوال عمر المحطة، ونبني معهم كفاءات سعودية مؤهلة.</span><span class="en">We design, build, commission and calibrate control systems and instruments for desalination, water and wastewater plants to one world-class standard, hand them over on time, and stay with our clients through data and support for the life of the plant, building qualified Saudi talent along the way.</span></p></div>
+    </div>
+    <div class="why" style="margin-top:40px">
+      <div class="wy" style="--c:var(--water)"><h3><span class="ar">جاهز قبل الموقع</span><span class="en">Ready before site</span></h3><p><span class="ar">البرنامج يُنجز ويُختبر قبل أن يحتاجه الموقع، فلا ينتظر التشغيل البرمجة.</span><span class="en">The program is finished and tested before the site needs it. Commissioning never waits on software.</span></p></div>
+      <div class="wy" style="--c:var(--green)"><h3><span class="ar">معيار واحد</span><span class="en">One standard</span></h3><p><span class="ar">نفس الشاشات والإنذارات والتقارير والتوثيق في كل محطة نسلّمها.</span><span class="en">The same screens, alarms, reports and documents on every plant we deliver.</span></p></div>
+      <div class="wy" style="--c:var(--amp)"><h3><span class="ar">نملك النتيجة</span><span class="en">We own the outcome</span></h3><p><span class="ar">نقيس نجاحنا بشهادة الاستلام وبأداء المحطة بعدها، لا بعدد الساعات.</span><span class="en">We measure success by the handover certificate and how the plant performs after it, not by hours on site.</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" id="contact" style="padding-top:0">
+  <div class="container">
+    <div class="contact">
+      <div style="display:grid;gap:12px">
+        <span class="mono" style="color:#7fe3f5">Contact</span>
+        <h2><span class="ar">مشروعك القادم يستحق نظام تحكم بمستوى أعلى.</span><span class="en">Your next plant deserves a better control system.</span></h2>
+        <p><span class="ar">راسلنا على واتساب، ونرد عليك خلال يوم عمل.</span><span class="en">Message us on WhatsApp and we will reply within one working day.</span></p>
+        <div class="ph"><span class="ltr">+966 56 086 1304</span></div>
+        <p><span class="ar">الرياض، المملكة العربية السعودية</span><span class="en">Riyadh, Kingdom of Saudi Arabia</span></p>
+        <div><a class="btn pri" style="background:#1db57a" href="https://wa.me/966560861304" target="_blank" rel="noopener"><span class="ar">ابدأ المحادثة على واتساب</span><span class="en">Start a WhatsApp chat</span></a></div>
+      </div>
+      <div class="qr" aria-label="WhatsApp QR code"><svg viewBox="0 0 33 33" class="segno"><path class="qrline" stroke="#071b2b" d="M0 0.5h7m1 0h1m3 0h1m1 0h2m1 0h1m3 0h4m1 0h7m-33 1h1m5 0h1m1 0h2m1 0h1m2 0h2m1 0h3m1 0h3m2 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m1 0h1m3 0h1m1 0h1m1 0h1m3 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h3m2 0h2m5 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m1 0h1m1 0h2m1 0h3m1 0h1m1 0h1m3 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h2m3 0h2m2 0h1m1 0h2m2 0h1m2 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-21 1h2m4 0h1m2 0h1m2 0h1m-22 1h1m2 0h1m2 0h5m1 0h4m1 0h3m4 0h3m1 0h2m-32 1h3m3 0h1m2 0h2m3 0h2m4 0h2m3 0h1m4 0h2m-32 1h2m1 0h1m1 0h1m2 0h3m2 0h1m1 0h1m2 0h2m8 0h2m1 0h1m-32 1h5m2 0h1m2 0h1m3 0h2m1 0h2m1 0h2m3 0h1m-27 1h1m1 0h1m3 0h2m2 0h1m1 0h3m2 0h1m1 0h1m2 0h1m2 0h5m1 0h2m-33 1h1m1 0h2m1 0h1m1 0h3m4 0h1m5 0h1m5 0h4m2 0h1m-32 1h1m1 0h4m3 0h2m1 0h3m1 0h1m3 0h1m1 0h1m2 0h6m-32 1h1m2 0h1m1 0h1m1 0h6m1 0h2m1 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h2m-32 1h1m1 0h1m1 0h2m1 0h1m2 0h2m2 0h7m1 0h1m1 0h4m1 0h2m-30 1h3m3 0h3m2 0h2m1 0h3m2 0h1m1 0h1m3 0h1m2 0h3m-33 1h1m2 0h4m1 0h4m1 0h1m1 0h2m2 0h3m3 0h1m2 0h1m1 0h1m1 0h1m-31 1h1m1 0h1m2 0h1m1 0h1m1 0h1m3 0h1m1 0h2m1 0h3m3 0h3m-29 1h3m2 0h2m7 0h2m1 0h1m2 0h4m1 0h2m4 0h1m-23 1h3m5 0h2m2 0h3m1 0h1m3 0h1m2 0h1m-33 1h3m1 0h1m1 0h1m2 0h4m4 0h2m1 0h1m4 0h2m1 0h5m-32 1h4m2 0h1m2 0h1m1 0h2m2 0h2m3 0h1m3 0h2m1 0h1m2 0h1m-32 1h1m1 0h2m1 0h2m2 0h2m2 0h3m1 0h2m2 0h2m1 0h5m2 0h2m-25 1h2m1 0h1m1 0h1m1 0h1m2 0h3m3 0h1m3 0h1m2 0h2m-33 1h7m4 0h1m2 0h1m2 0h2m1 0h2m2 0h1m1 0h1m1 0h2m1 0h1m-32 1h1m5 0h1m3 0h1m4 0h2m3 0h1m2 0h2m3 0h2m2 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m3 0h1m3 0h2m2 0h1m1 0h6m-30 1h1m1 0h3m1 0h1m1 0h2m2 0h6m1 0h2m3 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h2m1 0h1m1 0h3m1 0h2m1 0h1m1 0h3m1 0h2m3 0h1m-33 1h1m5 0h1m2 0h1m1 0h4m1 0h1m1 0h1m1 0h1m1 0h4m1 0h2m1 0h1m-31 1h7m4 0h3m2 0h2m1 0h1m3 0h3m1 0h5"/></svg><span class="ql"><svg><use href="#mark"/></svg></span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <a class="logo" href="#top"><svg aria-hidden="true"><use href="#mark"/></svg><span><span class="lt">True</span>Loop</span></a>
+    <span class="mono">Engineering intelligent water</span>
+    <span>© 2026 TrueLoop · Riyadh</span>
+  </div>
+</footer>
+</div>
+
+<script>
+(function(){
+  var site=document.getElementById("site"),btn=document.getElementById("langBtn");
+  function setLang(l){site.setAttribute("data-lang",l);site.setAttribute("dir",l==="ar"?"rtl":"ltr");site.setAttribute("lang",l);btn.textContent=l==="ar"?"EN":"عربي";try{localStorage.setItem("tl-lang",l);}catch(e){}}
+  var saved=null;try{saved=localStorage.getItem("tl-lang");}catch(e){}
+  setLang(saved==="en"?"en":"ar");
+  btn.addEventListener("click",function(){setLang(site.getAttribute("data-lang")==="ar"?"en":"ar");});
+  var c=document.getElementById("net");if(!c||!c.getContext)return;
+  var ctx=c.getContext("2d"),W,H,pts=[],reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function size(){var r=c.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);W=r.width;H=r.height;c.width=W*d;c.height=H*d;ctx.setTransform(d,0,0,d,0,0);}
+  function seed(){pts=[];var n=Math.round(Math.min(80,W*H/9000));for(var i=0;i<n;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,a:i%9===0});}
+  function draw(){ctx.clearRect(0,0,W,H);
+    for(var i=0;i<pts.length;i++){var p=pts[i];for(var j=i+1;j<pts.length;j++){var q=pts[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){ctx.strokeStyle="rgba(18,104,211,"+(0.16*(1-d/130))+")";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();}}}
+    pts.forEach(function(p){ctx.fillStyle=p.a?"rgba(224,138,0,.8)":"rgba(22,185,224,.55)";ctx.beginPath();ctx.arc(p.x,p.y,p.a?3:2.2,0,7);ctx.fill();if(!reduce){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;}});
+    var gx=(site.getAttribute("dir")==="rtl"?0.7:0.3)*W;var g=ctx.createRadialGradient(gx,H*0.5,10,gx,H*0.5,Math.max(W,H)*0.5);g.addColorStop(0,"rgba(255,255,255,.85)");g.addColorStop(1,"rgba(255,255,255,0)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    if(!reduce)requestAnimationFrame(draw);}
+  size();seed();draw();window.addEventListener("resize",function(){size();seed();if(reduce)draw();});
+})();
+</script>
+</html>

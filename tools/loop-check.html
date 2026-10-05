@@ -1,0 +1,318 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TrueLoop Loop Check Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: tool. Input panel (paste I/O list) -> summary chips -> tabbed output (loop sheets / FAT checklist) -> TrueLoop contact strip. */
+:root{
+  --bg:#eef3f6; --card:#ffffff; --ink:#071b2b; --muted:#566a77; --line:#d3dde3; --soft:#f5f9fb;
+  --water:#1268d3; --aqua:#16b9e0; --green:#1db57a; --amp:#e79a00; --bad:#c2410c;
+  --f-display:"Readex Pro",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,"Segoe UI",sans-serif;
+  --f-ar:"IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --f-mono:"IBM Plex Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#06131d;--card:#0c2333;--ink:#e3eef4;--muted:#9bb2c0;--line:#1e3d50;--soft:#0a1c29;--water:#5aa2f0;--amp:#ffb21e;--bad:#fb923c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#06131d;--card:#0c2333;--ink:#e3eef4;--muted:#9bb2c0;--line:#1e3d50;--soft:#0a1c29;--water:#5aa2f0;--amp:#ffb21e;--bad:#fb923c;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:1100px;margin-inline:auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.25;text-wrap:balance}
+h1{font-size:clamp(1.4rem,3.4vw,2rem)} h2{font-size:1.1rem} h3{font-size:1rem}
+p{margin:0}
+.muted{color:var(--muted)}
+.ar{font-family:var(--f-ar);direction:rtl}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:12px;min-width:0}
+header.top{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+header.top svg{width:56px;height:58px;flex:none}
+header.top .t{display:grid;gap:2px;min-width:0;flex:1}
+.brand{font-family:var(--f-display);font-size:.95rem;color:var(--muted)} .brand b{color:var(--ink)} .brand .lt{font-weight:300}
+.grid-in{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:16px}
+textarea{width:100%;min-height:230px;font-family:var(--f-mono);font-size:.82rem;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--soft);color:var(--ink);resize:vertical;white-space:pre;overflow:auto;tab-size:14}
+.fields{display:grid;gap:10px;align-content:start}
+.field{display:grid;gap:3px}
+.field label{font-size:.82rem;color:var(--muted)}
+.field input{font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--soft);color:var(--ink);width:100%}
+textarea:focus-visible,.field input:focus-visible,button:focus-visible,.tab:focus-visible{outline:2px solid var(--water);outline-offset:2px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;font-size:.88rem;padding:7px 14px;border-radius:6px;border:1px solid var(--water);background:transparent;color:var(--water);cursor:pointer}
+button.pri{background:var(--water);color:#fff}
+button:hover{filter:brightness(1.05)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);border-radius:99px;padding:3px 12px;font-size:.85rem;background:var(--soft);font-variant-numeric:tabular-nums}
+.chip b{font-family:var(--f-mono)}
+.chip.ai{border-color:var(--water)} .chip.ao{border-color:var(--aqua)} .chip.di{border-color:var(--green)} .chip.do{border-color:var(--amp)} .chip.unk{border-color:var(--bad);color:var(--bad)}
+.map{font-size:.82rem;color:var(--muted)}
+.map code{font-family:var(--f-mono);background:var(--soft);padding:1px 6px;border-radius:4px;border:1px solid var(--line)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:flex-end}
+.tab{font:inherit;border:1px solid transparent;border-bottom:0;border-radius:8px 8px 0 0;padding:8px 14px;background:transparent;color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--card);border-color:var(--line);color:var(--ink);font-weight:600;margin-bottom:-1px}
+.tools{margin-inline-start:auto;padding-bottom:6px}
+.note{font-size:.82rem;color:var(--muted)}
+/* sheets */
+.sheets{display:grid;gap:16px}
+.sheet{background:#fff;color:#071b2b;border:1px solid #d3dde3;border-radius:8px;padding:16px;display:grid;gap:10px;min-width:0}
+.sh-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:2px solid #071b2b;padding-bottom:8px;flex-wrap:wrap}
+.sh-head h3{font-size:1.05rem}
+.sh-head .tagno{font-family:var(--f-mono);font-size:1.1rem;font-weight:500}
+.sh-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px 16px;font-size:.82rem}
+.sh-meta span{color:#566a77}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.82rem;font-variant-numeric:tabular-nums}
+th,td{border:1px solid #c9d5dc;padding:5px 7px;text-align:left;vertical-align:top}
+th{background:#eef4f8;font-weight:600;font-size:.76rem;color:#24394a}
+td.num{font-family:var(--f-mono);white-space:nowrap}
+td.blank{min-width:70px}
+.sign{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;font-size:.8rem}
+.sign div{border-top:1px solid #071b2b;padding-top:4px;color:#566a77;min-height:34px}
+.sh-foot{display:flex;justify-content:space-between;gap:10px;font-size:.72rem;color:#566a77;border-top:1px dashed #c9d5dc;padding-top:6px;flex-wrap:wrap}
+.sh-foot svg{width:14px;height:15px;vertical-align:-3px}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1.5px dashed var(--line);border-radius:8px}
+/* contact */
+.cta{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;background:#071b2b;color:#fff;border-radius:10px;padding:18px}
+.cta svg.mk{width:52px;height:54px}
+.cta p{font-size:.92rem;opacity:.9}
+.cta a{color:#7fe3f5;font-weight:600}
+.qr{width:104px;height:104px;background:#fff;border-radius:8px;padding:7px;position:relative}
+.qr>svg{width:100%;height:100%;display:block}
+.qr .ql{position:absolute;left:50%;top:50%;width:26px;height:26px;transform:translate(-50%,-50%);background:#fff;border-radius:5px;display:grid;place-items:center}
+.qr .ql svg{width:21px;height:22px}
+@media (max-width:760px){.grid-in{grid-template-columns:1fr}.cta{grid-template-columns:1fr}.sign{grid-template-columns:1fr}.tools{margin-inline-start:0}}
+@media print{
+  body{background:#fff;padding:0}
+  .no-print,.cta,header.top,.card.input,.tabs{display:none!important}
+  .wrap{max-width:none;gap:0}
+  .card.out{border:0;padding:0}
+  .sheet{border:0;border-radius:0;padding:0 0 8mm;break-after:page}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gDrop" x1="25" y1="85" x2="72" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1268d3"/><stop offset=".5" stop-color="#16b9e0"/><stop offset=".78" stop-color="#16b9e0"/><stop offset="1" stop-color="#ffb21e"/>
+    </linearGradient>
+    <linearGradient id="gBolt" x1="66" y1="2" x2="66" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe066"/><stop offset=".55" stop-color="#ffb21e"/><stop offset="1" stop-color="#ff8a00"/>
+    </linearGradient>
+    <filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <symbol id="mark" viewBox="0 -4 100 104">
+      <path d="M50 9 C50 9 21 43 21 61 A29 29 0 0 0 79 61 C79 55 77 49 74 44" fill="none" stroke="url(#gDrop)" stroke-width="7" stroke-linecap="round"/>
+      <path d="M70 2 L54 26 L64 26 L58 44 L80 18 L69 18 L76 2 Z" fill="url(#gBolt)" stroke="#ff9f0a" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M37.3 62.3 L45 70 L59.7 55.3" fill="none" stroke="#1db57a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="33" cy="58" r="4.5" fill="none" stroke="#1db57a" stroke-width="3"/>
+      <circle cx="64" cy="51" r="4.5" fill="none" stroke="#1db57a" stroke-width="3"/>
+    </symbol></defs></svg>
+
+<main class="wrap">
+  <header class="top">
+    <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div class="t">
+      <div class="brand"><b><span class="lt">True</span>Loop</b> · free engineering tools</div>
+      <h1>Loop Check &amp; FAT Sheet Generator</h1>
+      <p class="muted">Paste your I/O list from Excel. Get a loop check sheet for every signal and a full FAT checklist in seconds.</p>
+      <p class="muted ar">الصق قائمة الإشارات من Excel، واحصل على نماذج فحص الحلقات وقائمة FAT جاهزة خلال ثوانٍ.</p>
+    </div>
+  </header>
+
+  <section class="card input">
+    <div class="grid-in">
+      <div style="display:grid;gap:8px;min-width:0">
+        <label for="io"><b>I/O list</b> <span class="muted">· copy the rows from Excel including the header row, then paste here</span></label>
+        <textarea id="io" spellcheck="false"></textarea>
+        <div class="btns"><button type="button" class="pri" id="gen">Generate sheets</button><button type="button" id="ex">Load example</button><button type="button" id="clr">Clear</button></div>
+        <div class="map" id="map"></div>
+      </div>
+      <div class="fields">
+        <div class="field"><label for="proj">Project</label><input id="proj" value="Example STP 2 x 500 m³/d"></div>
+        <div class="field"><label for="panel">Panel / PLC</label><input id="panel" value="MCP-01 · S7-1500"></div>
+        <div class="field"><label for="tol">Acceptance tolerance (% of span)</label><input id="tol" type="number" step="0.1" min="0" value="0.5"></div>
+        <div class="field"><label for="doc">Document no.</label><input id="doc" value="LC-001"></div>
+        <p class="note">Recognised columns: Tag, Description, Type (AI / AO / DI / DO), Min, Max or Range, Unit, Address, Panel. If there is no Type column the tool reads it from the PLC address (%IW, %QW, %I, %Q).</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card out">
+    <div class="chips no-print" id="sum"></div>
+    <div class="tabs no-print" role="tablist">
+      <button type="button" class="tab" role="tab" id="t-loop" aria-selected="true">Loop check sheets</button>
+      <button type="button" class="tab" role="tab" id="t-fat" aria-selected="false">FAT checklist</button>
+      <div class="tools btns">
+        <button type="button" id="copy">Copy for Excel</button>
+        <button type="button" id="csv" hidden>Download CSV</button>
+        <button type="button" id="prn" hidden>Print / PDF</button>
+      </div>
+    </div>
+    <p class="note no-print" id="copied" aria-live="polite"></p>
+    <div id="out" class="sheets"></div>
+  </section>
+
+  <section class="cta no-print">
+    <svg class="mk" role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div style="display:grid;gap:4px">
+      <b style="font-family:var(--f-display);font-size:1.1rem">Your next plant deserves a better control system.</b>
+      <p>TrueLoop engineers complete control systems for water and wastewater plants: PLC and redundant R/H, SCADA, smart diagnostics, reports and energy KPIs, then commissions and hands them over with full EN/AR documentation.</p>
+      <p>WhatsApp <a href="https://wa.me/966560861304" target="_blank" rel="noopener">+966 56 086 1304</a> · Riyadh, Saudi Arabia</p>
+    </div>
+    <div class="qr"><svg viewBox="0 0 33 33" class="segno"><path class="qrline" stroke="#071b2b" d="M0 0.5h7m1 0h1m3 0h1m1 0h2m1 0h1m3 0h4m1 0h7m-33 1h1m5 0h1m1 0h2m1 0h1m2 0h2m1 0h3m1 0h3m2 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m1 0h1m3 0h1m1 0h1m1 0h1m3 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h3m2 0h2m5 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m1 0h1m1 0h2m1 0h3m1 0h1m1 0h1m3 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h2m3 0h2m2 0h1m1 0h2m2 0h1m2 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-21 1h2m4 0h1m2 0h1m2 0h1m-22 1h1m2 0h1m2 0h5m1 0h4m1 0h3m4 0h3m1 0h2m-32 1h3m3 0h1m2 0h2m3 0h2m4 0h2m3 0h1m4 0h2m-32 1h2m1 0h1m1 0h1m2 0h3m2 0h1m1 0h1m2 0h2m8 0h2m1 0h1m-32 1h5m2 0h1m2 0h1m3 0h2m1 0h2m1 0h2m3 0h1m-27 1h1m1 0h1m3 0h2m2 0h1m1 0h3m2 0h1m1 0h1m2 0h1m2 0h5m1 0h2m-33 1h1m1 0h2m1 0h1m1 0h3m4 0h1m5 0h1m5 0h4m2 0h1m-32 1h1m1 0h4m3 0h2m1 0h3m1 0h1m3 0h1m1 0h1m2 0h6m-32 1h1m2 0h1m1 0h1m1 0h6m1 0h2m1 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m1 0h2m-32 1h1m1 0h1m1 0h2m1 0h1m2 0h2m2 0h7m1 0h1m1 0h4m1 0h2m-30 1h3m3 0h3m2 0h2m1 0h3m2 0h1m1 0h1m3 0h1m2 0h3m-33 1h1m2 0h4m1 0h4m1 0h1m1 0h2m2 0h3m3 0h1m2 0h1m1 0h1m1 0h1m-31 1h1m1 0h1m2 0h1m1 0h1m1 0h1m3 0h1m1 0h2m1 0h3m3 0h3m-29 1h3m2 0h2m7 0h2m1 0h1m2 0h4m1 0h2m4 0h1m-23 1h3m5 0h2m2 0h3m1 0h1m3 0h1m2 0h1m-33 1h3m1 0h1m1 0h1m2 0h4m4 0h2m1 0h1m4 0h2m1 0h5m-32 1h4m2 0h1m2 0h1m1 0h2m2 0h2m3 0h1m3 0h2m1 0h1m2 0h1m-32 1h1m1 0h2m1 0h2m2 0h2m2 0h3m1 0h2m2 0h2m1 0h5m2 0h2m-25 1h2m1 0h1m1 0h1m1 0h1m2 0h3m3 0h1m3 0h1m2 0h2m-33 1h7m4 0h1m2 0h1m2 0h2m1 0h2m2 0h1m1 0h1m1 0h2m1 0h1m-32 1h1m5 0h1m3 0h1m4 0h2m3 0h1m2 0h2m3 0h2m2 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m3 0h1m3 0h2m2 0h1m1 0h6m-30 1h1m1 0h3m1 0h1m1 0h2m2 0h6m1 0h2m3 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h2m1 0h1m1 0h3m1 0h2m1 0h1m1 0h3m1 0h2m3 0h1m-33 1h1m5 0h1m2 0h1m1 0h4m1 0h1m1 0h1m1 0h1m1 0h4m1 0h2m1 0h1m-31 1h7m4 0h3m2 0h2m1 0h1m3 0h3m1 0h5"/></svg><span class="ql"><svg><use href="#mark"/></svg></span></div>
+  </section>
+</main>
+
+<script>
+(function(){
+var EXAMPLE=["Tag\tDescription\tType\tMin\tMax\tUnit\tAddress\tPanel",
+"LIT-101\tInlet sump level\tAI\t0\t5\tm\t%IW64\tMCP-01",
+"FIT-201\tPermeate flow train 1\tAI\t0\t50\tm3/h\t%IW66\tMCP-01",
+"PIT-202\tTransmembrane pressure train 1\tAI\t-0.8\t0\tbar\t%IW68\tMCP-01",
+"AIT-301\tDissolved oxygen aeration tank\tAI\t0\t20\tmg/L\t%IW70\tMCP-01",
+"AIT-302\tpH inlet\tAI\t0\t14\tpH\t%IW72\tMCP-01",
+"P-101-RUN\tInlet pump P-101 running feedback\tDI\t\t\t\t%I0.0\tMCP-01",
+"P-101-TRIP\tInlet pump P-101 overload trip\tDI\t\t\t\t%I0.1\tMCP-01",
+"LSHH-101\tInlet sump level high-high switch\tDI\t\t\t\t%I0.2\tMCP-01",
+"P-101-CMD\tInlet pump P-101 start command\tDO\t\t\t\t%Q0.0\tMCP-01",
+"XV-401\tSludge valve open command\tDO\t\t\t\t%Q0.1\tMCP-01",
+"FCV-201\tPermeate control valve position\tAO\t0\t100\t%\t%QW64\tMCP-01",
+"B-301-SP\tBlower B-301 speed reference\tAO\t0\t50\tHz\t%QW66\tMCP-01"].join("\n");
+
+var $=function(id){return document.getElementById(id);};
+var KEY="tl-loopcheck-v1", tab="loop", rows=[];
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function num(v){var n=parseFloat(String(v).replace(",","."));return isFinite(n)?n:null;}
+function fmt(n){if(n==null)return "";var a=Math.abs(n);var d=a>=100?1:a>=10?2:3;return (+n.toFixed(d)).toString();}
+
+var COLS={tag:/^(tag|tag ?no\.?|tag ?name|tag ?number|instrument|equipment|kks)$/i,desc:/desc|service|signal ?name|function|comment/i,type:/^(type|i\/?o ?type|signal ?type|io|i\/o|sig)$/i,
+  range:/^range$/i,min:/(^min|lrv|^low|^from|range ?min|min ?range)/i,max:/(^max|urv|^high|range ?max|max ?range)/i,unit:/^(unit|units|eu|uom|eng\.? ?unit)/i,addr:/addr|channel|^ch$|plc ?tag|i\/?o ?address/i,panel:/panel|cabinet|rio|mcc|location|station/i};
+
+function parse(text){
+  var lines=text.replace(/\r/g,"").split("\n").filter(function(l){return l.trim().length;});
+  if(!lines.length)return {rows:[],map:null};
+  var sep=lines[0].indexOf("\t")>=0?"\t":(lines[0].indexOf(";")>=0?";":",");
+  var cells=lines.map(function(l){return l.split(sep).map(function(c){return c.trim().replace(/^"|"$/g,"");});});
+  var head=cells[0], map={}, hasHead=false;
+  head.forEach(function(h,i){for(var k in COLS){if(map[k]==null&&COLS[k].test(h)){map[k]=i;hasHead=true;break;}}});
+  if(!hasHead||map.tag==null){map={tag:0,desc:1,type:2,min:3,max:4,unit:5,addr:6,panel:7};hasHead=!!(head[0]&&/tag/i.test(head[0]));}
+  var data=hasHead?cells.slice(1):cells;
+  var out=data.map(function(c){
+    var g=function(k){return map[k]!=null?(c[map[k]]||""):"";};
+    var r={tag:g("tag"),desc:g("desc"),type:"",min:num(g("min")),max:num(g("max")),unit:g("unit"),addr:g("addr"),panel:g("panel")};
+    var rg=g("range"); if(rg){var m=rg.match(/(-?\d+(?:[.,]\d+)?)\s*(?:-|–|to|\.\.|~)\s*(-?\d+(?:[.,]\d+)?)/i);if(m){r.min=num(m[1]);r.max=num(m[2]);}}
+    r.type=normType(g("type"),r.addr,r.tag);
+    return r;
+  }).filter(function(r){return r.tag||r.desc;});
+  return {rows:out,map:map,hasHead:hasHead};
+}
+function normType(t,addr,tag){
+  var u=String(t).toUpperCase().replace(/\s+/g," ");
+  if(/\bAI\b|ANALOG(UE)? IN/.test(u))return "AI"; if(/\bAO\b|ANALOG(UE)? OUT/.test(u))return "AO";
+  if(/\bDI\b|DIGITAL IN|BINARY IN/.test(u))return "DI"; if(/\bDO\b|DIGITAL OUT|BINARY OUT/.test(u))return "DO";
+  var a=String(addr).toUpperCase().replace(/\s/g,"");
+  if(/^%?P?IW/.test(a))return "AI"; if(/^%?P?QW/.test(a))return "AO";
+  if(/^%?I\d/.test(a)||/^%?E\d/.test(a))return "DI"; if(/^%?Q\d/.test(a)||/^%?A\d/.test(a))return "DO";
+  var g=String(tag).toUpperCase();
+  if(/^(L|F|P|A|T|D|S)[IT]?T-?\d|^(LIT|FIT|PIT|AIT|TIT)/.test(g))return "AI";
+  return "?";
+}
+function isAlarm(r){return /(LSH|LSL|PSH|PSL|TSH|ALM|ALARM|TRIP|FAULT|HH|LL|ESD|E-STOP)/i.test(r.tag+" "+r.desc);}
+
+function loopRows(r,tol){
+  var out=[];
+  if(r.type==="AI"||r.type==="AO"){
+    var lo=r.min==null?0:r.min, hi=r.max==null?100:r.max, span=hi-lo, band=Math.abs(span)*tol/100;
+    [0,25,50,75,100].forEach(function(p){
+      var ma=4+16*p/100, eu=lo+span*p/100;
+      out.push({step:p+" %",ma:fmt(ma),exp:fmt(eu),lo:fmt(eu-band),hi:fmt(eu+band)});
+    });
+  } else if(r.type==="DI"){
+    var al=isAlarm(r);
+    out.push({step:"Field contact open / de-energised",exp:"PLC = 0"});
+    out.push({step:"Field contact closed / energised",exp:"PLC = 1"});
+    out.push({step:"HMI status follows field state",exp:"Matches"});
+    if(al)out.push({step:"Alarm raised on HMI and in alarm log",exp:"Alarm + time stamp"});
+  } else if(r.type==="DO"){
+    out.push({step:"Force output = 1 from PLC",exp:"Field device energised / ON"});
+    out.push({step:"Force output = 0 from PLC",exp:"Field device de-energised / OFF"});
+    out.push({step:"Operate from HMI in Manual",exp:"Device follows command"});
+    out.push({step:"Interlocks and permissives block the command",exp:"Command inhibited"});
+  }
+  return out;
+}
+
+function meta(){return {proj:$("proj").value,panel:$("panel").value,tol:Math.max(0,num($("tol").value)||0),doc:$("doc").value};}
+function foot(m,i,n){return '<div class="sh-foot"><span>'+esc(m.doc)+' · sheet '+i+' of '+n+'</span><span><svg><use href="#mark"/></svg> Generated with TrueLoop free tools · WhatsApp +966 56 086 1304</span></div>';}
+function signs(){return '<div class="sign"><div>Tested by / date</div><div>Witnessed by (contractor) / date</div><div>Witnessed by (consultant / client) / date</div></div>';}
+
+function renderLoop(m){
+  var list=rows.filter(function(r){return r.type!=="?";}), n=list.length;
+  if(!n)return '<div class="empty">No recognised signals yet. Paste an I/O list above, or press <b>Load example</b>.</div>';
+  return list.map(function(r,i){
+    var lr=loopRows(r,m.tol), an=(r.type==="AI"||r.type==="AO"), body;
+    if(an){
+      var h=r.type==="AI"?["Test point","Injected (mA)","Expected ("+esc(r.unit||"EU")+")","Accept from","Accept to","PLC reading","HMI reading","OK"]:["PLC output","Expected (mA)","Expected ("+esc(r.unit||"EU")+")","Accept from","Accept to","Measured (mA)","Field feedback","OK"];
+      body='<thead><tr>'+h.map(function(x){return "<th>"+x+"</th>";}).join("")+'</tr></thead><tbody>'+lr.map(function(s){return '<tr><td class="num">'+s.step+'</td><td class="num">'+s.ma+'</td><td class="num">'+s.exp+'</td><td class="num">'+s.lo+'</td><td class="num">'+s.hi+'</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>';}).join("")+'</tbody>';
+    } else {
+      body='<thead><tr><th>Check</th><th>Expected result</th><th>Actual result</th><th>OK</th></tr></thead><tbody>'+lr.map(function(s){return '<tr><td>'+s.step+'</td><td>'+s.exp+'</td><td class="blank"></td><td class="blank"></td></tr>';}).join("")+'</tbody>';
+    }
+    var range=an?(fmt(r.min==null?0:r.min)+" to "+fmt(r.max==null?100:r.max)+" "+esc(r.unit)):"—";
+    return '<article class="sheet"><div class="sh-head"><div><h3>Loop Check Sheet · '+r.type+'</h3><div class="muted" style="color:#566a77;font-size:.85rem">'+esc(m.proj)+'</div></div><div class="tagno">'+esc(r.tag)+'</div></div>'+
+      '<div class="sh-meta"><div><span>Description: </span>'+esc(r.desc)+'</div><div><span>PLC address: </span>'+esc(r.addr||"—")+'</div><div><span>Panel: </span>'+esc(r.panel||m.panel)+'</div><div><span>Range: </span>'+range+'</div>'+(an?'<div><span>Tolerance: </span>±'+fmt(m.tol)+' % of span</div>':'')+'</div>'+
+      '<div class="tbl"><table>'+body+'</table></div>'+
+      '<div class="tbl"><table><thead><tr><th>Pre-check</th><th>OK</th><th>Pre-check</th><th>OK</th></tr></thead><tbody><tr><td>Termination and ferrules match loop drawing</td><td class="blank"></td><td>Cable screen earthed one end only</td><td class="blank"></td></tr><tr><td>Insulation / continuity checked</td><td class="blank"></td><td>Tag label fitted at field device</td><td class="blank"></td></tr></tbody></table></div>'+
+      '<div style="font-size:.8rem;color:#566a77">Remarks: ____________________________________________________________</div>'+signs()+foot(m,i+1,n)+'</article>';
+  }).join("");
+}
+function fatTable(){
+  var h=["#","Tag","Description","Type","Address","Range","Wiring","PLC","HMI","Alarm","Remarks"];
+  var b=rows.map(function(r,i){var rg=(r.type==="AI"||r.type==="AO")?(fmt(r.min==null?0:r.min)+"–"+fmt(r.max==null?100:r.max)+" "+r.unit):"";return [i+1,r.tag,r.desc,r.type,r.addr,rg,"","","",(r.type==="DI"&&isAlarm(r))||r.type==="AI"?"":"n/a",""];});
+  return {h:h,b:b};
+}
+function renderFat(m){
+  if(!rows.length)return '<div class="empty">No signals yet. Paste an I/O list above.</div>';
+  var t=fatTable();
+  return '<article class="sheet"><div class="sh-head"><div><h3>Factory Acceptance Test · I/O checklist</h3><div style="color:#566a77;font-size:.85rem">'+esc(m.proj)+' · '+esc(m.panel)+'</div></div><div class="tagno">'+rows.length+' signals</div></div>'+
+    '<div class="tbl"><table><thead><tr>'+t.h.map(function(x){return "<th>"+x+"</th>";}).join("")+'</tr></thead><tbody>'+
+    t.b.map(function(r){return "<tr>"+r.map(function(c,j){return '<td class="'+(j===0||j===4||j===5?"num":(j>=6&&j<=9?"blank":""))+'">'+esc(c)+"</td>";}).join("")+"</tr>";}).join("")+
+    '</tbody></table></div>'+signs()+foot(m,1,1)+'</article>';
+}
+
+function render(){
+  var p=parse($("io").value); rows=p.rows; var m=meta();
+  try{localStorage.setItem(KEY,JSON.stringify({io:$("io").value,proj:m.proj,panel:m.panel,tol:$("tol").value,doc:m.doc}));}catch(e){}
+  var c={AI:0,AO:0,DI:0,DO:0,"?":0}; rows.forEach(function(r){c[r.type]++;});
+  $("sum").innerHTML='<span class="chip"><b>'+rows.length+'</b> signals</span><span class="chip ai">AI <b>'+c.AI+'</b></span><span class="chip ao">AO <b>'+c.AO+'</b></span><span class="chip di">DI <b>'+c.DI+'</b></span><span class="chip do">DO <b>'+c.DO+'</b></span>'+(c["?"]?'<span class="chip unk">Type not recognised <b>'+c["?"]+'</b>: add a Type column (AI/AO/DI/DO)</span>':'');
+  if(p.map){var names=[];for(var k in p.map){if(p.map[k]!=null)names.push(k);}$("map").innerHTML=p.hasHead?'Columns found: '+names.map(function(n){return "<code>"+n+"</code>";}).join(" "):'No header row found, so the columns were read in this order: <code>Tag · Description · Type · Min · Max · Unit · Address · Panel</code>';}else $("map").textContent="";
+  $("out").innerHTML=tab==="loop"?renderLoop(m):renderFat(m);
+}
+function tsv(){
+  var m=meta();
+  if(tab==="fat"){var t=fatTable();return [t.h].concat(t.b).map(function(r){return r.join("\t");}).join("\n");}
+  var out=[["Tag","Description","Type","Address","Check / test point","Injected or expected mA","Expected value","Accept from","Accept to","Actual","OK"].join("\t")];
+  rows.filter(function(r){return r.type!=="?";}).forEach(function(r){loopRows(r,m.tol).forEach(function(s){out.push([r.tag,r.desc,r.type,r.addr,s.step,s.ma||"",s.exp,s.lo||"",s.hi||"","",""].join("\t"));});});
+  return out.join("\n");
+}
+function setTab(t){tab=t;$("t-loop").setAttribute("aria-selected",t==="loop");$("t-fat").setAttribute("aria-selected",t==="fat");render();}
+
+try{var s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.io){$("io").value=s.io;$("proj").value=s.proj||"";$("panel").value=s.panel||"";$("tol").value=s.tol||"0.5";$("doc").value=s.doc||"";}else $("io").value=EXAMPLE;}catch(e){$("io").value=EXAMPLE;}
+
+var timer;["io","proj","panel","tol","doc"].forEach(function(id){$(id).addEventListener("input",function(){clearTimeout(timer);timer=setTimeout(render,250);});});
+$("gen").addEventListener("click",render);
+$("ex").addEventListener("click",function(){$("io").value=EXAMPLE;$("proj").value="Example STP 2 x 500 m³/d";$("panel").value="MCP-01 · S7-1500";render();});
+$("clr").addEventListener("click",function(){$("io").value="";render();$("io").focus();});
+$("t-loop").addEventListener("click",function(){setTab("loop");});
+$("t-fat").addEventListener("click",function(){setTab("fat");});
+$("copy").addEventListener("click",function(){
+  var text=tsv(), msg=$("copied");
+  var done=function(){msg.textContent="Copied "+(tab==="fat"?"FAT checklist":"loop check rows")+". Paste into Excel with Ctrl+V.";};
+  var fallback=function(){var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand("copy");}catch(e){}document.body.removeChild(ta);msg.textContent=ok?"Copied. Paste into Excel with Ctrl+V.":"Copy was blocked by the browser. Select the table and copy it by hand.";};
+  try{navigator.clipboard.writeText(text).then(done,fallback);}catch(e){fallback();}
+});
+// Print and file download only work when the page is opened on its own, not inside an embedded viewer.
+var top=false;try{top=window.self===window.top;}catch(e){}
+if(top){
+  $("prn").hidden=false;$("csv").hidden=false;
+  $("prn").addEventListener("click",function(){window.print();});
+  $("csv").addEventListener("click",function(){var csv=tsv().split("\n").map(function(l){return l.split("\t").map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(",");}).join("\r\n");var b=new Blob(["﻿"+csv],{type:"text/csv"});var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=($("doc").value||"TrueLoop")+"_"+tab+".csv";a.click();});
+}
+render();
+})();
+</script>
+</html>
