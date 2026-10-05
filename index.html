@@ -163,6 +163,24 @@ footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted)
 .tags span{font-family:var(--f-mono);font-size:.72rem;padding:3px 9px;border-radius:99px;background:var(--bg);border:1px solid var(--line);direction:ltr}
 .fnote{font-size:.8rem;color:var(--muted);margin-top:10px}
 @media (max-width:860px){.founder{grid-template-columns:1fr}}
+
+.mosaic{display:grid;grid-template-columns:1.4fr 1fr 1fr;grid-template-rows:260px 260px;gap:12px}
+.ph{position:relative;border-radius:16px;overflow:hidden;background:#0b2a40;margin:0}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
+.ph:hover img{transform:scale(1.04)}
+.ph figcaption{position:absolute;inset:auto 0 0 0;padding:40px 16px 14px;background:linear-gradient(transparent,rgba(7,27,43,.85));color:#fff;display:grid;gap:2px}
+.ph figcaption b{font-family:var(--f-display);font-size:1.05rem}
+.ph figcaption > span{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.12em;opacity:.8;direction:ltr;text-align:start}
+.ph.a{grid-row:span 2}
+.banner{height:240px;border-radius:18px;overflow:hidden;margin-bottom:26px;position:relative}
+.banner img{width:100%;height:100%;object-fit:cover;display:block}
+.fcard{background-image:linear-gradient(rgba(7,27,43,.88),rgba(7,27,43,.94)),url(img/control_panel.jpg);background-size:cover;background-position:center}
+.owners{border-top:1px solid rgba(255,255,255,.18);padding-top:12px;display:grid;gap:6px}
+.owners .k{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.12em;color:#7fe3f5;direction:ltr;text-align:start}
+.owners .v{font-family:var(--f-display);font-weight:600}
+@media (max-width:860px){.mosaic{grid-template-columns:1fr 1fr;grid-template-rows:200px 200px 200px}.ph.a{grid-row:span 1;grid-column:span 2}}
+@media (max-width:520px){.mosaic{grid-template-columns:1fr;grid-template-rows:none;grid-auto-rows:220px}.ph.a{grid-column:span 1}}
+@media (prefers-reduced-motion:reduce){.ph img{transition:none}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gDrop" x1="25" y1="85" x2="72" y2="30" gradientUnits="userSpaceOnUse">
@@ -234,8 +252,20 @@ footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted)
   </div>
 </section>
 
+<section class="s" id="field" style="padding-top:0">
+  <div class="container">
+    <div class="mosaic">
+      <figure class="ph a"><img src="img/panel_wiring.jpg" alt="Control panel with PLC modules and wiring" loading="lazy"><figcaption><span>Automation</span><b><span class="ar">لوحات التحكم وPLC</span><span class="en">Control panels and PLC</span></b></figcaption></figure>
+      <figure class="ph"><img src="img/scada_operator.jpg" alt="Operator in a control room with many screens" loading="lazy"><figcaption><span>SCADA</span><b><span class="ar">غرف التحكم</span><span class="en">Control rooms</span></b></figcaption></figure>
+      <figure class="ph"><img src="img/tanks_aerial.jpg" alt="Water treatment tanks seen from above" loading="lazy"><figcaption><span>Treatment</span><b><span class="ar">محطات المعالجة</span><span class="en">Treatment plants</span></b></figcaption></figure>
+      <figure class="ph" style="grid-column:span 2"><img src="img/pipes_valves.jpg" alt="Network of process pipes and valves" loading="lazy"><figcaption><span>Commissioning</span><b><span class="ar">التشغيل والمعايرة في الموقع</span><span class="en">Commissioning and calibration on site</span></b></figcaption></figure>
+    </div>
+  </div>
+</section>
+
 <section class="s alt" id="plants">
   <div class="container">
+    <div class="banner"><img src="img/plant_aerial.jpg" alt="Aerial view of a water treatment plant" loading="lazy"></div>
     <div class="sh"><span class="mono">Plants we serve</span><h2><span class="ar">من التحلية إلى معالجة الصرف</span><span class="en">From desalination to wastewater</span></h2></div>
     <div class="plants">
       <div class="pl"><svg viewBox="0 0 80 80"><rect x="8" y="22" width="64" height="46" rx="6" fill="none" stroke="#1268d3" stroke-width="5"/><rect x="12" y="38" width="56" height="26" fill="#16b9e0" opacity=".5"/><circle cx="26" cy="46" r="3" fill="#fff"/><circle cx="40" cy="52" r="3" fill="#fff"/><circle cx="54" cy="44" r="3" fill="#fff"/></svg><b>STP · MBR</b><span><span class="ar">معالجة الصرف الصحي والأغشية</span><span class="en">Sewage treatment and membrane bioreactors</span></span></div>
@@ -261,6 +291,7 @@ footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted)
           <li><span class="ar">تشغيل محطات MBR والتحلية بالتناضح العكسي</span><span class="en">Commissioning of MBR and reverse-osmosis plants</span></li>
           <li><span class="ar">مكتبة برمجية قياسية تختصر وقت البرمجة من أسابيع إلى أيام</span><span class="en">A standard software library that cuts programming from weeks to days</span></li>
         </ul>
+        <div class="owners"><span class="k">Project owners our founder has delivered for</span><span class="v"><span class="ar">مدن · شركة تطوير المربع الجديد</span><span class="en">MODON · New Murabba Development Company</span></span></div>
       </div>
       <div class="cases">
         <article class="case"><div class="top"><h3><span class="ar">محطة معالجة صرف صحي MBR في مدينة صناعية بجدة</span><span class="en">MBR sewage treatment plant, industrial city, Jeddah</span></h3><span class="who">OWNER · MODON</span></div>
@@ -373,7 +404,7 @@ footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted)
     <a class="logo" href="#top"><svg aria-hidden="true"><use href="#mark"/></svg><span><span class="lt">True</span>Loop</span></a>
     <span class="mono">Engineering intelligent water</span>
     <div class="fl"><a href="tools/loop-check.html">Loop Check</a><a href="tools/ro-normalization.html">RO Normalization</a><a href="tools/calibration-certificate.html">Calibration Certificate</a><a href="files/TrueLoop_Company_Profile.pdf">Company profile</a></div>
-    <span>© 2026 TrueLoop · Riyadh</span>
+    <span>© 2026 TrueLoop · Riyadh · <span class="ar">الصور: Unsplash</span><span class="en">Photos: Unsplash</span></span>
     <p class="privacy" style="flex-basis:100%"><span class="ar">لا يستخدم هذا الموقع ملفات تتبّع، والأدوات المجانية تعمل داخل متصفحك دون إرسال بيانات.</span><span class="en">This site uses no tracking cookies, and the free tools run in your browser without sending data anywhere.</span></p>
   </div>
 </footer>
