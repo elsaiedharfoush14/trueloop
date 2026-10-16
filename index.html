@@ -73,6 +73,8 @@ section.s.alt{background:var(--paper);border-block:1px solid var(--line)}
 .svc{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
 .sv{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:10px;align-content:start;border-top:4px solid var(--c)}
 section.alt .sv{background:var(--bg)}
+.svc4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.secnote{margin-top:22px;padding:14px 18px;border-inline-start:4px solid var(--green);background:var(--bg);border-radius:10px;font-size:.95rem;color:var(--ink-2)}
 .sv .nm{font-family:"Readex Pro",sans-serif;font-size:.95rem;direction:ltr;text-align:start;color:var(--muted)} .sv .nm b{color:var(--ink)}
 .sv h3{font-size:1.12rem}
 .sv p{font-size:.93rem;color:var(--ink-2)}
@@ -117,9 +119,9 @@ section.alt .sv{background:var(--bg)}
 .qr .ql svg{width:33px;height:34px}
 footer{padding-block:34px;color:var(--muted);font-size:.88rem}
 footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
-@media (max-width:980px){.svc,.plants{grid-template-columns:repeat(2,minmax(0,1fr))}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.steps li::after{display:none}.links{display:none}}
+@media (max-width:980px){.svc,.svc4,.plants{grid-template-columns:repeat(2,minmax(0,1fr))}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.steps li::after{display:none}.links{display:none}}
 @media (max-width:760px){.hero .container{grid-template-columns:1fr}.tools,.vm,.why,.contact{grid-template-columns:1fr}}
-@media (max-width:520px){.svc,.plants,.steps{grid-template-columns:1fr}.wa-btn .ar,.wa-btn .en{display:none!important}.wa-btn::after{content:"WhatsApp"}}
+@media (max-width:520px){.svc,.svc4,.plants,.steps{grid-template-columns:1fr}.wa-btn .ar,.wa-btn .en{display:none!important}.wa-btn::after{content:"WhatsApp"}}
 @media (prefers-reduced-motion:reduce){.tool{transition:none}}
 
 .menuBtn{display:none;font:600 1.3rem var(--f-mono);border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:10px;width:42px;height:38px;cursor:pointer}
@@ -211,6 +213,7 @@ footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted)
     <a class="logo" href="#top"><svg aria-hidden="true"><use href="#mark"/></svg><span><span class="lt">True</span>Loop</span></a>
     <div class="links">
       <a href="#services"><span class="ar">خدماتنا</span><span class="en">Services</span></a>
+      <a href="#smart"><span class="ar">المحطة الذكية</span><span class="en">Smart plant</span></a>
       <a href="#plants"><span class="ar">المحطات</span><span class="en">Plants</span></a>
       <a href="#tools"><span class="ar">أدوات مجانية</span><span class="en">Free tools</span></a>
       <a href="#founder"><span class="ar">خبرتنا</span><span class="en">Track record</span></a>
@@ -221,6 +224,7 @@ footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted)
   </div>
 <div class="mnav" id="mnav">
     <a href="#services"><span class="ar">خدماتنا</span><span class="en">Services</span></a>
+    <a href="#smart"><span class="ar">المحطة الذكية</span><span class="en">Smart plant</span></a>
     <a href="#plants"><span class="ar">المحطات</span><span class="en">Plants</span></a>
     <a href="#tools"><span class="ar">أدوات مجانية</span><span class="en">Free tools</span></a>
     <a href="#founder"><span class="ar">خبرتنا</span><span class="en">Track record</span></a>
@@ -265,6 +269,23 @@ footer .fl{display:flex;gap:16px;flex-wrap:wrap} footer .fl a{color:var(--muted)
       <div class="sv" style="--c:var(--aqua)"><div class="nm">TrueLoop <b>Digital</b></div><h3><span class="ar">المياه الرقمية</span><span class="en">Digital water</span></h3><p><span class="ar">مراقبة عن بُعد، ومؤشرات الطاقة، وتقارير صحة الأغشية، وعقود دعم سنوية.</span><span class="en">Remote monitoring, energy KPIs, membrane health reports and annual support.</span></p></div>
       <div class="sv" style="--c:var(--amp)"><div class="nm">TrueLoop <b>Academy</b></div><h3><span class="ar">الأكاديمية</span><span class="en">Academy</span></h3><p><span class="ar">تدريب المشغّلين والمهندسين السعوديين على المحاكي، بشهادات تشغيل.</span><span class="en">Simulator-based training and certificates for operators and Saudi engineers.</span></p></div>
     </div>
+  </div>
+</section>
+
+<section class="s alt" id="smart">
+  <div class="container">
+    <div class="sh"><span class="mono">Smart plant</span><h2><span class="ar">المحطة الذكية والخدمات الرقمية</span><span class="en">Smart plant &amp; digital services</span></h2><p><span class="ar">تشغيل حديث فوق نظام تحكم متين: المحطة على أي شاشة، والإنذارات على جوال المالك، والمشغّل يسترشد بمعرفة المحطة نفسها.</span><span class="en">Modern operation on top of a solid control system: the plant on any screen, alarms on the owner's phone, operators guided by the plant's own knowledge.</span></p></div>
+    <div class="svc svc4">
+      <div class="sv" style="--c:var(--water)"><div class="nm">TrueLoop <b>Web HMI</b></div><h3><span class="ar">شاشات تشغيل حديثة عبر المتصفح</span><span class="en">Web HMI &amp; modern screens</span></h3><p><span class="ar">شاشات عالية الأداء (ISA-101) على أي متصفح، تُخدَّم من PLC أو WinCC Unified، مع حالة محلي/عن بُعد وانقطاع الاتصال بوضوح.</span><span class="en">High-performance screens (ISA-101) in any browser, served by the PLC or WinCC Unified, with clear LOCAL / REMOTE and COMMS LOST states.</span></p></div>
+      <div class="sv" style="--c:var(--aqua)"><div class="nm">TrueLoop <b>Monitoring</b></div><h3><span class="ar">المراقبة عن بُعد بصلاحية القراءة فقط</span><span class="en">Remote monitoring, read-only</span></h3><p><span class="ar">بوابة صناعية تقرأ من PLC عبر OPC UA وترسل البيانات مشفّرة عبر MQTT إلى لوحة على الجوال، مع تنبيهات SMS والبريد.</span><span class="en">An industrial gateway reads the PLC over OPC UA and sends encrypted MQTT data to a mobile dashboard, with SMS and e-mail alarms.</span></p></div>
+      <div class="sv" style="--c:var(--green)"><div class="nm">TrueLoop <b>Access</b></div><h3><span class="ar">وصول آمن عن بُعد للصيانة</span><span class="en">Secure remote access (VPN)</span></h3><p><span class="ar">شبكة خاصة مشفّرة للتشخيص ودعم البرامج: حسابات فردية وسجل كامل، وتُفعَّل لكل جلسة بإذن المالك.</span><span class="en">Encrypted VPN for diagnostics and program support: individual accounts, full logging, enabled per session by the owner.</span></p></div>
+      <div class="sv" style="--c:#7c3aed"><div class="nm">TrueLoop <b>Control</b></div><h3><span class="ar">معيار التحكم المحلي وعن بُعد</span><span class="en">Local / remote control standard</span></h3><p><span class="ar">مفتاح على اللوحة، الإيقاف من أي مكان والتشغيل من مكان التحكم فقط، مراقبة نبض الاتصال وسجل لكل أمر.</span><span class="en">Panel key switch, stop from anywhere, start only from the location in control, heartbeat watchdog and a full command log.</span></p></div>
+      <div class="sv" style="--c:var(--water)"><div class="nm">TrueLoop <b>Diagnostics</b></div><h3><span class="ar">تشخيص ذكي داخل برنامج التحكم</span><span class="en">Smart PLC diagnostics</span></h3><p><span class="ar">تحذير من بطء الصمامات قبل العطل، وكشف أعطال إشارات 4-20 mA وفق NAMUR NE43، وساعات تشغيل المضخات.</span><span class="en">Valve stroke-time warnings before failure, NAMUR NE43 signal-fault detection, drive run hours, starts and fail-to-start alarms.</span></p></div>
+      <div class="sv" style="--c:var(--amp)"><div class="nm">TrueLoop <b>AI Assistant</b></div><h3><span class="ar">مساعد الأعطال الذكي دون إنترنت</span><span class="en">Offline AI fault assistant</span></h3><p><span class="ar">يسأل المشغّل عن الإنذار بالعربية أو الإنجليزية فيحصل على السبب المرجّح والفحوص والإجراءات من بطاقات أعطال المحطة نفسها.</span><span class="en">Operators ask about an alarm in Arabic or English and get the likely cause, checks and actions from the plant's own fault cards.</span></p></div>
+      <div class="sv" style="--c:var(--green)"><div class="nm">TrueLoop <b>Engineering</b></div><h3><span class="ar">هندسة مدعومة بالذكاء الاصطناعي</span><span class="en">AI-assisted engineering</span></h3><p><span class="ar">برامج ومواصفات وقوائم إشارات وأدلة تشغيل أسرع، يُتحقَّق منها دائماً في TIA Portal وPLCSIM قبل الموقع.</span><span class="en">Function blocks, specifications, I/O lists and manuals delivered faster, always verified in TIA Portal and PLCSIM before site.</span></p></div>
+      <div class="sv" style="--c:var(--aqua)"><div class="nm">TrueLoop <b>Roadmap</b></div><h3><span class="ar">بيانات للصيانة التنبؤية</span><span class="en">Data for predictive maintenance</span></h3><p><span class="ar">ساعات التشغيل وعدد مرات البدء وأزمنة الصمامات والتيارات تُجمَع اليوم لتغذّي التنبؤ بالأعطال غداً.</span><span class="en">Run hours, starts, stroke times and currents collected today feed condition monitoring and failure prediction tomorrow.</span></p></div>
+    </div>
+    <p class="secnote"><b><span class="ar">الأمن السيبراني من التصميم.</span><span class="en">Cybersecurity by design.</span></b> <span class="ar">قراءة فقط افتراضياً، والتحكم عبر شبكة خاصة آمنة فقط، ولا يُكشف أي جهاز تحكم على الإنترنت، مع الالتزام بسياسات المالك وضوابط الأمن السيبراني للأنظمة التشغيلية عند الطلب.</span><span class="en">Read-only by default, VPN only for control, no PLC exposed to the internet, aligned with the owner's IT / OT rules and the NCA OTCC controls when required.</span></p>
   </div>
 </section>
 
