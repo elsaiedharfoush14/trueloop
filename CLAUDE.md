@@ -20,6 +20,7 @@ Commit email `332831565+elsaiedharfoush14@users.noreply.github.com`. Check once:
 ## Facts the tools rely on (from his manuals — don't guess)
 - Cu/Ag controller reads pulse **length**, so flowmeter must use `M78 = 24 Flow Rate Pulse` (M67/M68/M69), not POS Int Pulse. 1 pulse = 1 L = 1 TFR. Copper target 0.2 ppm, HI-702 + `HI702-0` reagent; lower `TFR at Max Flow` = more copper.
 - TUF: M90 >60 works (>80 excellent), Q >60, M91 97–103 %, `M33` item 3 = x1, `M54` OCT pulse width, "relay" 30/31 is a transistor (DC only), TS-2 DN25–100, TM-1 DN50–700, TL-1 DN300–6000.
+- EMEC MAX5 (JDH4 Jeddah analysers: chlorine ECL/SCL, DO EOLUM, turbidity ETORBH) in `tools/instruments/` (controller = EMEC MAX5): terminals/menus from manual R36-01-18 (manualshive.com copy). mA outputs 13 common, 14–18, 0–20 mA two-point mapping; turbidity manual has no standard-solution calibration.
 - H100 MMC: AP1-40 1 Single Ctrl, OUT 21 MMC, IN 29–33 Interlock 1–5, 20 Ready, 23 Trip, 14 Run, 5 BX; lead pump is not rotated without RS-485 Multi Master.
 
 ## Specs

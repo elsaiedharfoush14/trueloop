@@ -67,6 +67,7 @@ pre.code{direction:ltr;text-align:left;background:var(--navy);color:#d9ecf4;bord
       <label><span data-t="tag"></span><input id="tag" type="text" autocomplete="off"></label>
       <label><span data-t="svc"></span><input id="svc" type="text" autocomplete="off"></label>
       <label><span data-t="model"></span><input id="model" type="text" autocomplete="off"></label>
+      <label id="mkL"><span data-t="mk"></span><select id="mk"><option value="gen" data-t="mkGen"></option><option value="emec">EMEC MAX5</option></select></label>
       <label><span data-t="lrv"></span><input id="lrv" type="number" step="any" inputmode="decimal"></label>
       <label><span data-t="urv"></span><input id="urv" type="number" step="any" inputmode="decimal"></label>
       <label><span data-t="unit"></span><input id="unit" type="text" autocomplete="off"></label>
@@ -77,6 +78,15 @@ pre.code{direction:ltr;text-align:left;background:var(--navy);color:#d9ecf4;bord
       <label><span data-t="alHi"></span><input id="alHi" type="number" step="any" inputmode="decimal"></label>
     </div>
     <div id="s2Msg" class="msgs"></div>
+  </section>
+
+  <section class="card" id="emec" hidden>
+    <h2><span class="num">E</span><span data-t="emT"></span></h2>
+    <p class="muted" data-t="emSrc"></p>
+    <h3 data-t="emWireT"></h3>
+    <div class="tbl stack"><table><thead><tr><th data-t="emTh1"></th><th data-t="emTh2"></th></tr></thead><tbody id="emWire"></tbody></table></div>
+    <h3 data-t="emMenuT"></h3>
+    <ol class="steps" id="emMenu"></ol>
   </section>
 
   <section class="card" id="s3">
@@ -126,9 +136,9 @@ pre.code{direction:ltr;text-align:left;background:var(--navy);color:#d9ecf4;bord
 <script src="../../assets/tl-core.js"></script>
 <script>
 (function(){
-var VER='2026.11.14.4',URL_APP='https://elsaiedharfoush14.github.io/trueloop/tools/instruments/';
+var VER='2026.11.14.5',URL_APP='https://elsaiedharfoush14.github.io/trueloop/tools/instruments/';
 var D={ar:{short:'أجهزة القياس',title:'تشغيل أجهزة القياس',intro:'اختار نوع الجهاز، ودخّل الـ tag والمدى، وخد خطوات التشغيل بالترتيب، وجدول الـ loop check بالنجاح والرسوب، وتحويل الإشارة في الـ PLC، والأعطال والصيانة.',
- s1:'نوع الجهاز',abHowT:'بيقيس إزاي',abWatchT:'خلي بالك من',s2:'بيانات الجهاز',tag:'Tag',svc:'الخدمة / المكان',model:'الماركة والموديل',lrv:'بداية المدى (LRV)',urv:'نهاية المدى (URV)',unit:'الوحدة',wire:'التوصيل',w2:'2-wire (من الـ loop)',w4:'4-wire (تغذية منفصلة)',plc:'الـ PLC',plcEng:'قيمة هندسية',tol:'السماحية (% من المدى)',alLo:'إنذار واطي',alHi:'إنذار عالي',
+ s1:'نوع الجهاز',abHowT:'بيقيس إزاي',abWatchT:'خلي بالك من',s2:'بيانات الجهاز',tag:'Tag',svc:'الخدمة / المكان',model:'الماركة والموديل',lrv:'بداية المدى (LRV)',urv:'نهاية المدى (URV)',unit:'الوحدة',wire:'التوصيل',w2:'2-wire (من الـ loop)',w4:'4-wire (تغذية منفصلة)',plc:'الـ PLC',mk:'الكنترولر',mkGen:'عام (أي ماركة)',emT:'EMEC MAX5: التوصيل والمنيو',emSrc:'من دليل EMEC MAX5 الرسمي (نسخة R36-01-18). الكنترولر ده بيقرا لحد 5 قنوات: كلور، أكسجين مذاب، عكارة، pH، ORP، حرارة. اتأكد من موديل الحساس من التيكت اللي عليه.',emWireT:'التوصيل على الكارتة',emTh1:'الأطراف',emTh2:'إيه',emMenuT:'المنيو والمعايرة على الجهاز',plcEng:'قيمة هندسية',tol:'السماحية (% من المدى)',alLo:'إنذار واطي',alHi:'إنذار عالي',
  rangeBad:'نهاية المدى لازم تكون أكبر من البداية.',alOut:'حد الإنذار بره المدى.',
  s3:'خطوات التشغيل',s3note:'أسماء الإعدادات هنا هي الأسماء الشائعة (HART أو الكنترولر). المسار على الشاشة بيختلف حسب الموديل، فطابقه مع المانوال.',
  ph1:'قبل التركيب',ph2:'التركيب والتوصيل',ph3:'الإعدادات',ph4:'المعايرة',ph5:'الإشارة والتسليم',
@@ -138,7 +148,7 @@ var D={ar:{short:'أجهزة القياس',title:'تشغيل أجهزة القي
  s5:'الأعطال والصيانة',omT:'الصيانة الدورية',s6:'الملخص',
  nT:'جهاز جديد مش في القايمة؟',nP:'اكتب الـ part number أو صوّر الـ nameplate، وابعته لـ TrueLoop. بنجهّز خطوات التشغيل بتاعته من الداتا شيت ونضيفه للأداة.',nPn:'Part number / الموديل',nPh:'صورة الـ nameplate',nSend:'ابعت على واتساب',nAi:'قريب: المساعد الذكي يقرا الصورة أو الرقم، ويجيب الداتا شيت، ويطلّع الخطوات بالعربي والإنجليزي على طول.',nNeed:'اكتب الرقم أو اختار صورة الأول.',nAttach:'اتفتح الواتساب. ارفق الصورة في المحادثة.'},
 en:{short:'Instruments',title:'Instrumentation Commissioning',intro:'Pick the instrument type, enter the tag and range, and get the commissioning steps in order, a loop check with pass/fail, PLC scaling, faults and maintenance.',
- s1:'Instrument type',abHowT:'How it measures',abWatchT:'Watch out for',s2:'Instrument data',tag:'Tag',svc:'Service / location',model:'Make and model',lrv:'Lower range value (LRV)',urv:'Upper range value (URV)',unit:'Unit',wire:'Wiring',w2:'2-wire (loop powered)',w4:'4-wire (separate supply)',plc:'PLC',plcEng:'Engineering value',tol:'Tolerance (% of span)',alLo:'Low alarm',alHi:'High alarm',
+ s1:'Instrument type',abHowT:'How it measures',abWatchT:'Watch out for',s2:'Instrument data',tag:'Tag',svc:'Service / location',model:'Make and model',lrv:'Lower range value (LRV)',urv:'Upper range value (URV)',unit:'Unit',wire:'Wiring',w2:'2-wire (loop powered)',w4:'4-wire (separate supply)',plc:'PLC',mk:'Controller',mkGen:'Generic (any make)',emT:'EMEC MAX5: wiring and menus',emSrc:'From the official EMEC MAX5 manual (rev. R36-01-18). This controller reads up to 5 channels: chlorine, dissolved oxygen, turbidity, pH, ORP, temperature. Confirm the probe model from its label.',emWireT:'Board wiring',emTh1:'Terminals',emTh2:'What',emMenuT:'Menus and calibration on the unit',plcEng:'Engineering value',tol:'Tolerance (% of span)',alLo:'Low alarm',alHi:'High alarm',
  rangeBad:'URV must be above LRV.',alOut:'An alarm limit is outside the range.',
  s3:'Commissioning steps',s3note:'Setting names here are the common ones (HART or the analyser controller). The menu path differs by model; match it with the manual.',
  ph1:'Before installing',ph2:'Install and wire',ph3:'Configure',ph4:'Calibrate',ph5:'Output and handover',
@@ -237,21 +247,66 @@ var TYPES={
   fl:[[S('بطيء جدًا','Very slow'),S('القطب قديم أو الوصلة المرجعية مسدودة','Old electrode or blocked junction'),S('نضّف، أو غيّر القطب','Clean or replace')],[S('slope واطي','Low slope'),S('القطب كبر','Ageing electrode'),S('غيّر القطب','Replace it')]],
   om:[[S('كل أسبوعين','Every 2 weeks'),S('تنضيف ومقارنة بجهاز محمول.','Clean and compare with a portable meter.')],[S('كل شهر','Monthly'),S('معايرة نقطتين.','Two-point calibration.')]]}
 };
+
+// EMEC MAX5 (used on JDH4 MODON STP, Jeddah). Every terminal and menu below is from the MAX5 operating manual R36-01-18.
+var EMC=[[S('L · E · N','L · E · N'),S('تغذية 90–265 VAC. فيوز F1 = 6.3 AT (رئيسي)، F2 = 3.15 AT.','Supply 90–265 VAC. Fuse F1 6.3 AT (main), F2 3.15 AT.')],
+ [S('13 · 14…18','13 · 14…18'),S('مخارج mA: الطرف 13 مشترك، و14 = mA1 لحد 18 = mA5. أقصى حِمل 500 Ω. المشترك واحد لكل المخارج، فاعمل حسابه مع كروت الـ PLC المعزولة.','mA outputs: 13 common, 14 = mA1 … 18 = mA5. Max load 500 Ω. One common for all outputs; mind it with isolated PLC channels.')],
+ [S('13 · 19','13 · 19'),S('mA6 = الحرارة (0 °C = 4 mA، 100 °C = 20 mA).','mA6 = temperature (0 °C = 4 mA, 100 °C = 20 mA).')],
+ [S('10 · 11 · 12','10 · 11 · 12'),S('ريليه الإنذار العام، كونتاكت جاف: 10 NC، 11 C، 12 NO. وصّله للـ SCADA كـ common fault.','General alarm relay, dry contact: 10 NC, 11 C, 12 NO. Wire to SCADA as common fault.')],
+ [S('39 · 40 · 41','39 · 40 · 41'),S('حساس الفلو SEPR في حامل الحساسات: 39 (+ بني)، 40 (أسود)، 41 (− أزرق)، و41 متوصل بـ 37.','SEPR flow sensor in the probe holder: 39 (+ brown), 40 (black), 41 (− blue); 41 bridged to 37.')],
+ [S('26 · 27','26 · 27'),S('RS485 للـ Modbus: 26 = A (+)، 27 = B (−).','RS485 for Modbus: 26 = A (+), 27 = B (−).')]];
+var EMK={
+ cl:{model:'EMEC MAX5 + ECL / SCL',
+  wire:[[S('MDCL-1: 1 · 2 · 3 · 4','MDCL-1: 1 · 2 · 3 · 4'),S('حساسات ECL1/2/3/8/9/10/11/17/18: 1 بني (+)، 2 أبيض (−)، 3 أخضر (IN)، 4 أصفر (GND).','ECL1/2/3/8/9/10/11/17/18 probes: 1 brown (+), 2 white (−), 3 green (IN), 4 yellow (GND).')],
+   [S('MDCL-6: 1 · 2','MDCL-6: 1 · 2'),S('حساسات ECL4/5/6/7: 1 أسود (−)، 2 أحمر (+).','ECL4/5/6/7 probes: 1 black (−), 2 red (+).')],
+   [S('MDSCL: 1 · 2 · 3 · 4','MDSCL: 1 · 2 · 3 · 4'),S('حساسات SCL الديجيتال: 1 أخضر (−485)، 2 أبيض (+485)، 3 أسود (GND)، 4 أحمر (+5 VDC).','SCL digital probes: 1 green (−485), 2 white (+485), 3 black (GND), 4 red (+5 VDC).')]],
+  menu:[S('<b>Calibration → Cl → Select Probe:</b> اختار موديل الحساس ومداه من القايمة (مثلًا ECL 1/5 = 0–5 mg/L). حساسات SCL مش محتاجة الخطوة دي ولا الـ Zero.','<b>Calibration → Cl → Select Probe:</b> pick the probe and its scale from the list (e.g. ECL 1/5 = 0–5 mg/L). SCL probes skip this step and the zero.'),
+   S('<b>Calib Zero:</b> ركّب فلتر كربون نشط (activated carbon) قبل حامل الحساس، وسيب مية المحطة تعدّي حوالي 30 دقيقة، ودوس OK، وبعدين شيل الفلتر.','<b>Calib Zero:</b> fit an activated-carbon filter before the probe holder, let plant water flow about 30 minutes, press OK, then remove the filter.'),
+   S('<b>Calib 2nd Pt:</b> اقرا الكلور بجهاز DPD أو فوتوميتر من نفس النقطة، ودخّل الرقم بالعجلة، وOK. المعايرة لازم بمية المحطة نفسها.','<b>Calib 2nd Pt:</b> read chlorine with DPD or a photometer at the same point, enter the value with the wheel, OK. Calibrate with plant water.')],
+  fl:[[S('قراية صفر ومخارج mA واقفة','Zero reading, mA outputs dead'),S('إنذار فلو من حساس SEPR (لو OUT mA متعلّم بيقفل كل مخارج الـ mA)','Flow alarm from the SEPR sensor (with OUT mA ticked, all mA outputs drop)'),S('راجع الفلو في الحامل ومكان الـ SEPR','Check flow in the holder and the SEPR position')]]},
+ 'do':{model:'EMEC MAX5 + EOLUM',
+  wire:[[S('MDEOLUM: 1…5','MDEOLUM: 1…5'),S('حساس EOLUM الضوئي (فيه حساس حرارة جواه): 1 بمبي، 2 أزرق، 3 بني، 4 رمادي، 5 أصفر.','EOLUM optical probe (built-in temperature): 1 pink, 2 blue, 3 brown, 4 grey, 5 yellow.')],
+   [S('كابل إضافي','Extension cable'),S('لو الحساس جاي بكابل إضافي: 1 بمبي، 2 أبيض، 3 بني، 4 رمادي + أسود، 5 أصفر، والأزرق (الشيلد) ما يتوصلش.','With an extension cable: 1 pink, 2 white, 3 brown, 4 grey + black, 5 yellow; blue (shield) not connected.')]],
+  menu:[S('<b>لو الحساس متشتراش مع الجهاز:</b> Options → EOLUM INDEX وادّيله ID وقناة.','<b>If the probe was not bought with the unit:</b> Options → EOLUM INDEX, give it an ID and channel.'),
+   S('<b>Calibration → Calib Chxx LDO → RANGE</b> لمدى العرض (لحد 20 mg/L).','<b>Calibration → Calib Chxx LDO → RANGE</b> for the display scale (up to 20 mg/L).'),
+   S('<b>AIR:</b> طلّع الحساس ونشّفه خالص وسيبه في الهوا (الهوا لازم ≥ −5 °C)، ودوس START. العداد بيبدأ من 600 ثانية، ولما تظهر CALIBRATION OK دوس OK. فيه كمان WATER (مية مشبّعة هوا) وREF (محلول مرجعي) بنفس الطريقة.','<b>AIR:</b> take the probe out, dry it fully, leave it in air (air ≥ −5 °C), press START. The timer counts from 600 s; at CALIBRATION OK press OK. WATER (air-saturated water) and REF (reference solution) work the same way.'),
+   S('<b>Temp:</b> دخّل الحرارة من ترمومتر خارجي. بعد المعايرة <b>اطفي الجهاز وشغّله</b> علشان القيم تتحفظ.','<b>Temp:</b> enter the temperature from an external thermometer. After calibrating, <b>power the unit off and on</b> to save the values.')],
+  fl:[[S('المعايرة ما اتحفظتش','Calibration not kept'),S('الجهاز ما اتطفاش بعد المعايرة','Unit not power-cycled after calibration'),S('اطفي وشغّل، ولو فضلت غلط: Default → FACTORY DEFAULT وعاير تاني','Power-cycle; if still wrong: Default → FACTORY DEFAULT and recalibrate')]]},
+ tu:{model:'EMEC MAX5 + ETORBH',
+  wire:[[S('MDETORBH: 1…5 (ETORBH)','MDETORBH: 1…5 (ETORBH)'),S('1 أخضر، 2 أصفر، 3 أسود، 4 أبيض، 5 بني.','1 green, 2 yellow, 3 black, 4 white, 5 brown.')],
+   [S('MDETORBH: 1…5 (ETORB40)','MDETORBH: 1…5 (ETORB40)'),S('1 أزرق، 2 بني، 3 أسود، 4 أبيض، 5 أخضر (الأطراف أفقي).','1 blue, 2 brown, 3 black, 4 white, 5 green (horizontal terminals).')],
+   [S('كابل إضافي ETORBH','ETORBH extension cable'),S('1 أخضر، 2 أصفر، 3 أسود + أبيض، 4 أزرق، 5 بني + أحمر.','1 green, 2 yellow, 3 black + white, 4 blue, 5 brown + red.')]],
+  menu:[S('<b>لو الحساس متشتراش مع الجهاز:</b> Options → Turbidity INDEX وادّيله ID وقناة.','<b>If the probe was not bought with the unit:</b> Options → Turbidity INDEX, give it an ID and channel.'),
+   S('<b>Calibration → NTU → Range:</b> اختار المدى: 9.999 أو 99.99 أو 999.9 أو 9999 NTU. «Redo calibration» بيرجّع المعايرة للأصل.','<b>Calibration → NTU → Range:</b> pick 9.999, 99.99, 999.9 or 9999 NTU. «Redo calibration» resets the calibration.'),
+   S('<b>تأكيد:</b> الدليل ما فيهوش خطوات معايرة بمحلول للعكارة، فقارن بعينة على جهاز معمل، ولو الفرق كبير كلّم EMEC.','<b>Verify:</b> the manual has no standard-solution steps for turbidity; compare a grab sample on a lab turbidimeter and contact EMEC if far off.')],
+  fl:[]}};
+EMK.cl.mA=EMK['do'].mA=EMK.tu.mA=1;
+function emMenuCommon(ty){var lrv=TL.num('lrv'),urv=TL.num('urv'),u=$('unit').value||'',r=(lrv!=null&&urv!=null)?[fmt(lrv)+' '+u,fmt(urv)+' '+u]:['LRV','URV'];
+ return [S('<b>العجلة:</b> لفّ للتنقل ودوس للاختيار. المنيو الرئيسي: Setpoint → Calibration → Option → Manual → Exit. OK بيحفظ، ESC بيخرج من غير حفظ.','<b>The wheel:</b> turn to move, press to select. Main menu: Setpoint → Calibration → Option → Manual → Exit. OK saves, ESC exits without saving.'),
+  S('<b>Setpoint → mA:</b> فعّل mA1 واختار Out (رقم المخرج)، وحط نقطتين: <b>'+r[0]+' = 4 mA</b> و<b>'+r[1]+' = 20 mA</b> (الجهاز بيطلع من 0 لـ 20 mA، فالـ 4 لازم تتحط بإيدك).','<b>Setpoint → mA:</b> enable mA1, choose Out (output number), set two points: <b>'+r[0]+' = 4 mA</b> and <b>'+r[1]+' = 20 mA</b> (the unit spans 0–20 mA, so 4 mA must be set by hand).'),
+  S('<b>Setpoint → Aa / Ab:</b> إنذار عالي أو واطي مع تأخير من 0 لـ 99 دقيقة.','<b>Setpoint → Aa / Ab:</b> high or low alarm with a 0–99 minute delay.'),
+  S('<b>Options → TAU</b> (0–30): التنعيم، كل ما يقل القراية أسرع وأقل ثبات. <b>Flow Detect = Direct</b> لحساس SEPR، ولو علّمت OUT mA مخارج الـ mA بتقف وقت إنذار الفلو. <b>Delay</b> (0–99 دقيقة) تأخير المخارج بعد التشغيل أو إنذار الفلو.','<b>Options → TAU</b> (0–30): damping; lower is faster but less stable. <b>Flow Detect = Direct</b> for the SEPR sensor; with OUT mA ticked, mA outputs drop during a flow alarm. <b>Delay</b> (0–99 min) holds outputs after start-up or a flow alarm.'),
+  S('<b>Manual:</b> تشغيل المخارج بإيدك (Relay، pulse، mA)، استخدمه في الـ loop check مع الـ PLC.','<b>Manual:</b> drive outputs by hand (relay, pulse, mA); use it for the loop check with the PLC.'),
+  S('<b>Modbus:</b> Communication → MODBUS: السرعة زي الـ PLC، وID مختلف لكل جهاز.','<b>Modbus:</b> Communication → MODBUS: speed to match the PLC, a unique ID per unit.')];}
 var ORDER=['pt','tt','mf','tu','cl','do','ph'];
-var F=['tag','svc','model','lrv','urv','unit','wire','plc','tol','alLo','alHi'];
+var F=['tag','svc','model','mk','lrv','urv','unit','wire','plc','tol','alLo','alHi'];
 var st=TL.store('tl_inst_v1',F),$=TL.$,cur='pt',found={};
 function L(o){return TL.lang==='ar'?o.ar:o.en;}
 function pt100(T){return 100*(1+3.9083e-3*T-5.775e-7*T*T);} // IEC 60751, T >= 0 °C
 function fmt(x){return Math.abs(x)>=100?x.toFixed(1):(Math.abs(x)>=10?x.toFixed(2):x.toFixed(3));}
-function applyType(){var ty=TYPES[cur];$('lrv').value=ty.lrv;$('urv').value=ty.urv;$('unit').value=ty.unit;$('wire').value=ty.wire;found={};}
+function applyType(){var ty=TYPES[cur];$('lrv').value=ty.lrv;$('urv').value=ty.urv;$('unit').value=ty.unit;$('wire').value=ty.wire;found={};if(/^EMEC MAX5/.test($('model').value))$('model').value='';}
 function render(){
-  var ty=TYPES[cur];
+  var ty=TYPES[cur],em=EMK[cur]&&$('mk').value==='emec'?EMK[cur]:null;$('mkL').hidden=!EMK[cur];
+  if(em&&!$('model').value)$('model').value=em.model;
   $('types').innerHTML=ORDER.map(function(k){var x=TYPES[k];return '<button type="button" class="type" data-k="'+k+'" aria-pressed="'+(k===cur)+'">'+IC[x.ic]+'<b>'+TL.esc(L(x.n))+'</b><span>'+x.code+'</span></button>';}).join('');
   $('abT').textContent=L(ty.ab);$('abLead').textContent=L(ty.lead);$('abHow').textContent=L(ty.how);$('abWatch').innerHTML=ty.watch.map(function(w){return '<li>'+TL.esc(L(w))+'</li>';}).join('');
   var lrv=TL.num('lrv'),urv=TL.num('urv'),unit=$('unit').value||'',tol=TL.num('tol')||0.5,m=[];
   var ok=lrv!=null&&urv!=null&&urv>lrv;if(!ok)m.push(['bad',TL.t('rangeBad')]);
   [TL.num('alLo'),TL.num('alHi')].forEach(function(a){if(ok&&a!=null&&(a<lrv||a>urv))m.push(['warn',TL.t('alOut')]);});
   TL.msg($('s2Msg'),m.filter(function(x,i,arr){return arr.findIndex(function(y){return y[1]===x[1];})===i;}));
+  if(em){$('emWire').innerHTML=em.wire.concat(EMC).map(function(w){return '<tr><td class="v">'+TL.esc(L(w[0]))+'</td><td class="tx">'+TL.esc(L(w[1]))+'</td></tr>';}).join('');
+   $('emMenu').innerHTML=em.menu.concat(emMenuCommon(ty)).map(function(s){return '<li><span>'+L(s)+'</span></li>';}).join('');}
+  $('emec').hidden=!em;
   var ph=0,h='';ty.steps.forEach(function(s){if(s[0]!==ph){ph=s[0];h+='<li class="ph">'+TL.esc(TL.t('ph'+ph))+'</li>';}h+='<li><span>'+L(s[1])+'</span></li>';});
   $('steps').innerHTML=h;
   $('thRaw').textContent=$('plc').value==='s7'?'PLC raw':'PLC';$('thRef').textContent=ty.pt?TL.t('refPt'):TL.t('refNone');
@@ -263,7 +318,7 @@ function render(){
   TL.msg($('lcMsg'),res.length===5?[res.indexOf('fail')<0?['ok',TL.t('lcAll')]:['bad',TL.t('lcFail')]]:(res.indexOf('fail')>-1?[['bad',TL.t('lcFail')]]:[]));
   var tag=($('tag').value||'AI_01').replace(/[^A-Za-z0-9_]/g,'_');
   $('scale').textContent=ok?('// '+tag+'  '+fmt(lrv)+'…'+fmt(urv)+' '+unit+'\n#norm := NORM_X(MIN := 0, VALUE := "'+tag+'_raw", MAX := 27648);\n"'+tag+'" := SCALE_X(MIN := '+lrv+'.0, VALUE := #norm, MAX := '+urv+'.0);\n#fault := "'+tag+'_raw" > 32511 OR "'+tag+'_raw" < -4864;'):'';
-  $('flRows').innerHTML=ty.fl.map(function(f){return '<tr><td>'+TL.esc(L(f[0]))+'</td><td>'+TL.esc(L(f[1]))+'</td><td>'+TL.esc(L(f[2]))+'</td></tr>';}).join('');
+  $('flRows').innerHTML=(em?em.fl:[]).concat(ty.fl).map(function(f){return '<tr><td>'+TL.esc(L(f[0]))+'</td><td>'+TL.esc(L(f[1]))+'</td><td>'+TL.esc(L(f[2]))+'</td></tr>';}).join('');
   $('omRows').innerHTML=ty.om.map(function(o){return '<tr><td><b>'+TL.esc(L(o[0]))+'</b></td><td>'+TL.esc(L(o[1]))+'</td></tr>';}).join('');
   var sum=['*TrueLoop · '+L(ty.ab)+'* '+($('tag').value||''),($('svc').value||'')+($('model').value?' | '+$('model').value:''),'Range '+(ok?fmt(lrv)+'–'+fmt(urv)+' '+unit:'?')+' | '+($('wire').value==='2'?'2-wire':'4-wire')+' | tol ±'+tol+'%'];
   if(TL.num('alLo')!=null||TL.num('alHi')!=null)sum.push('Alarms L '+(TL.num('alLo')!=null?TL.num('alLo'):'-')+' / H '+(TL.num('alHi')!=null?TL.num('alHi'):'-'));
