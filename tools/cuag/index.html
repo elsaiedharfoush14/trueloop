@@ -60,6 +60,7 @@ p{margin:0;max-width:72ch} .muted{color:var(--muted);font-size:.9rem}
 .prog a.ok i{background:var(--good);border-color:var(--good);color:#fff}
 .prog a.warn i{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
 .prog a.bad i{background:var(--crit);border-color:var(--crit);color:#fff}
+.card>*{min-width:0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px;min-width:0;scroll-margin-top:70px}
 .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--water),var(--aqua));color:#fff;font-family:var(--f-mono);font-size:.85rem;flex:none}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 14px}
@@ -101,12 +102,23 @@ textarea{font-family:var(--f-mono);font-size:.8rem;width:100%;min-height:220px;d
 .linkline{font-family:var(--f-mono);font-size:.78rem;direction:ltr;unicode-bidi:isolate;word-break:break-all;color:var(--muted)}
 .cta{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;background:#071b2b;color:#fff;border-radius:12px;padding:18px}
 .cta svg.mk{width:52px;height:54px} .cta p{font-size:.92rem;opacity:.9} .cta a{color:#7fe3f5;font-weight:600}
+.ab{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ab>div,.ab2>div{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:6px;align-content:start;min-width:0}
+.ab h3,.ab2 h3{font-size:.95rem}
+.ab2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ab2 .pro{border-color:transparent;background:var(--good-bg)} .ab2 .con{border-color:transparent;background:var(--warn-bg)}
+details.how{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--soft)}
+details.how summary{cursor:pointer;font-weight:600;font-family:var(--f-display)}
+details.how[open] summary{margin-bottom:8px}
+ol{margin:0;padding-inline-start:1.4em;display:grid;gap:6px}
+.tag{font-size:.72rem;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--soft);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+@media (max-width:620px){.ab,.ab2{grid-template-columns:1fr}}
 .foot{color:var(--muted);font-size:.78rem;text-align:center}
 .rep{display:none}
 @media (max-width:620px){.prog{grid-template-columns:repeat(3,minmax(0,1fr))}.share,.cta{grid-template-columns:1fr}.share .qrb{margin-inline:auto}header.top svg{width:48px;height:50px}}
 @media print{
   body{background:#fff;color:#000;font-size:12px}
-  .bar,.prog,.no-print,a.back,.cta,#s8,#share,body::before{display:none!important}
+  .bar,.prog,.no-print,a.back,.cta,#s8,#share,#about,#om,details.how,body::before{display:none!important}
   .card{border:1px solid #bbb;break-inside:avoid;padding:10px}
   .rep{display:block;font-size:.8rem;color:#444}
   input,select{border:0;background:transparent;padding:0}
@@ -148,6 +160,22 @@ textarea{font-family:var(--f-mono);font-size:.8rem;width:100%;min-height:220px;d
     </div>
   </header>
   <p class="rep" id="repLine"></p>
+
+
+  <section class="card" id="about">
+    <h2><span class="num">؟</span><span data-t="abT"></span></h2>
+    <p data-t="abLead"></p>
+    <div class="ab">
+      <div><h3 data-t="abHowT"></h3><p data-t="abHow"></p></div>
+      <div><h3 data-t="abPartsT"></h3><ul data-t="abParts" data-html></ul></div>
+      <div><h3 data-t="abSetT"></h3><ul data-t="abSet" data-html></ul></div>
+      <div><h3 data-t="abDontT"></h3><ul data-t="abDont" data-html></ul></div>
+    </div>
+    <div class="ab2">
+      <div class="pro"><h3 data-t="abGoodT"></h3><ul data-t="abGood" data-html></ul></div>
+      <div class="con"><h3 data-t="abLimT"></h3><ul data-t="abLim" data-html></ul></div>
+    </div>
+  </section>
 
   <nav class="prog" aria-label="progress">
     <a href="#s1" id="pg1"><i>1</i><span data-t="p1"></span></a>
@@ -236,6 +264,10 @@ textarea{font-family:var(--f-mono);font-size:.8rem;width:100%;min-height:220px;d
       <label><span data-t="cuT"></span><input id="cuT" type="number" step="0.01" min="0" value="0.2" inputmode="decimal"></label>
       <label><span data-t="tfrSet"></span><input id="tfrSet" type="number" step="1" min="1" inputmode="decimal"></label>
     </div>
+    <details class="how"><summary data-t="kitT"></summary>
+      <ol data-t="kitSteps" data-html></ol>
+      <p class="muted" data-t="kitTips" data-html></p>
+    </details>
     <div id="cuMsg" class="msgs"></div>
   </section>
 
@@ -248,6 +280,19 @@ textarea{font-family:var(--f-mono);font-size:.8rem;width:100%;min-height:220px;d
   <section class="card" id="s8">
     <h2><span class="num">8</span><span data-t="s8"></span></h2>
     <ul data-t="lessons" data-html></ul>
+  </section>
+
+
+  <section class="card" id="om">
+    <h2><span class="num">9</span><span data-t="omT"></span></h2>
+    <div class="msg warn" data-t="omSafe"></div>
+    <div class="tbl"><table><thead><tr><th data-t="omWhen"></th><th data-t="omWhat"></th></tr></thead><tbody data-t="omRows" data-html></tbody></table></div>
+    <details class="how"><summary data-t="omElT"></summary><ol data-t="omEl" data-html></ol></details>
+    <details class="how"><summary data-t="omFaultT"></summary>
+      <div class="tbl"><table><thead><tr><th data-t="omSign"></th><th data-t="omCause"></th><th data-t="omDo"></th></tr></thead><tbody data-t="omFaults" data-html></tbody></table></div>
+    </details>
+    <details class="how"><summary data-t="omSpareT"></summary><ul data-t="omSpare" data-html></ul></details>
+    <p class="muted" data-t="omSrc"></p>
   </section>
 
   <section class="card" id="share">
@@ -274,7 +319,7 @@ textarea{font-family:var(--f-mono);font-size:.8rem;width:100%;min-height:220px;d
       <p>WhatsApp <a href="https://wa.me/966560861304" target="_blank" rel="noopener">+966 56 086 1304</a> · <span data-t="city"></span></p>
     </div>
   </section>
-  <p class="foot">TrueLoop · Cu/Ag Commissioning · v2026.11.13.2</p>
+  <p class="foot">TrueLoop · Cu/Ag Commissioning · v2026.11.14.1</p>
 </main>
 
 <script id="i18n">
@@ -385,6 +430,69 @@ shareT:'Share the app',shareP:'Scan from another phone or send the link. It inst
 installHow:'<b>iPhone:</b> Safari → Share → Add to Home Screen<br><b>Android:</b> Chrome → ⋮ → Install app',
 ctaT:'Water plant commissioning without guesswork.',ctaP:'TrueLoop commissions and calibrates on site: flowmeters, analysers, drives and disinfection systems.',city:'Riyadh, Saudi Arabia',
 repLine:'Commissioning report · {s} · {d}'
+});
+
+Object.assign(I18N.ar,{
+updating:'فيه نسخة جديدة، بيتحدث…',
+abT:'السيستم ده بيعمل إيه؟',
+abLead:'جهاز النحاس والفضة بيحط كمية صغيرة جدًا من أيونات النحاس والفضة في مية الشبكة. الأيونات دي بتقتل البكتيريا، زي الليجيونيلا، وبتمنع الطبقة اللزجة اللي بتتكون جوه المواسير والتانكات، وبتفضل في المية لحد آخر حنفية.',
+abHowT:'بيشتغل إزاي',
+abHow:'المية بتعدّي على خلية فيها ألواح نحاس وفضة (الأقطاب). الجهاز بيعدّي فيها تيار DC صغير، فتطلع أيونات في المية. الفلوميتر بيقيس المية ويبعت إشارة للجهاز، والجهاز يزوّد التيار لما الفلو يزيد ويقلّله لما يقل، علشان التركيز يفضل ثابت. وبيعكس اتجاه التيار لوحده علشان الألواح تدوب بالتساوي.',
+abPartsT:'مكوّناته',
+abParts:'<li><b>لوحة التحكم:</b> الشاشة، والتيار لكل قناة، والإعدادات.</li><li><b>خلية الأقطاب:</b> ألواح نحاس 90% وفضة 10%، بوزن 1 أو 8 أو 16 كيلو. الـ Dual فيه خليتين.</li><li><b>فلوميتر تراسونيك:</b> حساسين بيتربطوا على الماسورة من بره، من غير قطع.</li><li><b>كيت اختبار النحاس:</b> جهاز Hanna HI-702 وأكياس الكاشف.</li>',
+abSetT:'اللي بتظبطه',
+abSet:'<li>إعدادات الفلوميتر: مقاس الماسورة وخامتها ونوع الإشارة (خطوة 2 و3).</li><li><code>Minimum Current</code> = صفر.</li><li><code>TFR at Max Flow</code>: ده المفتاح. لو قلّ النحاس زاد، ولو زاد النحاس قلّ.</li><li>بعدها اختبار النحاس يحدد الرقم النهائي (المستهدف 0.2 ppm).</li>',
+abDontT:'ما تعملهوش',
+abDont:'<li>ما تقيسش الفضة. المانوال بيقول كده.</li><li>ما تستخدمش أقطاب غير أقطاب المورّد: الضمان بيقع، والأقطاب متسجلة كمواد تعقيم.</li><li>ما تفتحش اللوحة غير بعد فصل الكهربا واستنى 5 دقايق.</li><li>ما تعلّيش التيار فوق قدرة الجهاز أو البريكر.</li>',
+abGoodT:'فايدته',
+abGood:'<li>حماية مستمرة للشبكة كلها، مش بس عند الجهاز.</li><li>أثر باقي في المية لحد آخر نقطة.</li><li>الجرعة بتمشي مع استهلاك المية لوحدها.</li><li>صيانته بسيطة: كشف شهري واختبار نحاس.</li>',
+abLimT:'حدوده',
+abLim:'<li>محتاج اختبار نحاس دوري، الجهاز مش بيقيس التركيز بنفسه.</li><li>الأقطاب بتخلص ولازم تتغير.</li><li>المية العسرة بتعمل قشرة على الألواح لازم تتنضف.</li><li>لو الفلو أكبر من قدرة الجهاز، مش هيوصل للتركيز المطلوب.</li>',
+kitT:'إزاي تعمل الاختبار بالكيت (HI-702)',
+kitSteps:'<li>اضغط الزرار. لما يظهر <code>C.1</code> و<code>Press</code> بيرمش، الجهاز جاهز.</li><li>املا الكوفيت <b>10 mL</b> من العينة من غير كاشف، واقفله، وحطه في الجهاز واقفل الغطا.</li><li>اضغط الزرار. لما يظهر <code>C.2</code> و<code>Press</code> بيرمش، الجهاز اتصفّر.</li><li>طلّع الكوفيت، وحط <b>كيس كاشف HI702-0 واحد</b>، واقفله، ورجّه بالراحة <b>15 ثانية</b>، ورجّعه في الجهاز.</li><li>اضغط مع الاستمرار لحد ما العدّاد يبدأ، أو استنى <b>45 ثانية</b> واضغط.</li><li>اقرا النحاس بالـ ppm، واكتبه هنا، وفضّي الكوفيت واغسله على طول.</li>',
+kitTips:'الكوفيت لازم يبقى نضيف وناشف من بره، ومن غير بصمات أو فقاعات. اعمل الاختبار مرتين وخد المتوسط. دقة الجهاز ±0.05 ppm. الكيت فيه كاشف لـ 6 اختبارات بس. الأكواد: <code>L.Hi</code>/<code>L.Lo</code> = الإضاءة غلط، نضّف الكوفيت وصفّر تاني · <code>Inv</code> = العينة أقل من الصفر، أعد · <code>0.00</code> بيرمش = تحت المدى · <code>5.00</code> بيرمش = فوق المدى، وقّف الجهاز وبلّغ · <code>bAt</code>/<code>bAd</code> = البطارية.',
+omT:'التشغيل والصيانة (O&M)',
+omSafe:'قبل أي صيانة: افصل الكهربا عن اللوحة واستنى 5 دقايق. ما تغيّرش الأقطاب بإيد عريانة أو جوانتي مبلول.',
+omWhen:'إمتى',omWhat:'تعمل إيه',
+omRows:'<tr><td><b>كل يوم</b> <span class="tag">توصية</span></td><td>بص على الشاشة: الـ TFR بيتحرك مع الفلو، والتيار طالع في القناتين، ومفيش لمبة عطل منورة.</td></tr><tr><td><b>كل أسبوع</b> <span class="tag">توصية</span></td><td>اختبار نحاس (خطوة 6)، وسجّل النتيجة والتيار والفلو.</td></tr><tr><td><b>كل شهر</b> <span class="tag">المانوال</span></td><td>افحص الأقطاب من فتحة الكشف، ولو عليها قشرة نضّفها فورًا. افحص الكابلات والوصلات وغيّر أي كابل تالف. نضّف الشاشة بقماشة ناشفة.</td></tr><tr><td><b>كل 3–6 شهور</b> <span class="tag">توصية</span></td><td>جدّد الجل أو الفازلين تحت حساسات الفلوميتر، واربط الحزام، وراجع <code>M90</code> و<code>M91</code>.</td></tr><tr><td><b>لما الأقطاب تخلص</b> <span class="tag">المانوال</span></td><td>غيّر الألواح بأقطاب المورّد بس، وبعدها اعمل اختبار نحاس.</td></tr>',
+omElT:'تنضيف أو تغيير الأقطاب',
+omEl:'<li>افصل كهربا اللوحة، وافصل كابلات الأقطاب من الخلية.</li><li>اقفل المحابس على الخلية وفضّيها من المية.</li><li>فك مسامير الغطا، وارفعه بالراحة، وطلّع الجوان ونضّفه.</li><li>اقلب الغطا، وفك مسامير تثبيت الألواح، وطلّعها بالراحة.</li><li>اغسل الألواح بمية نضيفة. شيل القشرة التقيلة بفرشة سلك، ونعّمها بصنفرة ناعمة، واغسلها تاني.</li><li>غيّر أي لوح خلص. استخدم أقطاب المورّد بس.</li><li>ادهن الجوان بطبقة رفيعة سيليكون جريس، وركّب الغطا، واربط المسامير على <b>45 N·m</b> من غير زيادة.</li><li>افتح المية وشوف لو فيه تسريب، ووصّل الكابلات، وشغّل، وراجع القراءات واختبار النحاس.</li>',
+omFaultT:'الأعطال وتعمل فيها إيه',omSign:'العَرَض',omCause:'السبب الغالب',omDo:'تعمل إيه',
+omFaults:'<tr><td>لمبة <b>DC power fault</b></td><td>مشكلة في مصدر التيار أو في الأقطاب أو كابلاتها</td><td>افحص كابلات الأقطاب، وشوف تيار كل قناة، ودوّر على قشرة أو لوح لامس لوح.</td></tr><tr><td>لمبة <b>AC power fault</b></td><td>الكهربا مش داخلة للوحة</td><td>راجع البريكر والفيوز وكابل الكهربا.</td></tr><tr><td>لمبة <b>Electrode fault</b></td><td>قطب خلص أو مفصول أو عليه قشرة</td><td>افحص الخلية، ونضّف أو غيّر الألواح.</td></tr><tr><td>قناة تيارها صفر</td><td>كابل مفصول، أو قطب خلص</td><td>افحص الكونكتور والكابل والألواح.</td></tr><tr><td>الـ TFR ثابت أو صفر</td><td>إعداد الفلوميتر أو السلك</td><td>شوف خطوة 5 في التطبيق.</td></tr><tr><td>النحاس قليل والتيار طالع</td><td>قشرة على الأقطاب، أو أقطاب خلصت</td><td>نضّف أو غيّر الألواح، وبعدين قلّل <code>TFR at Max Flow</code>.</td></tr><tr><td>النحاس عالي</td><td>الجرعة زيادة</td><td>زوّد <code>TFR at Max Flow</code> 10% وأعد الاختبار.</td></tr><tr><td>البريكر بيفصل</td><td>تيار عالي أو قصر في الخلية</td><td>رجّع آخر إعداد كان شغال، وافحص الأقطاب قبل ما تشغّل تاني.</td></tr>',
+omSpareT:'قطع الغيار اللي تخليها جاهزة',
+omSpare:'<li>طقم أقطاب من المورّد.</li><li>جوان الخلية وسيليكون جريس.</li><li>أكياس كاشف HI702-0 وكوفيت احتياطي.</li><li>جل للتراسونيك (أو فازلين) وحزام ربط الحساسات.</li><li>فيوز اللوحة.</li>',
+omSrc:'المصادر: مانوال NT Cu/Ag (LC1K والـ CSI)، ومانوال الفلوميتر، ومانوال Hanna HI-702. اللي مكتوب عليه «توصية» من خبرة الموقع، مش من المانوال.'
+});
+Object.assign(I18N.en,{
+updating:'New version, updating…',
+abT:'What does this system do?',
+abLead:'The Cu/Ag unit adds a very small amount of copper and silver ions to the water network. The ions kill bacteria such as Legionella and stop the slime layer that builds up inside pipes and tanks, and they stay in the water to the last outlet.',
+abHowT:'How it works',
+abHow:'Water passes through a flow cell holding copper and silver plates (the electrodes). The controller drives a small DC current through them, which releases ions into the water. The flowmeter measures the water and sends a signal to the controller, which raises the current when flow rises and lowers it when flow drops, so the concentration stays steady. It reverses the current by itself so the plates wear evenly.',
+abPartsT:'Parts',
+abParts:'<li><b>Control panel:</b> screen, current per channel, settings.</li><li><b>Flow cell:</b> 90% copper / 10% silver plates, 1, 8 or 16 kg. A Dual unit has two cells.</li><li><b>Ultrasonic flowmeter:</b> two transducers clamped on the outside of the pipe, no cutting.</li><li><b>Copper test kit:</b> Hanna HI-702 checker and reagent packets.</li>',
+abSetT:'What you adjust',
+abSet:'<li>Flowmeter settings: pipe size, material and signal type (steps 2 and 3).</li><li><code>Minimum Current</code> = zero.</li><li><code>TFR at Max Flow</code>: the key setting. Lower means more copper, higher means less.</li><li>The copper test then sets the final value (target 0.2 ppm).</li>',
+abDontT:'Do not',
+abDont:'<li>Test silver. The manual says not to.</li><li>Use electrodes from anyone but the supplier: it voids the warranty, and electrodes are registered biocides.</li><li>Open the panel before isolating power and waiting 5 minutes.</li><li>Push the current above the unit or breaker rating.</li>',
+abGoodT:'Benefits',
+abGood:'<li>Continuous protection of the whole network, not only at the unit.</li><li>A residual effect to the last outlet.</li><li>Dosing follows water use by itself.</li><li>Simple upkeep: a monthly inspection and a copper test.</li>',
+abLimT:'Limits',
+abLim:'<li>Needs regular copper tests; the unit does not measure concentration itself.</li><li>Electrodes wear out and must be replaced.</li><li>Hard water scales the plates; they need cleaning.</li><li>If flow exceeds the unit capacity it cannot reach the target level.</li>',
+kitT:'How to run the test with the kit (HI-702)',
+kitSteps:'<li>Press the button. When <code>C.1</code> shows with <code>Press</code> blinking, it is ready.</li><li>Fill the cuvette with <b>10 mL</b> of sample, no reagent, cap it, place it and close the lid.</li><li>Press the button. When <code>C.2</code> shows with <code>Press</code> blinking, it is zeroed.</li><li>Remove the cuvette, add <b>one HI702-0 packet</b>, cap it, shake gently for <b>15 seconds</b> and put it back.</li><li>Press and hold until the countdown starts, or wait <b>45 seconds</b> and press.</li><li>Read copper in ppm, enter it here, then empty and rinse the cuvette straight away.</li>',
+kitTips:'Keep the cuvette clean and dry outside, with no fingerprints or bubbles. Test twice and use the average. Accuracy ±0.05 ppm. The kit has reagent for 6 tests. Codes: <code>L.Hi</code>/<code>L.Lo</code> = light level wrong, clean and zero again · <code>Inv</code> = sample below blank, repeat · blinking <code>0.00</code> = under range · flashing <code>5.00</code> = over range, stop the unit and report · <code>bAt</code>/<code>bAd</code> = battery.',
+omT:'Operation and maintenance (O&M)',
+omSafe:'Before any maintenance: isolate the panel and wait 5 minutes. Never change electrodes with bare hands or wet gloves.',
+omWhen:'When',omWhat:'What to do',
+omRows:'<tr><td><b>Daily</b> <span class="tag">advice</span></td><td>Look at the screen: TFR follows the flow, both channels show current, no fault lamp lit.</td></tr><tr><td><b>Weekly</b> <span class="tag">advice</span></td><td>Copper test (step 6); log the result, current and flow.</td></tr><tr><td><b>Monthly</b> <span class="tag">manual</span></td><td>Inspect the electrodes through the inspection port and clean any scale at once. Check cables and connectors; replace any damaged cable. Wipe the screen with a dry cloth.</td></tr><tr><td><b>Every 3–6 months</b> <span class="tag">advice</span></td><td>Renew the gel under the flowmeter transducers, tighten the strap, check <code>M90</code> and <code>M91</code>.</td></tr><tr><td><b>When electrodes are worn</b> <span class="tag">manual</span></td><td>Replace the plates with supplier electrodes only, then run a copper test.</td></tr>',
+omElT:'Cleaning or replacing the electrodes',
+omEl:'<li>Isolate the panel and disconnect the electrode cables from the cell.</li><li>Close the cell valves and drain it.</li><li>Remove the lid bolts, lift the lid carefully, remove and clean the gasket.</li><li>Turn the lid over, loosen the plate retaining screws and lift the plates out.</li><li>Rinse the plates in clean water, remove heavy scale with a wire brush, finish with fine emery paper, rinse again.</li><li>Replace any worn plate, with supplier electrodes only.</li><li>Grease the gasket thinly with silicone grease, refit the lid and tighten the bolts to <b>45 N·m</b>, no more.</li><li>Open the water, check for leaks, reconnect the cables, power on, check the readings and run a copper test.</li>',
+omFaultT:'Faults and what to do',omSign:'Symptom',omCause:'Likely cause',omDo:'Action',
+omFaults:'<tr><td><b>DC power fault</b> lamp</td><td>DC supply, electrodes or their cables</td><td>Check electrode cables and each channel current; look for scale or touching plates.</td></tr><tr><td><b>AC power fault</b> lamp</td><td>No mains to the panel</td><td>Check breaker, fuse and supply cable.</td></tr><tr><td><b>Electrode fault</b> lamp</td><td>Electrode worn, disconnected or scaled</td><td>Inspect the cell; clean or replace the plates.</td></tr><tr><td>One channel at zero</td><td>Loose cable or worn electrode</td><td>Check connector, cable and plates.</td></tr><tr><td>TFR fixed or zero</td><td>Flowmeter setting or wiring</td><td>See step 5 in this app.</td></tr><tr><td>Low copper with current flowing</td><td>Scaled or worn electrodes</td><td>Clean or replace, then lower <code>TFR at Max Flow</code>.</td></tr><tr><td>High copper</td><td>Overdosing</td><td>Raise <code>TFR at Max Flow</code> 10% and test again.</td></tr><tr><td>Breaker trips</td><td>High current or a short in the cell</td><td>Go back to the last working setting and inspect the electrodes before restarting.</td></tr>',
+omSpareT:'Spares to keep on site',
+omSpare:'<li>Electrode set from the supplier.</li><li>Cell gasket and silicone grease.</li><li>HI702-0 reagent packets and a spare cuvette.</li><li>Ultrasonic gel (or petroleum jelly) and transducer straps.</li><li>Panel fuse.</li>',
+omSrc:'Sources: NT Cu/Ag manuals (LC1K and CSI), the flowmeter manual and the Hanna HI-702 manual. Items marked "advice" come from site experience, not the manuals.'
 });
 </script>
 <script id="calc">
@@ -593,7 +701,20 @@ if(typeof module!=='undefined')module.exports=CALC;
   $('installBtn').addEventListener('click',function(){if(deferred){deferred.prompt();deferred=null;$('installBtn').hidden=true;}});
   $('appLink').textContent=APP;
   load();applyLang();
-  if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js',{scope:'./'}).catch(function(){});
+  // Auto-update: compare with version.json on every open; reload once into the new version (inputs are kept in localStorage).
+  var VER='2026.11.14.1',reg=null;
+  function checkUpdate(){
+    if(location.protocol!=='https:')return;
+    fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+      if(!j||!j.v||j.v===VER)return;
+      var k='tl_cuag_upd_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');}catch(e){}
+      toast(t('updating'));
+      Promise.resolve(reg&&reg.update()).catch(function(){}).then(function(){setTimeout(function(){location.reload();},600);});
+    }).catch(function(){});
+  }
+  if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js',{scope:'./'}).then(function(r){reg=r;}).catch(function(){});
+  checkUpdate();
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')checkUpdate();});
 })();
 </script>
 </body>
