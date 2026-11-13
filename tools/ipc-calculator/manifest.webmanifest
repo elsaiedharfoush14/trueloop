@@ -1,0 +1,21 @@
+{
+  "name": "TrueLoop · حاسبة IPC لإنفرترات ACH480",
+  "short_name": "IPC TrueLoop",
+  "description": "ACH480 IPC multipump settings for 2 to 8 booster pumps: drive parameters, operating sequence, sleep, tank pre-charge and relay outputs. Arabic and English.",
+  "lang": "ar",
+  "dir": "auto",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#071b2b",
+  "theme_color": "#071b2b",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
