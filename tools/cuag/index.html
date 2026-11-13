@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TrueLoop Cu/Ag Commissioning</title>
+<meta name="description" content="Ultrasonic flowmeter and Cu/Ag ionisation unit commissioning: pipe sizing, flowmeter menus, controller settings, checks and copper test adjustment.">
+<meta name="theme-color" content="#071b2b">
+<meta property="og:image" content="https://elsaiedharfoush14.github.io/trueloop/og-image.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cu/Ag">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: TrueLoop tool. Slim sticky toolbar -> brand header -> step progress chips -> numbered step cards -> share card -> TrueLoop strip. */
+:root{
+  --bg:#eef3f6; --card:#ffffff; --ink:#071b2b; --muted:#566a77; --line:#d3dde3; --soft:#f5f9fb;
+  --water:#1268d3; --aqua:#16b9e0; --bolt:#ffb21e; --leaf:#1db57a;
+  --good:#1a8f5c; --good-bg:#dff3ea; --warn:#a15c00; --warn-bg:#fdf0d9; --crit:#b42318; --crit-bg:#fde4e1;
+  --f-display:"Readex Pro",system-ui,sans-serif; --f-body:"IBM Plex Sans","IBM Plex Sans Arabic",system-ui,"Segoe UI",sans-serif;
+  --f-ar:"IBM Plex Sans Arabic","IBM Plex Sans",Tahoma,sans-serif; --f-mono:"IBM Plex Mono",Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{--bg:#06131d;--card:#0c2333;--ink:#e3eef4;--muted:#9bb2c0;--line:#1e3d50;--soft:#0a1c29;--water:#5aa2f0;--aqua:#3fd0f0;--good:#4fd39b;--good-bg:#0f3327;--warn:#ffb84d;--warn-bg:#3a2a10;--crit:#ff8a7a;--crit-bg:#3d1714;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65;padding-bottom:env(safe-area-inset-bottom,0px)}
+[dir=rtl] body,[dir=rtl] input,[dir=rtl] select,[dir=rtl] button{font-family:var(--f-ar)}
+[hidden]{display:none!important}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:#071b2b}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:#071b2b;color:#fff}
+.bar-in{max-width:960px;margin:0 auto;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bar .mk{width:26px;height:27px;flex:none}
+.bar .nm{font-family:var(--f-display);font-weight:600;flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .nm .lt{font-weight:300}
+.seg{display:inline-flex;border:1px solid #29506a;border-radius:7px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;color:#b9d3e2;padding:5px 10px;font-weight:600}
+.seg button[aria-pressed=true]{background:var(--aqua);color:#04202c}
+.bar button.tb{background:transparent;border:1px solid #29506a;color:#fff;padding:5px 10px;font-size:.8rem}
+.bar button.tb.pri{background:var(--water);border-color:var(--water)}
+.toast{font-size:.82rem;color:#7fe3f5}
+.wrap{max-width:960px;margin:0 auto;padding-block:18px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+a.back{font-weight:600;font-size:.88rem;color:var(--water);text-decoration:none;width:fit-content}
+header.top{display:flex;gap:16px;align-items:center}
+header.top svg{width:60px;height:62px;flex:none}
+header.top .t{display:grid;gap:3px;min-width:0}
+.brand{font-family:var(--f-display);font-size:.95rem;color:var(--muted)} .brand b{color:var(--ink)} .brand .lt{font-weight:300}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.3;text-wrap:balance}
+h1{font-size:clamp(1.35rem,3.6vw,1.9rem)}
+h2{font-size:1.05rem;display:flex;gap:10px;align-items:center}
+p{margin:0;max-width:72ch} .muted{color:var(--muted);font-size:.9rem}
+.prog{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.prog a{display:grid;gap:2px;justify-items:center;text-decoration:none;color:var(--muted);font-size:.74rem;text-align:center;padding:8px 4px;border-radius:8px;background:var(--card);border:1px solid var(--line);min-width:0}
+.prog a i{font-style:normal;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.prog a.ok i{background:var(--good);border-color:var(--good);color:#fff}
+.prog a.warn i{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.prog a.bad i{background:var(--crit);border-color:var(--crit);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px;min-width:0;scroll-margin-top:70px}
+.num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--water),var(--aqua));color:#fff;font-family:var(--f-mono);font-size:.85rem;flex:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 14px}
+label{display:grid;gap:4px;font-size:.84rem;color:var(--muted);min-width:0;align-content:start}
+input,select{font:inherit;font-size:.95rem;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+input[type=number]{font-family:var(--f-mono);direction:ltr}
+[dir=rtl] input[type=number]{text-align:right}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--water);outline-offset:2px}
+button{font:inherit;font-size:.86rem;border-radius:7px;padding:7px 14px;cursor:pointer;border:1px solid var(--water);background:transparent;color:var(--water);font-weight:600}
+button.pri{background:var(--water);color:#fff}
+code{font-family:var(--f-mono);font-size:.84em;direction:ltr;unicode-bidi:isolate;background:var(--soft);border:1px solid var(--line);padding:0 6px;border-radius:4px;white-space:nowrap}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:start;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:.76rem;color:var(--muted);background:var(--soft)}
+tr:last-child td{border-bottom:0}
+td.v{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;white-space:nowrap;font-weight:500}
+td.tx{font-weight:500;min-width:9em}
+tr.key td{background:color-mix(in srgb,var(--aqua) 11%,transparent)}
+tr.key td.v:first-child{box-shadow:inset 3px 0 0 var(--aqua)}
+[dir=rtl] tr.key td.v:first-child{box-shadow:inset -3px 0 0 var(--aqua)}
+.msgs{display:grid;gap:6px}
+.msg{border-radius:9px;padding:10px 12px;background:var(--soft);border:1px solid var(--line)}
+.msg.ok{background:var(--good-bg);border-color:transparent;color:var(--ink)}
+.msg.warn{background:var(--warn-bg);border-color:transparent}
+.msg.bad{background:var(--crit-bg);border-color:transparent}
+.msg::before{font-weight:700;margin-inline-end:6px}
+.msg.ok::before{content:"✓";color:var(--good)} .msg.warn::before{content:"!";color:var(--warn)} .msg.bad::before{content:"✕";color:var(--crit)}
+.kv{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.9rem}
+.kv span{background:var(--soft);border:1px solid var(--line);border-radius:99px;padding:3px 12px}
+.kv b{font-family:var(--f-mono);direction:ltr;unicode-bidi:isolate;font-weight:500}
+ul{margin:0;padding-inline-start:1.3em;display:grid;gap:6px}
+textarea{font-family:var(--f-mono);font-size:.8rem;width:100%;min-height:220px;direction:ltr;text-align:left;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px;resize:vertical}
+.share{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.share .qrb{width:148px;height:148px;background:#fff;border-radius:12px;padding:8px;position:relative;border:1px solid var(--line)}
+.share .qrb img{width:100%;height:100%;display:block;image-rendering:pixelated}
+.share .qrb .ql{position:absolute;left:50%;top:50%;width:34px;height:34px;transform:translate(-50%,-50%);background:#fff;border-radius:7px;display:grid;place-items:center}
+.share .qrb .ql svg{width:28px;height:29px}
+.linkline{font-family:var(--f-mono);font-size:.78rem;direction:ltr;unicode-bidi:isolate;word-break:break-all;color:var(--muted)}
+.cta{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;background:#071b2b;color:#fff;border-radius:12px;padding:18px}
+.cta svg.mk{width:52px;height:54px} .cta p{font-size:.92rem;opacity:.9} .cta a{color:#7fe3f5;font-weight:600}
+.foot{color:var(--muted);font-size:.78rem;text-align:center}
+.rep{display:none}
+@media (max-width:620px){.prog{grid-template-columns:repeat(3,minmax(0,1fr))}.share,.cta{grid-template-columns:1fr}.share .qrb{margin-inline:auto}header.top svg{width:48px;height:50px}}
+@media print{
+  body{background:#fff;color:#000;font-size:12px}
+  .bar,.prog,.no-print,a.back,.cta,#s8,#share,body::before{display:none!important}
+  .card{border:1px solid #bbb;break-inside:avoid;padding:10px}
+  .rep{display:block;font-size:.8rem;color:#444}
+  input,select{border:0;background:transparent;padding:0}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .2s}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="gDrop" x1="25" y1="85" x2="72" y2="30" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1268d3"/><stop offset=".5" stop-color="#16b9e0"/><stop offset=".78" stop-color="#16b9e0"/><stop offset="1" stop-color="#ffb21e"/></linearGradient>
+  <linearGradient id="gBolt" x1="66" y1="2" x2="66" y2="44" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffe066"/><stop offset=".55" stop-color="#ffb21e"/><stop offset="1" stop-color="#ff8a00"/></linearGradient>
+  <symbol id="mark" viewBox="0 -4 100 104">
+    <path d="M50 9 C50 9 21 43 21 61 A29 29 0 0 0 79 61 C79 55 77 49 74 44" fill="none" stroke="url(#gDrop)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M70 2 L54 26 L64 26 L58 44 L80 18 L69 18 L76 2 Z" fill="url(#gBolt)" stroke="#ff9f0a" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M37.3 62.3 L45 70 L59.7 55.3" fill="none" stroke="#1db57a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="33" cy="58" r="4.5" fill="none" stroke="#1db57a" stroke-width="3"/>
+    <circle cx="64" cy="51" r="4.5" fill="none" stroke="#1db57a" stroke-width="3"/>
+  </symbol></defs></svg>
+
+<div class="bar"><div class="bar-in">
+  <svg class="mk" aria-hidden="true"><use href="#mark"/></svg>
+  <span class="nm"><span class="lt">True</span>Loop · Cu/Ag</span>
+  <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr" lang="ar">ع</button><button type="button" id="lnEn">EN</button></span>
+  <button class="tb pri" id="copyBtn" type="button" data-t="copy"></button>
+  <button class="tb" id="printBtn" type="button" data-t="print"></button>
+  <button class="tb" id="resetBtn" type="button" data-t="reset"></button>
+  <span id="toast" class="toast" role="status"></span>
+</div></div>
+
+<main class="wrap">
+  <a class="back" href="../../" data-t="back"></a>
+  <header class="top">
+    <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div class="t">
+      <div class="brand"><b><span class="lt">True</span>Loop</b> · <span data-t="brandSub"></span></div>
+      <h1 data-t="title"></h1>
+      <p class="muted" data-t="intro" data-html></p>
+    </div>
+  </header>
+  <p class="rep" id="repLine"></p>
+
+  <nav class="prog" aria-label="progress">
+    <a href="#s1" id="pg1"><i>1</i><span data-t="p1"></span></a>
+    <a href="#s2" id="pg2"><i>2</i><span data-t="p2"></span></a>
+    <a href="#s3" id="pg3"><i>3</i><span data-t="p3"></span></a>
+    <a href="#s4" id="pg4"><i>4</i><span data-t="p4"></span></a>
+    <a href="#s5" id="pg5"><i>5</i><span data-t="p5"></span></a>
+    <a href="#s6" id="pg6"><i>6</i><span data-t="p6"></span></a>
+  </nav>
+
+  <section class="card" id="s1">
+    <h2><span class="num">1</span><span data-t="s1"></span></h2>
+    <div class="grid">
+      <label><span data-t="site"></span><input id="site" type="text" autocomplete="off"></label>
+      <label><span data-t="model"></span>
+        <select id="model">
+          <option value="LC1K">LC1K · 1 kg</option><option value="LC1KD">LC1K Dual · 1 kg</option>
+          <option value="LC8K">LC8K · 8 kg</option><option value="LC8KD" selected>LC8K Dual · 8 kg</option>
+          <option value="LC16K">LC16K · 16 kg</option><option value="LC16KD">LC16K Dual · 16 kg</option>
+        </select></label>
+      <label><span data-t="peak"></span><input id="peak" type="number" min="0" step="1" inputmode="decimal"></label>
+    </div>
+    <div id="capMsg" class="msgs"></div>
+  </section>
+
+  <section class="card" id="s2">
+    <h2><span class="num">2</span><span data-t="s2"></span></h2>
+    <div class="grid">
+      <label><span data-t="mat"></span>
+        <select id="mat">
+          <option value="cs" data-t="mat_cs"></option><option value="ss" data-t="mat_ss"></option>
+          <option value="hdpe" data-t="mat_hdpe" selected></option><option value="ppr" data-t="mat_ppr"></option>
+          <option value="pvc" data-t="mat_pvc"></option><option value="cu" data-t="mat_cu"></option><option value="di" data-t="mat_di"></option>
+        </select></label>
+      <label><span data-t="circ"></span><input id="circ" type="number" min="0" step="0.1" inputmode="decimal"></label>
+      <label id="schL"><span>Schedule</span><select id="sch"><option value="10">Sch 10 / 10S</option><option value="40" selected>Sch 40 / 40S</option><option value="80">Sch 80</option></select></label>
+      <label id="pnL"><span>PN (PE100)</span><select id="pn"><option value="21">PN8 · SDR21</option><option value="17">PN10 · SDR17</option><option value="13.6">PN12.5 · SDR13.6</option><option value="11" selected>PN16 · SDR11</option><option value="9">PN20 · SDR9</option><option value="7.4">PN25 · SDR7.4</option></select></label>
+      <label id="sdrL"><span>SDR (PP-R)</span><select id="sdr"><option value="11">SDR11</option><option value="7.4" selected>SDR7.4</option><option value="6">SDR6</option></select></label>
+    </div>
+    <div id="sizeMsg" class="msgs"></div>
+    <div class="grid">
+      <label><span data-t="od"></span><input id="od" type="number" min="0" step="0.1" inputmode="decimal"></label>
+      <label><span data-t="wall"></span><input id="wall" type="number" min="0" step="0.01" inputmode="decimal"></label>
+    </div>
+    <p class="muted" data-t="pipeNote"></p>
+    <div id="pipeInfo" class="kv"></div>
+  </section>
+
+  <section class="card" id="s3">
+    <h2><span class="num">3</span><span data-t="s3"></span></h2>
+    <p class="muted" data-t="s3note" data-html></p>
+    <div class="tbl"><table><thead><tr><th data-t="thMenu"></th><th data-t="thVal"></th><th data-t="thWhy"></th></tr></thead><tbody id="fmRows"></tbody></table></div>
+  </section>
+
+  <section class="card" id="s4">
+    <h2><span class="num">4</span><span data-t="s4"></span></h2>
+    <div class="tbl"><table><thead><tr><th data-t="thSet"></th><th data-t="thVal"></th><th data-t="thWhy"></th></tr></thead><tbody id="ctRows"></tbody></table></div>
+    <p class="muted" data-t="s4note" data-html></p>
+  </section>
+
+  <section class="card" id="s5">
+    <h2><span class="num">5</span><span data-t="s5"></span></h2>
+    <div class="grid">
+      <label><span>M90 · UP</span><input id="up" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span>M90 · DN</span><input id="dn" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span>M90 · Q</span><input id="q" type="number" step="1" inputmode="decimal"></label>
+      <label><span>M91 · Tom/Tos %</span><input id="m91" type="number" step="0.001" inputmode="decimal"></label>
+    </div>
+    <div id="sigMsg" class="msgs"></div>
+    <div class="grid">
+      <label><span data-t="flowNow"></span><input id="flowNow" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span data-t="tfrNow"></span><input id="tfrNow" type="number" step="1" inputmode="decimal"></label>
+      <label><span>Channel 1 (A)</span><input id="ch1" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span>Channel 2 (A)</span><input id="ch2" type="number" step="0.1" inputmode="decimal"></label>
+    </div>
+    <div id="tfrMsg" class="msgs"></div>
+  </section>
+
+  <section class="card" id="s6">
+    <h2><span class="num">6</span><span data-t="s6"></span></h2>
+    <p class="muted" data-t="s6note"></p>
+    <div class="grid">
+      <label><span data-t="cuBg"></span><input id="cuBg" type="number" step="0.01" min="0" inputmode="decimal"></label>
+      <label><span data-t="cu1"></span><input id="cu1" type="number" step="0.01" min="0" inputmode="decimal"></label>
+      <label><span data-t="cu2"></span><input id="cu2" type="number" step="0.01" min="0" inputmode="decimal"></label>
+      <label><span data-t="cuT"></span><input id="cuT" type="number" step="0.01" min="0" value="0.2" inputmode="decimal"></label>
+      <label><span data-t="tfrSet"></span><input id="tfrSet" type="number" step="1" min="1" inputmode="decimal"></label>
+    </div>
+    <div id="cuMsg" class="msgs"></div>
+  </section>
+
+  <section class="card" id="s7">
+    <h2><span class="num">7</span><span data-t="s7"></span></h2>
+    <p class="muted" data-t="s7note"></p>
+    <textarea id="summary" readonly aria-label="summary"></textarea>
+  </section>
+
+  <section class="card" id="s8">
+    <h2><span class="num">8</span><span data-t="s8"></span></h2>
+    <ul data-t="lessons" data-html></ul>
+  </section>
+
+  <section class="card" id="share">
+    <div class="share">
+      <div class="qrb"><img src="qr-install.png" alt="QR"><span class="ql"><svg aria-hidden="true"><use href="#mark"/></svg></span></div>
+      <div style="display:grid;gap:8px;min-width:0">
+        <h2 data-t="shareT"></h2>
+        <p class="muted" data-t="shareP"></p>
+        <div class="linkline" id="appLink"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="pri" id="linkBtn" type="button" data-t="copyLink"></button>
+          <button id="installBtn" type="button" data-t="installBtn" hidden></button>
+        </div>
+        <p class="muted" data-t="installHow" data-html></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta no-print">
+    <svg class="mk" role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div style="display:grid;gap:4px">
+      <b style="font-family:var(--f-display);font-size:1.08rem" data-t="ctaT"></b>
+      <p data-t="ctaP"></p>
+      <p>WhatsApp <a href="https://wa.me/966560861304" target="_blank" rel="noopener">+966 56 086 1304</a> · <span data-t="city"></span></p>
+    </div>
+  </section>
+  <p class="foot">TrueLoop · Cu/Ag Commissioning · v2026.11.13.2</p>
+</main>
+
+<script id="i18n">
+var I18N={
+ar:{
+title:'مساعد تشغيل النحاس والفضة',langBtn:'English',copy:'نسخ الملخص',reset:'موقع جديد',resetConfirm:'اضغط تاني للمسح',copied:'اتنسخ',copyFallback:'اختار النص وانسخه',
+intro:'لفلوميتر التراسونيك (<code>TUF</code>) مع جهاز النحاس والفضة <code>NT Cu/Ag</code>. دخّل بيانات الموقع، والتطبيق يطلّعلك إعدادات الفلوميتر والجهاز، ويراجع القراءات، ويحسبلك التعديل من اختبار النحاس. البيانات بتتحفظ على جهازك بس.',
+s1:'الموقع والجهاز',site:'اسم الموقع',model:'موديل جهاز النحاس والفضة',peak:'أقصى فلو متوقع (L/min)',
+s2:'الماسورة',mat:'الخامة',mat_cs:'حديد كربون',mat_ss:'استانلس',mat_hdpe:'HDPE / PE100 (سودا بخط أزرق)',mat_ppr:'PP-R (خضرا)',mat_pvc:'PVC / uPVC',mat_cu:'نحاس',mat_di:'زهر مرن (Ductile iron)',
+circ:'المحيط بالمتر (cm)',od:'القطر الخارجي OD (mm)',wall:'سُمك الجدار (mm)',
+pipeNote:'القطر والسُمك بيتملوا لوحدهم من المحيط والجدول. لو مكتوب على الماسورة رقم مختلف، اكتبه بإيدك.',
+idTxt:'القطر الداخلي',perMs:'1 m/s =',velPeak:'السرعة عند أقصى فلو',
+s3:'إعدادات الفلوميتر',s3note:'<code>MENU</code> + رقم المنيو، وبعدين <code>ENT</code> للتعديل و<code>ENT</code> للتأكيد. الصفوف الملوّنة هي الأهم لجهاز النحاس والفضة.',
+thMenu:'المنيو',thVal:'القيمة',thWhy:'ليه',thSet:'الإعداد',
+s4:'إعدادات جهاز النحاس والفضة',s4note:'نفس القيم في <code>Channel 1</code> و<code>Channel 2</code>. الـ <code>PPM</code> على شاشة الجهاز معناها نبضات في الدقيقة، مش تركيز.',
+s5:'مراجعة القراءات',flowNow:'قراية الفلوميتر (L/min)',tfrNow:'الـ TFR على الجهاز (PPM)',
+s6:'اختبار النحاس (HI-702)',s6note:'العينة من أقرب حنفية بعد خلية الأقطاب، بعد 5 دقايق تشغيل. قياس الأساس والجهاز مقفول. ما تقيسش الفضة.',
+cuBg:'نحاس الأساس (ppm)',cu1:'القراية 1 (ppm)',cu2:'القراية 2 (ppm)',cuT:'المستهدف (ppm)',tfrSet:'TFR at Max Flow الحالي',
+s7:'الملخص',s7note:'انسخه وابعته واتساب أو حطه في تقرير الموقع.',
+s8:'أخطاء حصلت قبل كده',
+lessons:'<li><b>الـ TFR ثابت على 150 أو 300 أو 600:</b> الفلوميتر على <code>9. POS Int Pulse</code> زي مانوال المورّد. الجهاز بيقيس طول النبضة مش عددها، فلازم <code>M78 = 24. Flow Rate Pulse</code>.</li><li><b>اختيار رقم 1 في <code>M33</code>:</b> رقم 1 معناه <code>x0.01</code>، والصح <code>3. x1</code>.</li><li><b>«ريليه» الفلوميتر (30/31):</b> هو في الحقيقة ترانزستور، محتاج مصدر DC وقطبية صح، ومينفعش يتوصل على 230V.</li><li><b>الإشارة ضعيفة:</b> جل أو فازلين كتير، والسطح نضيف، والحساسات على جنب الماسورة (ساعة 3 أو 9)، و10D قبلها و5D بعدها مستقيم.</li><li><b>الإعدادات بتضيع بعد قطع الكهربا:</b> احفظ بـ <code>M26</code> بعد أي تعديل.</li><li><b>الـ TFR بيتنطط:</b> طبيعي مع خرج التردد. المهم المتوسط يقرب من الفلو، وزيادة <code>M40</code> مش بتهديه.</li>',
+needPipe:'دخّل المحيط أو القطر والسُمك.',needPipe2:'بيظهر بعد بيانات الماسورة.',
+size:'المحيط بيدّي قطر {m} mm، وأقرب مقاس قياسي {od} mm{lbl}.',sizeFar:' الفرق {d}%: غالبًا القياس اتاخد فوق حاجة، قيس تاني على حتة نضيفة.',noWall:'السُمك مش في الجدول للخامة دي. اكتبه من على الماسورة.',
+capOver:'أقصى فلو ({p} L/min) أعلى من قدرة الجهاز (حوالي {c} L/min). مش هيوصل للتركيز المطلوب، كلّم المورّد.',capOk:'الفلو جوه قدرة الجهاز (حوالي {c} L/min).',
+r_m11:'القطر الخارجي بالمليمتر.',r_m12:'سُمك الجدار. القطر الداخلي = {id} mm.',r_m14o:'الخامة مش في قايمة الفلوميتر، فبنختار Other.',r_m14s:'خامة موجودة في قايمة الفلوميتر.',
+r_m15:'سرعة الصوت في الماسورة، قيمة بداية. عدّلها لحد ما M91 يقرب من 100%.',r_m16:'مفيش بطانة.',r_m20:'مية.',
+tr_s:'حساس صغير للمواسير تحت DN50.',tr_m:'المقاس ده بيشتغل بالاتنين، استخدم اللي معاك.',tr_t:'الحساس المتوسط، من DN50 لـ DN700.',tr_l:'مواسير فوق DN700.',trAlt:'TM-1 (أو TS-2)',
+m24z_v:'Z (أو V)',m24z:'ماسورة كبيرة أو جدار بلاستيك تخين: ابدأ بـ Z، أو V لو M90 فوق 60.',m24v:'الحساسين على نفس الجنب.',
+m25_v:'اقرا الرقم',m25:'ركّب الحساسين على المسافة دي بالظبط، من علامة لعلامة.',m31:'الجهاز شغال باللتر في الدقيقة.',
+m33:'اختار x1 بالاسم. رقم 1 في القايمة معناه x0.01 وده غلط.',m34:'زي مانوال المورّد.',m40:'تهدئة قراية الفلوميتر بالثواني.',m41:'قطع الفلو الصغير m/s، علشان يقرا صفر والمية واقفة.',
+m78:'أهم إعداد. الجهاز بيقيس التردد، ومع POS Int Pulse الـ TFR بيقف على رقم ثابت.',m67:'مدى التردد. أقل تردد يغطي أقصى فلو، علشان القراية تبقى أهدى.',m68:'صفر فلو = صفر تردد.',
+m69:'{f} Hz = {m} L/min، يعني كل نبضة = {k} لتر.',m79_v:'6. Alarm #1 (اختياري)',m79:'إشارة Run للوحة على 30/31 (ترانزستور، DC).',m73:'الخرج يقفل لما الفلو يعدّي 20 L/min.',
+m42:'والمية واقفة والماسورة مليانة.',m26:'حفظ دايم. من غيره الإعدادات بتضيع.',
+ct_min:'مانوال المورّد: مفيش تيار والمية واقفة.',ct_tfr_v:'= 1.5 × أقصى فلو',ct_tfr:'بداية آمنة أعلى من أقصى فلو ({p}) بـ 50%، يعني تيار أقل. اختبار النحاس هو اللي ينزّله للرقم النهائي.',
+ct_exp:'الـ TFR المتوقع على الشاشة',ct_exp_v:'الفلو ÷ {k}',ct_exp_w:'لو الرقم بعيد عن كده، راجع خطوة 5.',
+sigOk:'قوة الإشارة كويسة ({v}).',sigBad:'قوة الإشارة ضعيفة ({v}). جل أكتر، نضّف السطح، أو جرّب Z.',qOk:'جودة الإشارة Q كويسة ({v}).',qWarn:'Q أقل من 80. راجع التركيب والجل.',
+m91Ok:'M91 = {v}%، المقاس والمسافة مظبوطين.',m91Warn:'M91 = {v}% مقبول بس مش مثالي. راجع M11 / M12 (قيس المحيط تاني) ومسافة M25، وفي البلاستيك M15.',
+m91Low:'M91 = {v}% بعيد. الصوت بيوصل أسرع: الماسورة من جوه أصغر من المدخّل، فراجع M11 / M12.',m91High:'M91 = {v}% بعيد. الصوت بيوصل أبطأ: الماسورة من جوه أكبر، أو المسافة M25 غلط.',
+tfrZero:'الجهاز مش شايف إشارة. السلك لازم على 28 (+) و29 (−). جرّب M78 = 9 مؤقتًا: لو ظهر رقم، يبقى الفلوميتر ده مفيهوش خرج تردد (كارت من المورّد).',
+tfrOk:'الـ TFR ماشي مع الفلو (المتوقع {e}). التنطيط البسيط طبيعي، المهم المتوسط.',tfrStuck:'الرقم {t} ده حد النبضات الثابت. الفلوميتر لسه على POS Int Pulse: خلّي M78 = 24، واحفظ M26، واقفل الفلوميتر وافتحه.',
+tfrOff:'المتوقع حوالي {e} والجهاز بيقرا {t}. غيّر الفلو بمحبس: لو الـ TFR مش بيتحرك، نزّل M67 لـ 0–10 Hz وعدّل الحسبة.',
+chDead:'قناة شغالة والتانية تقريبًا صفر. في الجهاز الـ Dual الاتنين المفروض يشتغلوا: اكشف على القطب والكابل ولمبة DC fault.',
+cuNone:'النحاس المضاف صفر أو أقل. اتأكد إن الجهاز شغال والتيار طالع، والعينة من بعد الخلية.',
+cuOk:'النحاس المضاف {a} ppm، قريب من المستهدف. سيب الإعداد، وأعد الاختبار على أعلى فلو.',
+cuLow:'النحاس المضاف {a} ppm، قليل: قلّل TFR at Max Flow من {s} لـ {n}، واستنى 5 دقايق وأعد الاختبار.',
+cuHigh:'النحاس المضاف {a} ppm، كتير: زوّد TFR at Max Flow من {s} لـ {n}، واستنى 5 دقايق وأعد الاختبار.',
+cuCap:' (التغيير متحدد بـ 30% في المرة الواحدة.)',cuNeedSet:'النحاس المضاف {a} ppm. دخّل TFR at Max Flow الحالي علشان أحسبلك الرقم الجديد.'
+},
+en:{
+title:'Cu/Ag Commissioning',langBtn:'عربي',copy:'Copy summary',reset:'New site',resetConfirm:'Tap again to clear',copied:'Copied',copyFallback:'Select the text and copy it',
+intro:'For the ultrasonic flowmeter (<code>TUF</code>) with the <code>NT Cu/Ag</code> ionisation unit. Enter the site data: the app gives the flowmeter and controller settings, checks the readings and works out the adjustment from the copper test. Data stays on this device only.',
+s1:'Site and unit',site:'Site name',model:'Cu/Ag unit model',peak:'Expected peak flow (L/min)',
+s2:'Pipe',mat:'Material',mat_cs:'Carbon steel',mat_ss:'Stainless steel',mat_hdpe:'HDPE / PE100 (black, blue stripe)',mat_ppr:'PP-R (green)',mat_pvc:'PVC / uPVC',mat_cu:'Copper',mat_di:'Ductile iron',
+circ:'Circumference by tape (cm)',od:'Outer diameter OD (mm)',wall:'Wall thickness (mm)',
+pipeNote:'OD and wall fill in from the circumference and the size tables. If the pipe is marked with different figures, type them in.',
+idTxt:'Inner diameter',perMs:'1 m/s =',velPeak:'Velocity at peak flow',
+s3:'Flowmeter settings',s3note:'<code>MENU</code> + menu number, then <code>ENT</code> to edit and <code>ENT</code> to confirm. Highlighted rows matter most for the Cu/Ag unit.',
+thMenu:'Menu',thVal:'Value',thWhy:'Why',thSet:'Setting',
+s4:'Cu/Ag controller settings',s4note:'Same values on <code>Channel 1</code> and <code>Channel 2</code>. <code>PPM</code> on the controller screen means pulses per minute, not concentration.',
+s5:'Check the readings',flowNow:'Flowmeter reading (L/min)',tfrNow:'Controller TFR (PPM)',
+s6:'Copper test (HI-702)',s6note:'Sample from the nearest tap after the flow cell, after 5 minutes of running. Take the background reading with the unit off. Do not test silver.',
+cuBg:'Background copper (ppm)',cu1:'Reading 1 (ppm)',cu2:'Reading 2 (ppm)',cuT:'Target (ppm)',tfrSet:'Current TFR at Max Flow',
+s7:'Summary',s7note:'Copy it to WhatsApp or the site report.',
+s8:'Mistakes seen on earlier sites',
+lessons:'<li><b>TFR stuck at 150, 300 or 600:</b> the flowmeter is on <code>9. POS Int Pulse</code> as in the supplier manual. The controller reads pulse length, not pulse count, so set <code>M78 = 24. Flow Rate Pulse</code>.</li><li><b>Picking item 1 in <code>M33</code>:</b> item 1 is <code>x0.01</code>; the correct one is <code>3. x1</code>.</li><li><b>Flowmeter "relay" (30/31):</b> it is a transistor output; it needs a DC supply and the right polarity, never 230 V.</li><li><b>Weak signal:</b> plenty of gel or petroleum jelly, clean surface, transducers on the side of the pipe (3 or 9 o\'clock), 10D straight before and 5D after.</li><li><b>Settings lost after a power cut:</b> save with <code>M26</code> after every change.</li><li><b>TFR jumps around:</b> normal with the frequency output. Its average should match the flow; raising <code>M40</code> does not steady it.</li>',
+needPipe:'Enter the circumference, or the OD and wall.',needPipe2:'Shown once the pipe data is in.',
+size:'The circumference gives {m} mm; nearest standard size {od} mm{lbl}.',sizeFar:' {d}% off: the tape probably went over something. Measure again on a clean part of the pipe.',noWall:'No wall table for this material. Enter the wall from the pipe marking.',
+capOver:'Peak flow ({p} L/min) is above the unit\'s capacity (about {c} L/min). It will not reach the target level; contact the supplier.',capOk:'Flow is within the unit\'s capacity (about {c} L/min).',
+r_m11:'Outer diameter in mm.',r_m12:'Wall thickness. Inner diameter = {id} mm.',r_m14o:'Material not in the flowmeter list, so choose Other.',r_m14s:'Material is in the flowmeter list.',
+r_m15:'Sound speed in the pipe wall, a starting value. Adjust it until M91 is close to 100%.',r_m16:'No lining.',r_m20:'Water.',
+tr_s:'Small transducer for pipes under DN50.',tr_m:'Either works at this size; use the one you have.',tr_t:'Medium transducer, DN50 to DN700.',tr_l:'Pipes above DN700.',trAlt:'TM-1 (or TS-2)',
+m24z_v:'Z (or V)',m24z:'Large pipe or thick plastic wall: start with Z, or V if M90 is above 60.',m24v:'Both transducers on the same side.',
+m25_v:'Read it',m25:'Mount the transducers at exactly this spacing, mark to mark.',m31:'The controller works in litres per minute.',
+m33:'Choose x1 by name. Item 1 in the list is x0.01, which is wrong.',m34:'As in the supplier manual.',m40:'Flowmeter display damping in seconds.',m41:'Low-flow cut-off in m/s, so it reads zero when the water stops.',
+m78:'The key setting. The controller reads a frequency; with POS Int Pulse its TFR stays fixed.',m67:'Frequency range. The lowest one that covers peak flow, for a steadier reading.',m68:'Zero flow = zero frequency.',
+m69:'{f} Hz = {m} L/min, so 1 pulse = {k} litre(s).',m79_v:'6. Alarm #1 (optional)',m79:'Run signal to the panel on 30/31 (transistor, DC).',m73:'Output closes when flow exceeds 20 L/min.',
+m42:'With the water stopped and the pipe full.',m26:'Permanent save. Without it the settings are lost.',
+ct_min:'Supplier manual: no current when the water stops.',ct_tfr_v:'= 1.5 × peak flow',ct_tfr:'Safe start 50% above peak flow ({p}), which means less current. The copper test brings it down to the final value.',
+ct_exp:'Expected TFR on screen',ct_exp_v:'flow ÷ {k}',ct_exp_w:'If it is far from this, see step 5.',
+sigOk:'Signal strength is good ({v}).',sigBad:'Weak signal ({v}). More gel, clean the surface, or try Z.',qOk:'Signal quality Q is good ({v}).',qWarn:'Q is below 80. Check mounting and gel.',
+m91Ok:'M91 = {v}%: size and spacing are right.',m91Warn:'M91 = {v}% is acceptable but not ideal. Check M11 / M12 (measure the circumference again) and the M25 spacing; on plastic pipe, M15.',
+m91Low:'M91 = {v}% is off. Sound arrives early: the bore is smaller than entered, so check M11 / M12.',m91High:'M91 = {v}% is off. Sound arrives late: the bore is larger than entered, or the M25 spacing is wrong.',
+tfrZero:'The controller sees no signal. The cable must be on 28 (+) and 29 (−). Try M78 = 9 briefly: if a number appears, this flowmeter has no frequency output (needs the supplier\'s card).',
+tfrOk:'TFR follows the flow (expected {e}). Small jumps are normal; the average is what counts.',tfrStuck:'{t} is the fixed pulse limit. The flowmeter is still on POS Int Pulse: set M78 = 24, save M26, and power-cycle the flowmeter.',
+tfrOff:'Expected about {e}, the controller reads {t}. Change the flow with a valve: if TFR does not move, set M67 to 0–10 Hz and recalculate.',
+chDead:'One channel runs and the other is near zero. On a dual unit both should run: check the electrode, its cable and the DC fault lamp.',
+cuNone:'Added copper is zero or less. Check the unit is running with current, and the sample is taken after the flow cell.',
+cuOk:'Added copper {a} ppm, close to target. Keep the setting and repeat the test at peak flow.',
+cuLow:'Added copper {a} ppm is low: lower TFR at Max Flow from {s} to {n}, wait 5 minutes and test again.',
+cuHigh:'Added copper {a} ppm is high: raise TFR at Max Flow from {s} to {n}, wait 5 minutes and test again.',
+cuCap:' (Change limited to 30% per step.)',cuNeedSet:'Added copper {a} ppm. Enter the current TFR at Max Flow to get the new value.'
+}};
+</script>
+<script id="i18nx">
+Object.assign(I18N.ar,{
+title:'تشغيل وتظبيط النحاس والفضة',brandSub:'أدوات هندسية مجانية',back:'← TrueLoop · الرئيسية',print:'تقرير PDF',
+intro:'للفلوميتر التراسونيك (<code>TUF</code>) مع جهاز النحاس والفضة <code>NT Cu/Ag</code>. دخّل بيانات الموقع، والتطبيق يطلّعلك إعدادات الفلوميتر والجهاز، ويراجع القراءات، ويحسبلك التعديل من اختبار النحاس. البيانات بتتحفظ على جهازك بس.',
+p1:'الموقع',p2:'الماسورة',p3:'الفلوميتر',p4:'الجهاز',p5:'القراءات',p6:'النحاس',
+shareT:'شارك التطبيق',shareP:'امسح الباركود من موبايل تاني، أو ابعت اللينك. التطبيق بيتسطّب على الموبايل ويشتغل من غير نت.',copyLink:'نسخ اللينك',linkCopied:'اللينك اتنسخ',installBtn:'تسطيب التطبيق',
+installHow:'<b>آيفون:</b> Safari ← زرار المشاركة ← Add to Home Screen<br><b>أندرويد:</b> Chrome ← ⋮ ← Install app',
+ctaT:'تشغيل محطات المياه من غير تخمين.',ctaP:'TrueLoop بتعمل تشغيل ومعايرة في الموقع: فلوميترات، أجهزة تحليل، درايفات، وأنظمة تعقيم.',city:'الرياض، السعودية',
+repLine:'تقرير تشغيل · {s} · {d}'
+});
+Object.assign(I18N.en,{
+title:'Cu/Ag Commissioning',brandSub:'free engineering tools',back:'← TrueLoop · home',print:'PDF report',
+p1:'Site',p2:'Pipe',p3:'Flowmeter',p4:'Controller',p5:'Readings',p6:'Copper',
+shareT:'Share the app',shareP:'Scan from another phone or send the link. It installs on the phone and works offline.',copyLink:'Copy link',linkCopied:'Link copied',installBtn:'Install app',
+installHow:'<b>iPhone:</b> Safari → Share → Add to Home Screen<br><b>Android:</b> Chrome → ⋮ → Install app',
+ctaT:'Water plant commissioning without guesswork.',ctaP:'TrueLoop commissions and calibrates on site: flowmeters, analysers, drives and disinfection systems.',city:'Riyadh, Saudi Arabia',
+repLine:'Commissioning report · {s} · {d}'
+});
+</script>
+<script id="calc">
+// Pure calculation layer. Every text goes through t(key, vars) so both languages share one logic.
+var CALC=(function(){
+  var STEEL=[['1/2"',21.3,2.11,2.77,3.73],['3/4"',26.7,2.11,2.87,3.91],['1"',33.4,2.77,3.38,4.55],['1-1/4"',42.2,2.77,3.56,4.85],
+    ['1-1/2"',48.3,2.77,3.68,5.08],['2"',60.3,2.77,3.91,5.54],['2-1/2"',73.0,3.05,5.16,7.01],['3"',88.9,3.05,5.49,7.62],
+    ['4"',114.3,3.05,6.02,8.56],['5"',141.3,3.40,6.55,9.53],['6"',168.3,3.40,7.11,10.97],['8"',219.1,3.76,8.18,12.70],
+    ['10"',273.0,4.19,9.27,15.09],['12"',323.8,4.57,10.31,17.48],['14"',355.6,4.78,11.13,19.05],['16"',406.4,4.78,12.70,21.44]];
+  var PE_OD=[20,25,32,40,50,63,75,90,110,125,140,160,180,200,225,250,280,315,355,400,450,500,560,630];
+  var PE_WALL={'280|11':25.4}; // ISO 4427 table values where OD/SDR rounding differs
+  var PPR_OD=[20,25,32,40,50,63,75,90,110,125,160];
+  var PVC_OD=[20,25,32,40,50,63,75,90,110,125,140,160,200,225,250,315];
+  var CU_OD=[15,22,28,35,42,54,67,76.1,108];
+  var MODELS={LC1K:210,LC1KD:420,LC8K:900,LC8KD:1800,LC16K:2400,LC16KD:4800}; // L/min, CSI manual (l/s x 60)
+  var M14={cs:'0. Carbon Steel',ss:'1. Stainless Steel',di:'3. Ductile Iron',cu:'4. Copper',pvc:'5. PVC',hdpe:'9. Other',ppr:'9. Other'};
+  var SOUND={hdpe:2400,ppr:2600};
+  function nearest(list,v){var b=list[0];list.forEach(function(x){if(Math.abs(x-v)<Math.abs(b-v))b=x;});return b;}
+  function r1(x){return Math.round(x*10)/10;}
+
+  function sizeFromCirc(mat,circCm,opt){
+    if(!(circCm>0))return null;
+    var od=circCm*10/Math.PI,res;
+    if(mat==='cs'||mat==='ss'){var row=STEEL[0];STEEL.forEach(function(r){if(Math.abs(r[1]-od)<Math.abs(row[1]-od))row=r;});
+      res={od:row[1],wall:row[{'10':2,'40':3,'80':4}[opt.sch]||3],label:row[0]+' Sch '+opt.sch};}
+    else if(mat==='hdpe'){var o=nearest(PE_OD,od);res={od:o,wall:PE_WALL[o+'|'+opt.pn]||r1(o/opt.pn),label:'PE100 '+o+' SDR'+opt.pn};}
+    else if(mat==='ppr'){var p=nearest(PPR_OD,od);res={od:p,wall:r1(p/opt.sdr),label:'PP-R '+p+' SDR'+opt.sdr};}
+    else if(mat==='pvc')res={od:nearest(PVC_OD,od),wall:null,label:'PVC'};
+    else if(mat==='cu')res={od:nearest(CU_OD,od),wall:null,label:'Copper'};
+    else res={od:r1(od),wall:null,label:''};
+    res.measured=r1(od);res.diffPct=Math.abs(res.od-od)/res.od*100;return res;
+  }
+  function freqScale(peak){
+    var need=Math.max(peak||0,1)*1.2,opts=[10,20,50];
+    for(var i=0;i<opts.length;i++)if(opts[i]*60>=need)return {fmax:opts[i],m69:opts[i]*60,k:1};
+    var m69=Math.ceil(need/500)*500;return {fmax:50,m69:m69,k:m69/3000};
+  }
+  function flowmeter(s,t){
+    var id=s.od-2*s.wall,perMs=Math.PI*Math.pow(id/1000,2)/4*60000,fs=freqScale(s.peak);
+    var plastic=s.mat==='hdpe'||s.mat==='ppr'||s.mat==='pvc',z=s.od>300||(plastic&&s.wall>20);
+    var tr=id<50?['TS-2',t('tr_s')]:id<=100?[t('trAlt'),t('tr_m')]:id<=700?['TM-1',t('tr_t')]:['TL-1',t('tr_l')];
+    var rows=[['M11',r1(s.od),t('r_m11')],['M12',s.wall,t('r_m12',{id:r1(id)})],['M14',M14[s.mat],SOUND[s.mat]?t('r_m14o'):t('r_m14s')]];
+    if(SOUND[s.mat])rows.push(['M15',SOUND[s.mat],t('r_m15')]);
+    rows=rows.concat([['M16','0. None',t('r_m16')],['M20','0. Water',t('r_m20')],['M23',tr[0],tr[1]],
+      ['M24',z?t('m24z_v'):'V',z?t('m24z'):t('m24v')],['M25',t('m25_v'),t('m25')],
+      ['M30','Metric',''],['M31','L/min',t('m31')],['M32','Liter',''],['M33','3. x1',t('m33')],
+      ['M34 / M35 / M36','On / On / Off',t('m34')],['M40','5',t('m40')],['M41','0.03',t('m41')],
+      ['M78','24. Flow Rate Pulse',t('m78'),1],['M67','0 – '+fs.fmax+' Hz',t('m67'),1],['M68','0',t('m68'),1],
+      ['M69',fs.m69,t('m69',{f:fs.fmax,m:fs.m69,k:fs.k}),1],
+      ['M79',t('m79_v'),t('m79')],['M73 / M74','-99999 / 20',t('m73')],['M42','Set Zero',t('m42')],['M26','ENT',t('m26')]]);
+    return {id:id,perMs:perMs,fs:fs,rows:rows};
+  }
+  function controller(peak,fs,t){
+    var peakT=peak>0?Math.round(peak/fs.k):null,start=peakT?Math.round(peakT*1.5):null;
+    return {start:start,rows:[['Minimum Current','0.0 A',t('ct_min')],
+      ['TFR at Max Flow',start||t('ct_tfr_v'),t('ct_tfr',{p:peakT||'—'}),1],
+      [t('ct_exp'),t('ct_exp_v',{k:fs.k}),t('ct_exp_w')]]};
+  }
+  function signal(up,dn,q,m91,t){
+    var out=[];
+    if(up>0||dn>0){var lo=Math.min(up||0,dn||0);out.push(lo>=60?['ok',t('sigOk',{v:lo})]:['bad',t('sigBad',{v:lo})]);}
+    if(q>0)out.push(q>=80?['ok',t('qOk',{v:q})]:['warn',t('qWarn')]);
+    if(m91>0){if(m91>=97&&m91<=103)out.push(['ok',t('m91Ok',{v:m91})]);
+      else if(m91>=95&&m91<=105)out.push(['warn',t('m91Warn',{v:m91})]);
+      else out.push(['bad',t(m91<97?'m91Low':'m91High',{v:m91})]);}
+    return out;
+  }
+  function tfrCheck(flow,tfr,k,t){
+    if(!(flow>0)||tfr===null||!(tfr>=0))return null;
+    if(tfr===0)return ['bad',t('tfrZero')];
+    var e=flow/k,r=tfr/e,stuck=[150,300,600].some(function(x){return Math.abs(tfr-x)<=x*0.02;});
+    if(Math.abs(r-1)<=0.25)return ['ok',t('tfrOk',{e:Math.round(e)})];
+    if(stuck)return ['bad',t('tfrStuck',{t:tfr})];
+    return ['warn',t('tfrOff',{e:Math.round(e),t:tfr})];
+  }
+  function copper(bg,c1,c2,target,set,t){
+    var vals=[c1,c2].filter(function(x){return x>0;});
+    if(!vals.length||!(target>0))return null;
+    var avg=vals.reduce(function(a,b){return a+b;},0)/vals.length,added=avg-(bg||0);
+    if(added<=0)return {cls:'bad',text:t('cuNone')};
+    var ratio=added/target,res={avg:avg,added:added},a=added.toFixed(2);
+    if(Math.abs(ratio-1)<=0.25){res.cls='ok';res.text=t('cuOk',{a:a});return res;}
+    res.cls='warn';
+    if(!(set>0)){res.text=t('cuNeedSet',{a:a});return res;}
+    var next=set*ratio,lo=set*0.7,hi=set*1.3,n=Math.round(Math.min(hi,Math.max(lo,next)));
+    res.next=n;res.text=t(ratio<1?'cuLow':'cuHigh',{a:a,s:set,n:n})+((next<lo||next>hi)?t('cuCap'):'');
+    return res;
+  }
+  return {sizeFromCirc:sizeFromCirc,freqScale:freqScale,flowmeter:flowmeter,controller:controller,signal:signal,tfrCheck:tfrCheck,copper:copper,MODELS:MODELS,r1:r1};
+})();
+if(typeof module!=='undefined')module.exports=CALC;
+</script>
+<script>
+// UI layer: language, inputs, progress, render, share/install, per-device draft.
+(function(){
+  var KEY='tl_cuag_v1',LKEY='tl_lang',$=function(id){return document.getElementById(id);};
+  var APP='https://elsaiedharfoush14.github.io/trueloop/tools/cuag/';
+  var FIELDS=['site','model','peak','mat','circ','sch','pn','sdr','od','wall','up','dn','q','m91','flowNow','tfrNow','ch1','ch2','cuBg','cu1','cu2','cuT','tfrSet'];
+  var manual={od:false,wall:false},lang='ar',deferred=null;
+  var saved=null;try{saved=localStorage.getItem(LKEY);}catch(e){}
+  lang=saved||((navigator.language||'').slice(0,2)==='en'?'en':'ar');if(!I18N[lang])lang='ar';
+  function t(k,v){var s=(I18N[lang][k]!=null?I18N[lang][k]:I18N.ar[k])||k;if(v)Object.keys(v).forEach(function(n){s=s.split('{'+n+'}').join(v[n]);});return s;}
+  function num(id){var x=parseFloat($(id).value);return isNaN(x)?null:x;}
+  function esc(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+  function msg(el,items){el.innerHTML=items.map(function(m){return '<div class="msg '+m[0]+'">'+esc(m[1])+'</div>';}).join('');}
+  var AR=/[\u0600-\u06FF]/;
+  function cell(x){return '<td'+(AR.test(String(x))?' class="tx"':' class="v"')+'>'+esc(x)+'</td>';}
+  function rowsHtml(rows){return rows.map(function(r){return '<tr'+(r[3]?' class="key"':'')+'>'+cell(r[0])+cell(r[1])+'<td>'+esc(r[2])+'</td></tr>';}).join('');}
+  function worst(items){var o={ok:1,warn:2,bad:3},w='';items.forEach(function(m){if(!w||o[m[0]]>o[w])w=m[0];});return w;}
+  function prog(n,state){var a=$('pg'+n);a.className=state||'';}
+  function toast(s){$('toast').textContent=s;setTimeout(function(){$('toast').textContent='';},2200);}
+  function save(){try{var d={};FIELDS.forEach(function(f){d[f]=$(f).value;});d._m=manual;localStorage.setItem(KEY,JSON.stringify(d));}catch(e){}}
+  function load(){try{var d=JSON.parse(localStorage.getItem(KEY)||'null');if(!d)return;FIELDS.forEach(function(f){if(d[f]!==undefined)$(f).value=d[f];});if(d._m)manual=d._m;}catch(e){}}
+
+  function applyLang(){
+    document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+    document.title='TrueLoop · '+t('title');
+    document.querySelectorAll('[data-t]').forEach(function(el){var v=t(el.getAttribute('data-t'));if(el.hasAttribute('data-html'))el.innerHTML=v;else el.textContent=v;});
+    $('lnAr').setAttribute('aria-pressed',lang==='ar');$('lnEn').setAttribute('aria-pressed',lang==='en');
+    render();
+  }
+
+  function render(){
+    var mat=$('mat').value;
+    $('schL').hidden=!(mat==='cs'||mat==='ss');$('pnL').hidden=mat!=='hdpe';$('sdrL').hidden=mat!=='ppr';
+    var sz=CALC.sizeFromCirc(mat,num('circ'),{sch:$('sch').value,pn:parseFloat($('pn').value),sdr:parseFloat($('sdr').value)}),sm=[];
+    if(sz){
+      if(!manual.od)$('od').value=sz.od;
+      if(!manual.wall&&sz.wall!=null)$('wall').value=sz.wall;
+      var far=sz.diffPct>3;sm.push([far?'warn':'ok',t('size',{m:sz.measured,od:sz.od,lbl:sz.label?' ('+sz.label+')':''})+(far?t('sizeFar',{d:sz.diffPct.toFixed(1)}):'')]);
+      if(sz.wall==null&&!manual.wall)sm.push(['warn',t('noWall')]);
+    }
+    msg($('sizeMsg'),sm);
+    var od=num('od'),wall=num('wall'),peak=num('peak'),cap=CALC.MODELS[$('model').value];
+    var cm=peak>0&&cap?[peak>cap?['bad',t('capOver',{p:peak,c:cap})]:['ok',t('capOk',{c:cap})]]:[];
+    msg($('capMsg'),cm);prog(1,peak>0?(worst(cm)||'ok'):'');
+
+    var fm=null;
+    if(od>0&&wall>0&&od>2*wall){
+      fm=CALC.flowmeter({mat:mat,od:od,wall:wall,peak:peak},t);
+      $('pipeInfo').innerHTML='<span>'+esc(t('idTxt'))+' <b>'+CALC.r1(fm.id)+' mm</b></span><span>'+esc(t('perMs'))+' <b>'+Math.round(fm.perMs)+' L/min</b></span>'+(peak>0?'<span>'+esc(t('velPeak'))+' <b>'+(peak/fm.perMs).toFixed(2)+' m/s</b></span>':'');
+      $('fmRows').innerHTML=rowsHtml(fm.rows);
+      var ct=CALC.controller(peak,fm.fs,t);$('ctRows').innerHTML=rowsHtml(ct.rows);$('tfrSet').placeholder=ct.start||'';
+      prog(2,worst(sm)==='warn'?'warn':'ok');prog(3,'ok');prog(4,peak>0?'ok':'warn');
+    }else{
+      $('pipeInfo').innerHTML='';
+      $('fmRows').innerHTML='<tr><td colspan="3" class="muted">'+esc(t('needPipe'))+'</td></tr>';
+      $('ctRows').innerHTML='<tr><td colspan="3" class="muted">'+esc(t('needPipe2'))+'</td></tr>';
+      prog(2,'');prog(3,'');prog(4,'');
+    }
+    var sg=CALC.signal(num('up'),num('dn'),num('q'),num('m91'),t);msg($('sigMsg'),sg);
+    var tm=[];if(fm){var tc=CALC.tfrCheck(num('flowNow'),num('tfrNow'),fm.fs.k,t);if(tc)tm.push(tc);}
+    var c1=num('ch1'),c2=num('ch2');
+    if(c1!=null&&c2!=null&&Math.max(c1,c2)>1&&Math.min(c1,c2)<0.5)tm.push(['warn',t('chDead')]);
+    msg($('tfrMsg'),tm);prog(5,worst(sg.concat(tm)));
+    var cu=CALC.copper(num('cuBg'),num('cu1'),num('cu2'),num('cuT'),num('tfrSet'),t);
+    msg($('cuMsg'),cu?[[cu.cls,cu.text]]:[]);prog(6,cu?cu.cls:'');
+    $('summary').value=summary(fm,cu);
+    $('repLine').textContent=t('repLine',{s:$('site').value||'—',d:new Date().toLocaleDateString(lang==='ar'?'ar-EG':'en-GB')});
+    save();
+  }
+
+  function summary(fm,cu){
+    var L=[],sel=function(id){var s=$(id);return s.options[s.selectedIndex].text;};
+    L.push('*TrueLoop · Cu/Ag commissioning* '+$('site').value);
+    L.push('Unit: '+sel('model')+(num('peak')?' | Peak flow: '+num('peak')+' L/min':''));
+    if(fm){
+      L.push('Pipe: '+sel('mat')+' | OD '+num('od')+' x '+num('wall')+' mm | ID '+CALC.r1(fm.id)+' mm');
+      L.push('','*Flowmeter*');
+      fm.rows.forEach(function(r){if(r[0]!=='M25'&&r[0]!=='M42')L.push(r[0]+' = '+r[1]);});
+      L.push('','*Controller*','Minimum Current = 0.0 A','TFR at Max Flow = '+(num('tfrSet')||'?')+'  (1 pulse = '+fm.fs.k+' L)');
+    }
+    var ch=[];
+    if(num('up')!=null)ch.push('M90 '+num('up')+'/'+(num('dn')!=null?num('dn'):'-')+' Q '+(num('q')!=null?num('q'):'-'));
+    if(num('m91')!=null)ch.push('M91 '+num('m91')+'%');
+    if(num('flowNow')!=null)ch.push('Flow '+num('flowNow')+' L/min | TFR '+(num('tfrNow')!=null?num('tfrNow'):'-'));
+    if(num('ch1')!=null||num('ch2')!=null)ch.push('Ch1 '+(num('ch1')!=null?num('ch1'):'-')+' A | Ch2 '+(num('ch2')!=null?num('ch2'):'-')+' A');
+    if(ch.length)L.push.apply(L,['','*Readings*'].concat(ch));
+    if(cu&&cu.added!=null){L.push('','*Copper test*','Background '+(num('cuBg')||0)+' | avg '+cu.avg.toFixed(2)+' | added '+cu.added.toFixed(2)+' ppm (target '+num('cuT')+')');if(cu.next)L.push('Next TFR at Max Flow: '+cu.next);}
+    L.push('',APP);
+    return L.join('\n');
+  }
+
+  function copyText(s,ok){
+    var fail=function(){$('summary').select();toast(t('copyFallback'));};
+    try{navigator.clipboard.writeText(s).then(function(){toast(ok);},fail);}catch(e){fail();}
+  }
+  FIELDS.forEach(function(f){$(f).addEventListener('input',function(){
+    if(f==='od')manual.od=$('od').value!=='';
+    if(f==='wall')manual.wall=$('wall').value!=='';
+    if(f==='circ'||f==='mat'||f==='sch'||f==='pn'||f==='sdr'){manual.od=false;manual.wall=false;}
+    render();});});
+  function setLang(l){lang=l;try{localStorage.setItem(LKEY,lang);}catch(e){}applyLang();}
+  $('lnAr').addEventListener('click',function(){setLang('ar');});
+  $('lnEn').addEventListener('click',function(){setLang('en');});
+  $('copyBtn').addEventListener('click',function(){copyText($('summary').value,t('copied'));});
+  $('linkBtn').addEventListener('click',function(){copyText(APP,t('linkCopied'));});
+  $('printBtn').addEventListener('click',function(){window.print();});
+  $('resetBtn').addEventListener('click',function(){
+    var b=$('resetBtn');
+    if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent=t('resetConfirm');setTimeout(function(){b.dataset.armed='';b.textContent=t('reset');},3000);return;}
+    FIELDS.forEach(function(f){var el=$(f);if(el.tagName==='SELECT'){var d=el.querySelector('[selected]');el.selectedIndex=d?d.index:0;}else el.value=(f==='cuT'?'0.2':'');});
+    manual={od:false,wall:false};b.dataset.armed='';b.textContent=t('reset');render();window.scrollTo(0,0);
+  });
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;$('installBtn').hidden=false;});
+  $('installBtn').addEventListener('click',function(){if(deferred){deferred.prompt();deferred=null;$('installBtn').hidden=true;}});
+  $('appLink').textContent=APP;
+  load();applyLang();
+  if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js',{scope:'./'}).catch(function(){});
+})();
+</script>
+</body>
+</html>
