@@ -5,3 +5,4 @@ Engineering intelligent water. Website and free engineering tools for water, des
 - Loop Check & FAT Sheet Generator
 - RO Normalization & Membrane Health
 - Calibration Certificate
+- IPC Multipump Setup (ACH480 booster pumps, Arabic / English, installable)

@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071b2b">
+<meta name="description" content="TrueLoop IPC Setup Calculator: ACH480 multipump (IPC) settings for 2 to 8 pumps, operating sequence, sleep, tank pre-charge and relay outputs. Arabic and English.">
+<meta property="og:title" content="TrueLoop IPC Setup Calculator">
+<meta property="og:description" content="ACH480 IPC multipump settings for 2 to 8 booster pumps. Arabic and English, installable, works offline.">
+<meta property="og:image" content="https://elsaiedharfoush14.github.io/trueloop/og-image.png">
+<link rel="canonical" href="https://elsaiedharfoush14.github.io/trueloop/tools/ipc-calculator/">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="IPC TrueLoop">
+<title>حاسبة IPC · TrueLoop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: TrueLoop tool. Navy app bar; desktop = sticky input column + results column; phone = one column + bottom nav. */
+:root {
+  --bg: #eef3f6;
+  --card: #ffffff;
+  --soft: #f5f9fb;
+  --ink: #071b2b;
+  --muted: #566a77;
+  --line: #d3dde3;
+  --water: #1268d3;
+  --aqua: #16b9e0;
+  --green: #1db57a;
+  --amp: #e79a00;
+  --bad: #c2410c;
+  --water-soft: #e3effc;
+  --amp-soft: #fdf1dc;
+  --bad-soft: #fbe7dd;
+  --green-soft: #dff5ec;
+  --diff: #fff4d6;
+  --bar: #071b2b;
+  --bar-ink: #ffffff;
+  --f-display: "Readex Pro", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --f-en: "IBM Plex Sans", system-ui, "Segoe UI", sans-serif;
+  --f-ar: "IBM Plex Sans Arabic", "IBM Plex Sans", Tahoma, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --r: 12px;
+  --barh: 64px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #06131d; --card: #0c2333; --soft: #0a1c29; --ink: #e3eef4; --muted: #9bb2c0; --line: #1e3d50;
+    --water: #5aa2f0; --aqua: #3fcbe9; --green: #3fd194; --amp: #ffb21e; --bad: #fb923c;
+    --water-soft: #0f2f4d; --amp-soft: #33270b; --bad-soft: #3a1d10; --green-soft: #0d3326; --diff: #33290f;
+    --bar: #030c13; --bar-ink: #e3eef4; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #06131d; --card: #0c2333; --soft: #0a1c29; --ink: #e3eef4; --muted: #9bb2c0; --line: #1e3d50;
+  --water: #5aa2f0; --aqua: #3fcbe9; --green: #3fd194; --amp: #ffb21e; --bad: #fb923c;
+  --water-soft: #0f2f4d; --amp-soft: #33270b; --bad-soft: #3a1d10; --green-soft: #0d3326; --diff: #33290f;
+  --bar: #030c13; --bar-ink: #e3eef4; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-ar); font-size: 15px; line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+html[lang="en"] body { font-family: var(--f-en); }
+.mono, .p, .chip, .num { font-family: var(--f-mono); direction: ltr; unicode-bidi: isolate; }
+h1, h2, h3 { font-family: var(--f-display); margin: 0; line-height: 1.3; text-wrap: balance; }
+h2 { font-size: 1.12rem; font-weight: 600; }
+h3 { font-size: .98rem; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--water); }
+button, input, select { font: inherit; }
+:focus-visible { outline: 2px solid var(--water); outline-offset: 2px; }
+
+/* App bar */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--bar); z-index: 30; }
+.appbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bar); color: var(--bar-ink);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.appbar .in { max-width: 1320px; margin: 0 auto; min-height: var(--barh); display: flex; align-items: center; gap: 14px; }
+.brand { display: flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; direction: ltr; flex: none; }
+.brand svg { width: 30px; height: 32px; }
+.brand .wm { font-family: "Readex Pro", sans-serif; font-weight: 700; font-size: 1.15rem; letter-spacing: .01em; }
+.brand .wm .lt { font-weight: 300; }
+.appbar .sep { width: 1px; height: 26px; background: rgba(255,255,255,.22); flex: none; }
+.appbar .ttl { display: grid; min-width: 0; flex: 1; }
+.appbar .ttl b { font-family: var(--f-display); font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.appbar .ttl span { font-size: .78rem; opacity: .72; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lang {
+  flex: none; border: 1px solid rgba(255,255,255,.35); background: transparent; color: var(--bar-ink);
+  border-radius: 99px; padding: 6px 14px; font-weight: 600; font-size: .86rem; cursor: pointer; min-height: 36px;
+}
+.lang:hover { background: rgba(255,255,255,.08); }
+@media (max-width: 560px) { .appbar .sep, .brand .wm { display: none; } }
+
+/* Layout */
+.layout {
+  max-width: 1320px; margin: 0 auto; display: grid; gap: 20px; align-items: start;
+  grid-template-columns: minmax(0, 1fr);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 96px;
+}
+@media (min-width: 1040px) {
+  .layout { grid-template-columns: 390px minmax(0, 1fr); padding-bottom: 40px; }
+  .side { position: sticky; top: calc(var(--barh) + env(safe-area-inset-top, 0px) + 16px); max-height: calc(100vh - var(--barh) - 32px); overflow: auto; }
+}
+.content { display: grid; gap: 20px; min-width: 0; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: grid; gap: 14px; min-width: 0; scroll-margin-top: calc(var(--barh) + 16px); }
+.card-h { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
+.muted { color: var(--muted); }
+.small { font-size: .84rem; }
+
+/* Inputs */
+.side { display: grid; gap: 0; padding: 0; overflow: hidden; }
+.side .side-h { padding: 16px 18px 6px; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.side .side-h .small { color: var(--muted); }
+details.grp { border-top: 1px solid var(--line); }
+details.grp:first-of-type { border-top: 0; }
+details.grp > summary {
+  list-style: none; cursor: pointer; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  font-family: var(--f-display); font-weight: 600; font-size: .95rem;
+}
+details.grp > summary::-webkit-details-marker { display: none; }
+details.grp > summary::after { content: ""; width: 9px; height: 9px; border-inline-end: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); margin-top: -4px; transition: transform .15s; flex: none; }
+details.grp[open] > summary::after { transform: rotate(225deg); margin-top: 4px; }
+.form { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px 14px; padding: 2px 18px 18px; }
+.field { display: grid; gap: 5px; align-content: start; min-width: 0; }
+.field.wide { grid-column: 1 / -1; }
+.field > label { font-size: .8rem; color: var(--muted); font-weight: 500; display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.field > label .p { color: var(--water); font-size: .74rem; font-weight: 600; }
+input[type=number], select {
+  font-size: 15px; color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 10px; width: 100%; min-height: 42px;
+}
+input[type=number] { font-family: var(--f-mono); direction: ltr; text-align: start; }
+html[dir="rtl"] input[type=number] { text-align: right; }
+input:disabled { opacity: .45; }
+.big select { font-size: 1.15rem; font-weight: 700; background: var(--water-soft); border-color: var(--water); color: var(--ink); }
+.check { display: flex; gap: 8px; align-items: center; min-height: 34px; font-size: .9rem; }
+.check input { width: 18px; height: 18px; accent-color: var(--water); flex: none; }
+
+/* Summary tiles */
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.tile { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 2px; min-width: 0; }
+.tile .k { font-size: .78rem; color: var(--muted); font-weight: 500; }
+.tile .v { font-family: var(--f-display); font-weight: 600; font-size: 1.55rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.tile .v .u { font-size: .85rem; font-weight: 500; color: var(--muted); margin-inline-start: 4px; }
+.tile .s { font-size: .8rem; color: var(--muted); }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 600; padding: 2px 10px; border-radius: 99px; width: fit-content; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill.ok { background: var(--green-soft); color: var(--green); }
+.pill.warn { background: var(--amp-soft); color: var(--amp); }
+.pill.crit { background: var(--bad-soft); color: var(--bad); }
+
+/* Alerts */
+.alerts { display: grid; gap: 8px; }
+.alert { border-radius: 10px; padding: 10px 14px; font-size: .9rem; display: flex; gap: 10px; align-items: flex-start; border: 1px solid; background: var(--card); }
+.alert .tag { font-size: .7rem; font-weight: 700; letter-spacing: .04em; padding: 2px 9px; border-radius: 99px; white-space: nowrap; margin-top: 2px; color: #fff; }
+.alert.crit { border-color: var(--bad); background: var(--bad-soft); }
+.alert.crit .tag { background: var(--bad); }
+.alert.warn { border-color: var(--amp); background: var(--amp-soft); }
+.alert.warn .tag { background: var(--amp); color: #1b1200; }
+.alert.ok { border-color: var(--green); background: var(--green-soft); }
+.alert.ok .tag { background: var(--green); }
+
+/* Sequence */
+.seq-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (max-width: 860px) { .seq-grid { grid-template-columns: minmax(0, 1fr); } }
+.seq { list-style: none; margin: 0; padding: 0; display: grid; counter-reset: step; }
+.seq li { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; position: relative; padding-bottom: 16px; }
+.seq li::before {
+  counter-increment: step; content: counter(step); font-family: var(--f-mono); font-weight: 600; font-size: .8rem;
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--water); color: #fff;
+}
+.seq li::after { content: ""; position: absolute; inset-inline-start: 15px; top: 32px; bottom: 0; width: 2px; background: var(--line); }
+.seq li:last-child::after { display: none; }
+.seq li.off::before { background: var(--line); color: var(--muted); }
+.seq .body { display: grid; gap: 3px; min-width: 0; padding-top: 3px; }
+.seq .when { font-size: .9rem; }
+.seq .then { font-size: .86rem; color: var(--muted); }
+.chip { display: inline-block; font-size: .74rem; font-weight: 600; color: var(--water); background: var(--water-soft); border-radius: 5px; padding: 0 6px; margin-inline: 2px; }
+.num { font-weight: 600; color: var(--ink); }
+.side-col { display: grid; gap: 16px; min-width: 0; }
+.ladder-wrap { background: var(--soft); border: 1px solid var(--line); border-radius: 10px; padding: 12px; min-width: 0; display: grid; gap: 6px; }
+.ladder-wrap svg { width: 100%; height: auto; display: block; }
+.tank { border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 8px; background: var(--card); }
+.tank .big-num { font-family: var(--f-display); font-size: 2rem; font-weight: 600; color: var(--water); direction: ltr; unicode-bidi: isolate; width: fit-content; }
+.tank p, .tank li { font-size: .86rem; color: var(--muted); }
+.tank ol { margin: 0; padding-inline-start: 20px; display: grid; gap: 3px; }
+
+/* Wiring chain */
+.chain-scroll { overflow-x: auto; padding-bottom: 4px; }
+.chain { display: flex; align-items: stretch; min-width: min-content; }
+.node { background: var(--soft); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 128px; display: grid; gap: 3px; font-size: .82rem; }
+.node b { font-family: var(--f-display); font-size: .92rem; }
+.node .row { display: flex; justify-content: space-between; gap: 10px; }
+.node .on { color: var(--green); font-weight: 600; }
+.node .off { color: var(--muted); }
+.link { width: 26px; align-self: center; height: 2px; background: var(--aqua); flex: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .82rem; color: var(--muted); }
+.wire-note { font-size: .9rem; background: var(--soft); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+
+/* Drives */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tab { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 99px; padding: 7px 15px; font-weight: 600; font-size: .88rem; cursor: pointer; min-height: 38px; }
+.tab[aria-selected="true"] { background: var(--water); border-color: var(--water); color: #fff; }
+.lcdbar { font-family: var(--f-mono); direction: ltr; background: var(--bar); color: #9fe8f6; border-radius: 6px; padding: 5px 12px; font-size: .8rem; letter-spacing: .02em; }
+.btn { border-radius: 8px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--water); background: var(--water); color: #fff; font-weight: 600; font-size: .88rem; min-height: 40px; }
+.btn:hover { filter: brightness(1.06); }
+.copied { font-size: .84rem; color: var(--green); font-weight: 600; }
+.diffkey { display: inline-block; width: 14px; height: 14px; border-radius: 3px; background: var(--diff); border: 1px solid var(--amp); vertical-align: -2px; margin-inline-end: 6px; }
+.table-scroll { overflow-x: auto; min-width: 0; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th { text-align: start; font-size: .74rem; color: var(--muted); font-weight: 600; letter-spacing: .03em; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr.grp td { background: var(--soft); font-family: var(--f-display); font-weight: 600; font-size: .86rem; padding-block: 7px; }
+td.par { font-family: var(--f-mono); direction: ltr; white-space: nowrap; color: var(--water); font-weight: 600; }
+html[dir="rtl"] td.par, html[dir="rtl"] td.name { text-align: right; }
+td.name { font-family: var(--f-mono); direction: ltr; font-size: .8rem; color: var(--muted); }
+td.val { font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+td.note { color: var(--muted); font-size: .84rem; min-width: 160px; }
+tr.diff td { background: var(--diff); }
+@media (max-width: 720px) {
+  thead { display: none; }
+  table, tbody { display: block; }
+  tr { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; padding: 10px 2px; border-bottom: 1px solid var(--line); }
+  tr.grp { padding: 0; border: 0; }
+  tr.grp td { display: block; border-radius: 6px; margin-top: 8px; }
+  td { border: 0; padding: 0; }
+  tr.grp td { grid-column: 1 / -1; padding: 6px 10px; }
+  td.par { grid-row: 1; }
+  td.val { grid-row: 1; text-align: end; white-space: normal; }
+  td.name { grid-column: 1 / -1; grid-row: 2; }
+  td.note { grid-column: 1 / -1; grid-row: 3; min-width: 0; }
+  tr.diff { background: var(--diff); border-radius: 8px; padding-inline: 8px; }
+  tr.diff td { background: transparent; }
+}
+textarea.copy-area { width: 100%; min-height: 160px; font-family: var(--f-mono); direction: ltr; background: var(--soft); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+
+/* Checks */
+.checks { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.checks li { display: grid; grid-template-columns: minmax(84px, auto) 1fr; gap: 12px; align-items: baseline; font-size: .9rem; }
+.checks .k { font-family: var(--f-mono); direction: ltr; color: var(--water); font-weight: 600; white-space: nowrap; font-size: .82rem; }
+
+/* Contact strip */
+.cta { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; background: var(--bar); color: #fff; border-radius: var(--r); padding: 18px; }
+.cta svg.mk { width: 48px; height: 50px; }
+.cta b { font-family: var(--f-display); font-size: 1.05rem; }
+.cta p { font-size: .88rem; opacity: .88; }
+.cta a.wa { display: inline-flex; align-items: center; gap: 8px; background: var(--green); color: #04120c; text-decoration: none; font-weight: 700; border-radius: 99px; padding: 9px 16px; white-space: nowrap; direction: ltr; }
+@media (max-width: 640px) { .cta { grid-template-columns: auto 1fr; } .cta a.wa { grid-column: 1 / -1; justify-content: center; } }
+.fineprint { font-size: .78rem; color: var(--muted); }
+
+/* Bottom nav (phone / tablet) */
+.bottomnav {
+  position: fixed; inset: auto 0 0; z-index: 25; background: var(--card); border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  padding: 4px max(8px, env(safe-area-inset-right, 0px)) calc(4px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+}
+.bottomnav a { display: grid; justify-items: center; gap: 1px; padding: 6px 4px; text-decoration: none; color: var(--muted); font-size: .72rem; font-weight: 600; border-radius: 10px; }
+.bottomnav a svg { width: 22px; height: 22px; }
+.bottomnav a.active { color: var(--water); background: var(--water-soft); }
+@media (min-width: 1040px) { .bottomnav { display: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .tab, .btn, .lang, details.grp > summary::after { transition: background .15s, color .15s, transform .15s; }
+  html { scroll-behavior: smooth; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="gDrop" x1="25" y1="85" x2="72" y2="30" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1268d3"/><stop offset=".5" stop-color="#16b9e0"/><stop offset=".78" stop-color="#16b9e0"/><stop offset="1" stop-color="#ffb21e"/></linearGradient>
+  <linearGradient id="gBolt" x1="66" y1="2" x2="66" y2="44" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffe066"/><stop offset=".55" stop-color="#ffb21e"/><stop offset="1" stop-color="#ff8a00"/></linearGradient>
+  <symbol id="mark" viewBox="0 -4 100 104">
+    <path d="M50 9 C50 9 21 43 21 61 A29 29 0 0 0 79 61 C79 55 77 49 74 44" fill="none" stroke="url(#gDrop)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M70 2 L54 26 L64 26 L58 44 L80 18 L69 18 L76 2 Z" fill="url(#gBolt)" stroke="#ff9f0a" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M37.3 62.3 L45 70 L59.7 55.3" fill="none" stroke="#1db57a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="33" cy="58" r="4.5" fill="none" stroke="#1db57a" stroke-width="3"/>
+    <circle cx="64" cy="51" r="4.5" fill="none" stroke="#1db57a" stroke-width="3"/>
+  </symbol>
+</defs></svg>
+
+<header class="appbar">
+  <div class="in">
+    <a class="brand" href="../../" aria-label="TrueLoop home">
+      <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+      <span class="wm"><span class="lt">True</span>Loop</span>
+    </a>
+    <span class="sep" aria-hidden="true"></span>
+    <div class="ttl">
+      <b data-ar="حاسبة برمجة IPC لإنفرترات ACH480" data-en="ACH480 IPC Setup Calculator"></b>
+      <span data-ar="بوستر من 2 لـ 8 طرمبات · مانوال وأوتو" data-en="2 to 8 booster pumps · manual and auto"></span>
+    </div>
+    <button type="button" class="lang" id="langBtn" aria-label="Language"></button>
+  </div>
+</header>
+
+<main class="layout">
+  <aside class="card side" id="s-inputs" aria-labelledby="in-h">
+    <div class="side-h">
+      <h2 id="in-h" data-ar="بيانات الموقع" data-en="Site data"></h2>
+      <span class="small" data-ar="بتتحفظ على جهازك" data-en="Saved on this device"></span>
+    </div>
+    <form id="f" autocomplete="off">
+      <details class="grp" open>
+        <summary data-ar="الطرمبات والسرعات" data-en="Pumps and speeds"></summary>
+        <div class="form">
+          <div class="field big">
+            <label for="n"><span data-ar="عدد الطرمبات" data-en="Number of pumps"></span></label>
+            <select id="n">
+              <option value="2" selected>2</option><option value="3">3</option><option value="4">4</option>
+              <option value="5">5</option><option value="6">6</option><option value="7">7</option>
+              <option value="8">8</option><option value="9">9</option><option value="10">10</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="motorHz"><span data-ar="تردد الموتور المقنن" data-en="Motor rated frequency"></span></label>
+            <select id="motorHz" dir="ltr"><option value="50">50 Hz</option><option value="60" selected>60 Hz</option></select>
+          </div>
+          <div class="field">
+            <label for="minHz"><span data-ar="أقل سرعة (Hz)" data-en="Minimum frequency (Hz)"></span><span class="p">30.13</span></label>
+            <input type="number" id="minHz" value="25" min="0" max="100" step="0.5" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="maxHz"><span data-ar="أقصى سرعة (Hz)" data-en="Maximum frequency (Hz)"></span><span class="p">30.14</span></label>
+            <input type="number" id="maxHz" value="60" min="1" max="120" step="0.5" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="startHz"><span data-ar="دخول الطرمبة الجاية (Hz)" data-en="Next pump starts at (Hz)"></span><span class="p">76.30…</span></label>
+            <input type="number" id="startHz" value="58" min="0" max="120" step="0.5" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="stopHz"><span data-ar="خروج الطرمبة (Hz)" data-en="Pump stops at (Hz)"></span><span class="p">76.41…</span></label>
+            <input type="number" id="stopHz" value="45" min="0" max="120" step="0.5" inputmode="decimal">
+          </div>
+          <div class="field wide">
+            <div class="check"><input type="checkbox" id="standby"><label for="standby" data-ar="طرمبة واحدة Standby دايماً" data-en="Keep one pump on standby"></label></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="grp" open>
+        <summary data-ar="الحساس والضغط" data-en="Sensor and pressure"></summary>
+        <div class="form">
+          <div class="field">
+            <label for="setpoint"><span data-ar="الضغط المطلوب (bar)" data-en="Pressure setpoint (bar)"></span><span class="p">40.21</span></label>
+            <input type="number" id="setpoint" value="5.5" min="0" step="0.1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="range"><span data-ar="رينج الحساس (bar)" data-en="Sensor range (bar)"></span><span class="p">12.30</span></label>
+            <input type="number" id="range" value="10" min="0.1" step="0.5" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="sensorType"><span data-ar="إشارة الحساس" data-en="Sensor signal"></span></label>
+            <select id="sensorType" dir="ltr"><option value="mA" selected>4–20 mA</option><option value="V">0–10 V</option></select>
+          </div>
+          <div class="field">
+            <label for="permissive"><span data-ar="حماية السحب" data-en="Suction protection"></span><span class="p">20.40</span></label>
+            <select id="permissive">
+              <option value="none" selected data-ar="مفيش" data-en="None"></option><option value="DI2">DI2</option><option value="DI3">DI3</option><option value="DI4">DI4</option>
+            </select>
+          </div>
+          <div class="field wide">
+            <label for="sensorWiring"><span data-ar="توصيل الحساس" data-en="Sensor wiring"></span></label>
+            <select id="sensorWiring">
+              <option value="splitter" selected data-ar="Signal splitter لكل الإنفرترات (الموصى به)" data-en="Signal splitter to every drive (recommended)"></option>
+              <option value="own" data-ar="حساس مستقل لكل إنفرتر" data-en="One transmitter per drive"></option>
+              <option value="series" data-ar="حساس واحد على التوالي (Current loop)" data-en="One sensor in series (current loop)"></option>
+              <option value="one" data-ar="إنفرتر 1 بس" data-en="Drive 1 only"></option>
+            </select>
+          </div>
+        </div>
+      </details>
+
+      <details class="grp">
+        <summary data-ar="التشغيل والتسارع" data-en="Start-up and ramps"></summary>
+        <div class="form">
+          <div class="field">
+            <label for="accel"><span data-ar="وقت التسارع (s)" data-en="Acceleration time (s)"></span><span class="p">28.72</span></label>
+            <input type="number" id="accel" value="10" min="0" step="1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="decel"><span data-ar="وقت التباطؤ (s)" data-en="Deceleration time (s)"></span><span class="p">28.73</span></label>
+            <input type="number" id="decel" value="10" min="0" step="1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="stopMode"><span data-ar="طريقة الوقوف" data-en="Stop mode"></span><span class="p">21.03</span></label>
+            <select id="stopMode" dir="ltr"><option value="Ramp" selected>Ramp</option><option value="Coast">Coast</option></select>
+          </div>
+          <div class="field">
+            <label for="startDelay"><span data-ar="تأخير دخول طرمبة (s)" data-en="Pump start delay (s)"></span><span class="p">76.55</span></label>
+            <input type="number" id="startDelay" value="10" min="0" step="1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="stopDelay"><span data-ar="تأخير خروج طرمبة (s)" data-en="Pump stop delay (s)"></span><span class="p">76.56</span></label>
+            <input type="number" id="stopDelay" value="10" min="0" step="1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="smooth"><span data-ar="تسارع الطرمبة الداخلة (s)" data-en="Smooth acceleration (s)"></span><span class="p">76.62</span></label>
+            <input type="number" id="smooth" value="20" min="3" step="1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="fillT"><span data-ar="ملء الخط بالراحة (s)" data-en="Soft pipe fill (s)"></span><span class="p">40.28</span></label>
+            <input type="number" id="fillT" value="30" min="0" step="1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <div class="check"><input type="checkbox" id="fill" checked><label for="fill">Soft pipe fill</label></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="grp">
+        <summary data-ar="النوم والصحيان" data-en="Sleep and wake-up"></summary>
+        <div class="form">
+          <div class="field">
+            <label for="sleepHz"><span data-ar="مستوى النوم (Hz)" data-en="Sleep level (Hz)"></span><span class="p">40.43</span></label>
+            <input type="number" id="sleepHz" value="50" min="0" max="120" step="0.5" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="sleepDelay"><span data-ar="تأخير النوم (s)" data-en="Sleep delay (s)"></span><span class="p">40.44</span></label>
+            <input type="number" id="sleepDelay" value="60" min="0" step="1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="wakeP"><span data-ar="تصحى عند ضغط (bar)" data-en="Wake-up pressure (bar)"></span><span class="p">40.47</span></label>
+            <input type="number" id="wakeP" value="4.5" min="0" step="0.1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="wakeDelay"><span data-ar="تأخير الصحيان (s)" data-en="Wake-up delay (s)"></span><span class="p">40.48</span></label>
+            <input type="number" id="wakeDelay" value="2" min="0" max="60" step="0.5" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="boostP"><span data-ar="زيادة قبل النوم (bar)" data-en="Sleep boost (bar)"></span><span class="p">40.46</span></label>
+            <input type="number" id="boostP" value="0.3" min="0" step="0.1" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="boostT"><span data-ar="مدة الزيادة (s)" data-en="Boost time (s)"></span><span class="p">40.45</span></label>
+            <input type="number" id="boostT" value="5" min="0" step="1" inputmode="decimal">
+          </div>
+          <div class="field wide">
+            <div class="check"><input type="checkbox" id="sleep" checked><label for="sleep" data-ar="تشغيل الـ Sleep" data-en="Enable sleep"></label></div>
+            <div class="check"><input type="checkbox" id="boost" checked><label for="boost">Sleep boost</label></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="grp">
+        <summary data-ar="المانوال والبالونة والريلاي" data-en="Manual, tank and relays"></summary>
+        <div class="form">
+          <div class="field">
+            <label for="manualMethod"><span data-ar="سرعة المانوال من" data-en="Manual speed source"></span></label>
+            <select id="manualMethod">
+              <option value="panel" selected data-ar="الكيباد (Control panel)" data-en="Control panel"></option>
+              <option value="const">Constant frequency</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="manualHz"><span data-ar="سرعة المانوال (Hz)" data-en="Manual speed (Hz)"></span></label>
+            <input type="number" id="manualHz" value="50" min="0" max="120" step="0.5" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="runRO"><span data-ar="ريلاي التشغيل" data-en="Run relay"></span></label>
+            <select id="runRO" dir="ltr"><option value="1">RO1</option><option value="2" selected>RO2</option><option value="3">RO3</option></select>
+          </div>
+          <div class="field">
+            <label for="faultRO"><span data-ar="ريلاي العطل" data-en="Fault relay"></span></label>
+            <select id="faultRO" dir="ltr"><option value="1">RO1</option><option value="2">RO2</option><option value="3" selected>RO3</option></select>
+          </div>
+          <div class="field wide">
+            <label for="faultLogic"><span data-ar="نوع ريلاي العطل" data-en="Fault relay logic"></span></label>
+            <select id="faultLogic">
+              <option value="Fault (-1)" selected data-ar="Fault (-1): مشحون وهو سليم (الأضمن)" data-en="Fault (-1): energized when healthy (fail-safe)"></option>
+              <option value="Fault" data-ar="Fault: بيشتغل مع العطل بس" data-en="Fault: energized on fault only"></option>
+            </select>
+          </div>
+          <div class="field wide">
+            <div class="check"><input type="checkbox" id="tank" checked><label for="tank" data-ar="فيه بالونة (خزان ضغط) على الطرد" data-en="Pressure tank on the discharge"></label></div>
+          </div>
+        </div>
+      </details>
+    </form>
+  </aside>
+
+  <div class="content">
+    <section class="summary" id="summary" aria-live="polite"></section>
+    <section class="alerts" id="alerts" aria-live="polite"></section>
+
+    <section class="card" id="s-seq" aria-labelledby="sq-h">
+      <h2 id="sq-h" data-ar="تسلسل التشغيل: إيه بيحصل وإمتى" data-en="Operating sequence: what happens and when"></h2>
+      <div class="seq-grid">
+        <ol class="seq" id="seq"></ol>
+        <div class="side-col">
+          <div class="ladder-wrap">
+            <h3 data-ar="مستويات الضغط" data-en="Pressure levels"></h3>
+            <div id="ladder"></div>
+          </div>
+          <div class="tank" id="tankCard"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="s-wiring" aria-labelledby="ch-h">
+      <h2 id="ch-h" data-ar="كابل IPC وتوصيل الحساس" data-en="IPC link and sensor wiring"></h2>
+      <div class="chain-scroll"><div class="chain" id="chain"></div></div>
+      <div class="legend">
+        <span data-ar="كابل RS-485 ماشي من إنفرتر للتاني (Daisy chain) على أطراف الـ EFB: ‎B+‎ مع ‎B+‎ و‎A-‎ مع ‎A-‎." data-en="RS-485 cable runs drive to drive (daisy chain) on the EFB terminals: B+ to B+, A- to A-."></span>
+        <span data-ar="Termination ON على أول وآخر إنفرتر بس." data-en="Termination ON on the first and last drive only."></span>
+      </div>
+      <p class="wire-note" id="wireNote"></p>
+    </section>
+
+    <section class="card" id="s-drives" aria-labelledby="dr-h">
+      <div class="card-h">
+        <h2 id="dr-h" data-ar="إعدادات كل إنفرتر" data-en="Settings per drive"></h2>
+        <span class="legend"><span><span class="diffkey"></span><span data-ar="بيختلف من إنفرتر للتاني" data-en="Differs between drives"></span></span></span>
+      </div>
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="card-h">
+        <span class="lcdbar" id="lcd"></span>
+        <span style="display:flex;gap:10px;align-items:center">
+          <span class="copied" id="copied" hidden data-ar="اتنسخ" data-en="Copied"></span>
+          <button type="button" class="btn" id="copyBtn" data-ar="انسخ إعدادات الإنفرتر ده" data-en="Copy this drive"></button>
+        </span>
+      </div>
+      <div class="table-scroll">
+        <table id="tbl">
+          <thead><tr><th data-ar="البارامتر" data-en="Parameter"></th><th class="name" data-ar="الاسم على الشاشة" data-en="Name on panel"></th><th data-ar="القيمة" data-en="Value"></th><th data-ar="ملاحظة" data-en="Note"></th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <textarea id="copyArea" class="copy-area" readonly hidden></textarea>
+    </section>
+
+    <section class="card" id="s-checks" aria-labelledby="ck-h">
+      <h2 id="ck-h" data-ar="اتأكد بعد البرمجة" data-en="Check after programming"></h2>
+      <ul class="checks" id="checks"></ul>
+    </section>
+
+    <section class="cta">
+      <svg class="mk" role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+      <div>
+        <b>TrueLoop · <span data-ar="ترو لوب" data-en="Engineering intelligent water"></span></b>
+        <p data-ar="محتاج برمجة أو تشغيل لمحطة طرمبات أو تحلية أو صرف؟ كلّمنا." data-en="Need programming or commissioning for a pump, RO or wastewater plant? Talk to us."></p>
+      </div>
+      <a class="wa" href="https://wa.me/966560861304" target="_blank" rel="noopener">WhatsApp +966 56 086 1304</a>
+    </section>
+
+    <p class="fineprint" data-ar="أرقام البارامترات مراجعة على ACH480 Firmware manual (3AXD50000247134 Rev E، إصدار 2.22 وأحدث) ودليل IPC من ABB. القيم المبدئية هنا قيم موقع حقيقي، وكل موقع لازم يغيّرها حسب منحنى الطرمبة والتجربة. ضغط البالونة قاعدة عملية (0.9 × ضغط الصحيان)، فراجعه على كتالوج البالونة. ABB وACH480 علامات تجارية لشركة ABB، والأداة دي مستقلة ومش تابعة لـ ABB." data-en="Parameter numbers checked against the ACH480 firmware manual (3AXD50000247134 Rev E, version 2.22 and later) and the ABB IPC guide. Default values come from a real site; adjust them to the pump curve and site tests. Tank pre-charge uses the 0.9 × wake-up pressure rule of thumb; confirm with the tank datasheet. ABB and ACH480 are trademarks of ABB. This tool is independent and not affiliated with ABB."></p>
+  </div>
+</main>
+
+<nav class="bottomnav" aria-label="Sections">
+  <a href="#s-inputs" data-sec="s-inputs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span data-ar="البيانات" data-en="Inputs"></span></a>
+  <a href="#s-seq" data-sec="s-seq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="5" cy="6" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="5" cy="18" r="1.6"/><path d="M10 6h10M10 12h10M10 18h10"/></svg><span data-ar="التسلسل" data-en="Sequence"></span></a>
+  <a href="#s-drives" data-sec="s-drives"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/><path d="M5.5 8h2M16.5 8h2"/></svg><span data-ar="الإنفرترات" data-en="Drives"></span></a>
+  <a href="#s-checks" data-sec="s-checks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span data-ar="الفحص" data-en="Checks"></span></a>
+</nav>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var ids = ['n','motorHz','minHz','maxHz','setpoint','range','sensorType','sensorWiring','startHz','stopHz','manualMethod','manualHz','permissive',
+             'sleepHz','wakeP','sleep','standby','accel','decel','stopMode','startDelay','stopDelay','smooth','fillT','fill','sleepDelay','wakeDelay','boostP','boostT','boost','tank','runRO','faultRO','faultLogic'];
+  var KEY = 'ipc-setup-cfg-v1', LKEY = 'ipc-lang';
+  var active = 1;
+  var lang = 'ar';
+  function T(ar, en) { return lang === 'ar' ? ar : en; }
+
+  // ---------- language ----------
+  function pickLang() {
+    var q = (location.search.match(/[?&]lang=(ar|en)/) || [])[1];
+    if (q) return q;
+    try { var s = localStorage.getItem(LKEY); if (s === 'ar' || s === 'en') return s; } catch (e) {}
+    return 'ar';
+  }
+  function applyLang() {
+    var h = document.documentElement;
+    h.lang = lang; h.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('[data-ar]').forEach(function (el) { el.textContent = el.getAttribute(lang === 'ar' ? 'data-ar' : 'data-en'); });
+    $('langBtn').textContent = lang === 'ar' ? 'English' : 'عربي';
+    $('langBtn').setAttribute('lang', lang === 'ar' ? 'en' : 'ar');
+    document.title = T('حاسبة IPC · TrueLoop', 'IPC Calculator · TrueLoop');
+  }
+
+  // ---------- storage ----------
+  function load() {
+    try {
+      var s = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (!s) return;
+      ids.forEach(function (k) {
+        if (!(k in s)) return;
+        var el = $(k); if (!el) return;
+        if (el.type === 'checkbox') el.checked = !!s[k]; else el.value = s[k];
+        if (el.tagName === 'SELECT' && el.selectedIndex < 0) el.selectedIndex = 0;
+      });
+    } catch (e) {}
+  }
+  function save() {
+    try {
+      var o = {};
+      ids.forEach(function (k) { var el = $(k); o[k] = el.type === 'checkbox' ? el.checked : el.value; });
+      localStorage.setItem(KEY, JSON.stringify(o));
+    } catch (e) {}
+  }
+
+  // ---------- model ----------
+  function num(id) { var v = parseFloat($(id).value); return isFinite(v) ? v : 0; }
+  function cfg() {
+    var c = {
+      n: parseInt($('n').value, 10), motorHz: num('motorHz'), minHz: num('minHz'), maxHz: num('maxHz'),
+      setpoint: num('setpoint'), range: num('range'), sensorType: $('sensorType').value, sensorWiring: $('sensorWiring').value,
+      startHz: num('startHz'), stopHz: num('stopHz'), manualMethod: $('manualMethod').value, manualHz: num('manualHz'),
+      permissive: $('permissive').value, sleepHz: num('sleepHz'), wakeP: num('wakeP'),
+      sleep: $('sleep').checked, standby: $('standby').checked,
+      accel: num('accel'), decel: num('decel'), stopMode: $('stopMode').value,
+      startDelay: num('startDelay'), stopDelay: num('stopDelay'), smooth: num('smooth'),
+      fill: $('fill').checked, fillT: num('fillT'),
+      sleepDelay: num('sleepDelay'), wakeDelay: num('wakeDelay'),
+      boost: $('boost').checked, boostP: num('boostP'), boostT: num('boostT'), tank: $('tank').checked,
+      runRO: parseInt($('runRO').value, 10), faultRO: parseInt($('faultRO').value, 10), faultLogic: $('faultLogic').value
+    };
+    c.wakeDev = c.setpoint - c.wakeP;
+    c.boostOn = c.sleep && c.boost && c.boostP > 0;
+    c.top = c.setpoint + (c.boostOn ? c.boostP : 0);
+    c.precharge = Math.floor(c.wakeP * 0.9 * 10 + 1e-9) / 10;
+    c.maxRun = c.standby ? c.n - 1 : c.n;
+    return c;
+  }
+  function hz(v) { return (+v).toFixed(2) + ' Hz'; }
+  function f2(v) { return (+v).toFixed(2); }
+  function f1(v) { return (+v).toFixed(1); }
+  function s(v) { return (+v).toFixed(v % 1 ? 1 : 0); }
+  function drv(i) { return T('إنفرتر ' + i, 'Drive ' + i); }
+
+  function warnings(c) {
+    var w = [];
+    if (c.n > 8) return [{ lvl: 'crit', t: T('نظام IPC في ACH480 آخره 8 طرمبات (Master واحد + 7 Followers)، والـ Node number في 76.22 من 1 لـ 8 بس. لـ ' + c.n + ' طرمبات محتاج PLC يعمل الـ Cascade، أو تقسيم المحطة لمجموعتين لو كل مجموعة ليها هيدر منفصل.',
+      'ACH480 IPC supports up to 8 pumps (one master and 7 followers); node numbers in 76.22 go from 1 to 8. For ' + c.n + ' pumps you need a PLC cascade, or two groups if each group has its own header.') }];
+    if (c.minHz >= c.stopHz) w.push({ lvl: 'crit', t: T('أقل سرعة (30.13 = ' + c.minHz + ' Hz) لازم تبقى أقل من الـ Stop point (' + c.stopHz + ' Hz)، وإلا 76.02 هيطلع Not ready (level conflict).',
+      'Minimum frequency (30.13 = ' + c.minHz + ' Hz) must be below the stop point (' + c.stopHz + ' Hz), otherwise 76.02 shows Not ready (level conflict).') });
+    if (c.stopHz >= c.startHz) w.push({ lvl: 'crit', t: T('الـ Stop point لازم يبقى أقل من الـ Start point.', 'The stop point must be below the start point.') });
+    else if (c.startHz - c.stopHz < 5) w.push({ lvl: 'warn', t: T('الفرق بين الدخول والخروج ' + f2(c.startHz - c.stopHz) + ' Hz بس. الطرمبات ممكن تفضل تدخل وتخرج، فجرّب في الموقع.',
+      'Only ' + f2(c.startHz - c.stopHz) + ' Hz between start and stop points. Pumps may keep staging on and off; verify on site.') });
+    if (c.startHz >= c.maxHz) w.push({ lvl: 'crit', t: T('الـ Start point (' + c.startHz + ' Hz) لازم يبقى أقل من أقصى سرعة (' + c.maxHz + ' Hz)، وإلا الطرمبة الجاية عمرها ما هتدخل.',
+      'The start point (' + c.startHz + ' Hz) must be below maximum frequency (' + c.maxHz + ' Hz), otherwise the next pump never starts.') });
+    if (c.maxHz > c.motorHz) w.push({ lvl: 'warn', t: T('أقصى سرعة أعلى من تردد الموتور المقنن. اتأكد إن الموتور والطرمبة يستحملوا.', 'Maximum frequency is above the motor rated frequency. Check that motor and pump can take it.') });
+    if (c.range <= 0) w.push({ lvl: 'crit', t: T('اكتب رينج الحساس من الليبل.', 'Enter the sensor range from its nameplate.') });
+    else if (c.top >= c.range) w.push({ lvl: 'crit', t: T('الضغط المطلوب' + (c.boostOn ? ' مع الـ Sleep boost' : '') + ' (' + f2(c.top) + ' bar) أكبر من رينج الحساس أو بيساويه (' + c.range + ' bar).',
+      'Required pressure' + (c.boostOn ? ' with sleep boost' : '') + ' (' + f2(c.top) + ' bar) is at or above the sensor range (' + c.range + ' bar).') });
+    else if (c.top > 0.9 * c.range) w.push({ lvl: 'warn', t: T('الضغط المطلوب قريب من آخر رينج الحساس. الأفضل حساس رينجه أكبر.', 'Required pressure is close to the top of the sensor range. A wider-range sensor is better.') });
+    if (c.sensorWiring === 'series') {
+      var drop = c.n * 137 * 0.022, free = 24 - drop;
+      if (free < 8) w.push({ lvl: 'crit', t: T('توصيل ' + c.n + ' إنفرترات على التوالي بياكل ' + drop.toFixed(1) + ' V عند 22 mA (137 Ω لكل مدخل)، والفاضل للحساس ' + Math.max(0, free).toFixed(1) + ' V بس. مش هيكفي، استخدم Signal splitter.',
+        c.n + ' drives in series drop ' + drop.toFixed(1) + ' V at 22 mA (137 Ω per input), leaving only ' + Math.max(0, free).toFixed(1) + ' V for the sensor. Not enough: use a signal splitter.') });
+      else w.push({ lvl: 'warn', t: T('التوصيل على التوالي بياكل ' + drop.toFixed(1) + ' V عند 22 mA، والفاضل للحساس ' + free.toFixed(1) + ' V. ومداخل ACH480 مش معزولة: لو الأرضيات متوصّلة ببعض (زي DGND في كابل IPC)، الإنفرترات اللي بعد الأول هتقرا أقل. اقرا 12.21 على الكل، ولازم يبقوا نفس الرقم. ABB بتوصي بـ Signal splitter.',
+        'The series loop drops ' + drop.toFixed(1) + ' V at 22 mA, leaving ' + free.toFixed(1) + ' V for the sensor. ACH480 inputs are not isolated: if the drive grounds are linked (for example DGND in the IPC cable), the drives after the first read low. Compare 12.21 on all drives. ABB recommends a signal splitter.') });
+    }
+    if (c.sensorWiring === 'one') w.push({ lvl: 'warn', t: T('الحساس على إنفرتر 1 بس، فالباقيين مينفعش يبقوا Master. لو إنفرتر 1 وقع، السيستم كله هيقف.', 'Sensor on drive 1 only, so the others cannot be master. If drive 1 fails, the whole system stops.') });
+    if (c.manualHz > c.maxHz) w.push({ lvl: 'warn', t: T('سرعة المانوال أعلى من أقصى سرعة، والإنفرتر هيقف عند ' + c.maxHz + ' Hz.', 'Manual speed is above maximum frequency; the drive limits it to ' + c.maxHz + ' Hz.') });
+    if (c.sleep) {
+      if (c.wakeDev <= 0) w.push({ lvl: 'crit', t: T('ضغط الصحيان (' + c.wakeP + ' bar) لازم يبقى أقل من الضغط المطلوب (' + c.setpoint + ' bar).', 'Wake-up pressure (' + c.wakeP + ' bar) must be below the setpoint (' + c.setpoint + ' bar).') });
+      else if (c.wakeDev < 0.3) w.push({ lvl: 'warn', t: T('الفرق بين الضغط المطلوب وضغط الصحيان ' + f2(c.wakeDev) + ' bar بس، والطرمبة هتنام وتصحى كتير.', 'Only ' + f2(c.wakeDev) + ' bar between setpoint and wake-up pressure; the pump will sleep and wake too often.') });
+      if (c.maxRun > 1 && c.sleepHz >= c.stopHz) w.push({ lvl: 'warn', t: T('مستوى النوم (' + c.sleepHz + ' Hz) أعلى من خروج الطرمبة (' + c.stopHz + ' Hz) أو بيساويه. الترتيب الصح: 30.13 < 40.43 < 76.41 < 76.30 < 30.14. لو الطرمبة بتمسك الضغط من غير سحب على سرعة عالية، ارفع الـ Stop point فوق مستوى النوم.',
+        'Sleep level (' + c.sleepHz + ' Hz) is at or above the stop point (' + c.stopHz + ' Hz). Correct order: 30.13 < 40.43 < 76.41 < 76.30 < 30.14. If the pump holds pressure at zero flow at a high speed, raise the stop point above the sleep level.') });
+      if (c.sleepHz <= c.minHz) w.push({ lvl: 'warn', t: T('مستوى النوم أقل من أقل سرعة أو بيساويها. اتأكد إن الطرمبة فعلاً بتوصل للسرعة دي وهي ماسكة الضغط من غير سحب.', 'Sleep level is at or below minimum frequency. Check that the pump really reaches it while holding pressure at zero flow.') });
+      if (c.sleepDelay < 20) w.push({ lvl: 'warn', t: T('تأخير النوم أقل من 20 ثانية، والطرمبة ممكن تنام من أي هدوء لحظي في السحب.', 'Sleep delay under 20 s: the pump may sleep on any brief pause in demand.') });
+      if (!c.tank) w.push({ lvl: 'warn', t: T('من غير بالونة، أي سحب صغير هيصحّي الطرمبة على طول، وهتنام وتصحى كتير.', 'Without a pressure tank, any small draw wakes the pump at once and it will cycle often.') });
+    }
+    if (c.smooth <= 10) w.push({ lvl: 'crit', t: T('76.62 و76.63 لازم يبقوا أكبر من 40.33 (10 ثواني).', '76.62 and 76.63 must be longer than 40.33 (10 s).') });
+    if (c.accel < 3) w.push({ lvl: 'warn', t: T('وقت التسارع قصير جداً، وده ممكن يعمل طرقة مية وتيار عالي في البداية.', 'Very short acceleration time: risk of water hammer and high starting current.') });
+    if (c.stopMode === 'Coast') w.push({ lvl: 'warn', t: T('الوقوف Coast بيقفل الخرج مرة واحدة، وممكن يعمل طرقة مية مع الطرمبات الكبيرة. Ramp أنعم.', 'Coast stop cuts the output at once and can cause water hammer on large pumps. Ramp is smoother.') });
+    if (c.runRO === c.faultRO) w.push({ lvl: 'crit', t: T('ريلاي التشغيل وريلاي العطل على نفس المخرج (RO' + c.runRO + '). اختار مخرج مختلف لكل واحد.', 'Run and fault relays are on the same output (RO' + c.runRO + '). Pick a different output for each.') });
+    return w;
+  }
+
+  function wiringRow(c, i) {
+    var N = c.n;
+    if (c.sensorWiring === 'splitter') return ['AI2 wiring', 'Signal splitter', 'OUT' + i, T('OUT' + i + '+ على AI2 وOUT' + i + '− على AGND', 'OUT' + i + '+ to AI2, OUT' + i + '− to AGND')];
+    if (c.sensorWiring === 'own') return ['AI2 wiring', 'Own transmitter', T('حساس ', 'Transmitter ') + i, T('+24V على + الحساس، و− الحساس على AI2، وAGND على DGND', '+24V to sensor +, sensor − to AI2, AGND to DGND')];
+    if (c.sensorWiring === 'series') return ['AI2 wiring', 'Series current loop', T(i + ' من ' + N, i + ' of ' + N),
+      T('AI2 جاي من ' + (i === 1 ? '− الحساس' : 'AGND إنفرتر ' + (i - 1)) + '، وAGND رايح على ' + (i === N ? '0V السبلاي' : 'AI2 إنفرتر ' + (i + 1)),
+        'AI2 from ' + (i === 1 ? 'sensor −' : 'AGND of drive ' + (i - 1)) + ', AGND to ' + (i === N ? 'supply 0V' : 'AI2 of drive ' + (i + 1)))];
+    return ['AI2 wiring', 'Direct', T('الحساس مباشرة', 'Sensor direct'), T('− الحساس على AI2، وAGND على 0V السبلاي', 'Sensor − to AI2, AGND to supply 0V')];
+  }
+
+  function driveGroups(c, i) {
+    var N = c.n, mA = c.sensorType === 'mA';
+    var hasSensor = c.sensorWiring !== 'one' || i === 1;
+    var isEnd = (i === 1 || i === N);
+    var g = [];
+    g.push({ t: T('الموتور والحدود والتسارع', 'Motor, limits and ramps'), r: [
+      ['99.04', 'Motor control mode', 'Scalar', T('زي الموقع', 'As on site')],
+      ['99.06…99.10', 'Motor nominal data', T('من ليبل الموتور', 'From motor nameplate'), T('التيار والجهد والتردد والسرعة والقدرة', 'Current, voltage, frequency, speed, power')],
+      ['30.13', 'Minimum frequency', hz(c.minHz), T('مش بيتزامن، اكتبه على كل إنفرتر', 'Not synchronized: set it on every drive')],
+      ['30.14', 'Maximum frequency', hz(c.maxHz), T('مش بيتزامن', 'Not synchronized')],
+      ['28.72', 'Freq acceleration time 1', f1(c.accel) + ' s', T('الافتراضي 30 s', 'Default 30 s')],
+      ['28.73', 'Freq deceleration time 1', f1(c.decel) + ' s', T('الافتراضي 30 s', 'Default 30 s')],
+      ['21.03', 'Stop mode', c.stopMode, c.stopMode === 'Ramp' ? T('الافتراضي Coast. Ramp بيقلل طرقة المية', 'Default Coast. Ramp reduces water hammer') : T('بيقفل الخرج مرة واحدة', 'Cuts the output at once')]
+    ]});
+    g.push({ t: T('التبديل بين المانوال والأوتو', 'Manual / auto selection'), r: [
+      ['11.21', 'DI5 configuration', 'Digital input', T('مش Frequency input', 'Not frequency input')],
+      ['19.11', 'Ext1/Ext2 selection', 'DI5', T('DI5 = 0 مانوال (EXT1)، DI5 = 1 أوتو (EXT2)', 'DI5 = 0 manual (EXT1), DI5 = 1 auto (EXT2)')]
+    ]});
+    var man = [
+      ['20.01', 'Ext1 commands', 'In1 Start', ''],
+      ['20.03', 'Ext1 in1 source', 'DI1', T('بعد كونتاكت السلكتور والبريشر سويتش', 'Through selector contact and pressure switch')]
+    ];
+    if (c.manualMethod === 'panel') {
+      man.push(['28.11', 'Ext1 frequency ref1', 'Control panel (ref saved)', T('اضبط ' + hz(c.manualHz) + ' بالأسهم وهو على المانوال', 'Set ' + hz(c.manualHz) + ' with the arrow keys in manual')]);
+      man.push(['28.22', 'Constant frequency sel1', 'Always off', T('الافتراضي DI3، ولو اتساب هيفرض 5 Hz لما DI3 يقفل', 'Default DI3: if left, it forces 5 Hz when DI3 closes')]);
+    } else {
+      man.push(['28.11', 'Ext1 frequency ref1', 'Control panel (ref saved)', T('مش هيأثر طول ما DI1 شغال', 'Overridden while DI1 is on')]);
+      man.push(['28.22', 'Constant frequency sel1', 'DI1', T('السرعة الثابتة تشتغل مع DI1', 'Constant speed active with DI1')]);
+      man.push(['28.26', 'Constant frequency 1', hz(c.manualHz), '']);
+    }
+    g.push({ t: T('المانوال · EXT1', 'Manual · EXT1'), r: man });
+    g.push({ t: T('الأوتو · EXT2', 'Auto · EXT2'), r: [
+      ['20.06', 'Ext2 commands', 'In1 Start', T('الافتراضي Not selected', 'Default Not selected')],
+      ['20.08', 'Ext2 in1 source', 'DI5', T('أمر التشغيل اللي IPC بيستناه', 'The start command IPC waits for')],
+      ['28.15', 'Ext2 frequency ref1', 'PID', T('الافتراضي Zero', 'Default Zero')],
+      ['28.17', 'Ext2 frequency function', 'Ref1', ''],
+      ['20.40', 'Run permissive', c.permissive === 'none' ? 'Not used' : c.permissive, c.permissive === 'none' ? '' : T('فلوت أو بريشر سويتش على السحب', 'Float or suction pressure switch')]
+    ]});
+    if (hasSensor) {
+      g.push({ t: T('الحساس · AI2', 'Sensor · AI2'), r: [
+        ['12.25', 'AI2 unit selection', mA ? 'mA' : 'V', ''],
+        ['12.27', 'AI2 min', mA ? '4.000 mA' : '0.000 V', ''],
+        ['12.28', 'AI2 max', mA ? '20.000 mA' : '10.000 V', ''],
+        ['12.29', 'AI2 scaled at AI2 min', '0.000', ''],
+        ['12.30', 'AI2 scaled at AI2 max', (+c.range).toFixed(3), T('رينج الحساس بالـ bar. الافتراضي 50', 'Sensor range in bar. Default 50')],
+        wiringRow(c, i)
+      ]});
+    } else {
+      g.push({ t: T('الحساس · AI2', 'Sensor · AI2'), r: [['AI2', 'Analog input 2', T('مش متوصّل', 'Not connected'), T('الإنفرتر ده Follower بس', 'This drive is follower only')]] });
+    }
+    var pid = [
+      ['40.07', 'Process PID operation mode', 'On', T('الافتراضي Off', 'Default Off')],
+      ['40.08', 'Set 1 feedback 1 source', 'AI2 scaled', T('مش AI2 percent', 'Not AI2 percent')],
+      ['40.10', 'Set 1 feedback function', 'In1', ''],
+      ['40.16', 'Set 1 setpoint 1 source', 'Internal setpoint', ''],
+      ['40.21', 'Set 1 internal setpoint 1', f2(c.setpoint) + ' bar', ''],
+      ['40.31', 'Set 1 deviation inversion', 'Not inverted', T('الضغط يقل فالسرعة تزيد', 'Lower pressure, higher speed')],
+      ['40.32', 'Set 1 gain', '1.00', T('ابدأ بيه وعدّل في الموقع', 'Start here, tune on site')],
+      ['40.33', 'Set 1 integration time', '10.0 s', T('لازم أقل من 76.62', 'Must be shorter than 76.62')]
+    ];
+    if (c.fill) {
+      pid.push(['40.28', 'Set 1 setpoint increase time', f1(c.fillT) + ' s', T('Soft pipe fill: الوقت من 0 لـ 100% من مقياس 40.14', 'Soft pipe fill: time from 0 to 100% of the 40.14 scale')]);
+      pid.push(['82.25', 'Soft pipe fill supervision', 'Warning', T('تحذير لو الضغط ما وصلش (تسريب أو كسر)', 'Warns if pressure is not reached (leak or burst)')]);
+      pid.push(['82.26', 'Time-out limit', f1(Math.max(60, c.fillT * 2)) + ' s', '']);
+    } else {
+      pid.push(['40.28', 'Set 1 setpoint increase time', '0.0 s', T('Soft pipe fill مقفول', 'Soft pipe fill off')]);
+    }
+    if (c.sleep) {
+      pid.push(['40.43', 'Set 1 sleep level', f1(c.sleepHz), T('بالـ Hz. أعلى بـ 1–2 Hz من سرعتها وهي ماسكة الضغط من غير سحب', 'In Hz. 1–2 Hz above the speed that holds pressure at zero flow')]);
+      pid.push(['40.44', 'Set 1 sleep delay', f1(c.sleepDelay) + ' s', '']);
+      pid.push(['40.45', 'Set 1 sleep boost time', c.boostOn ? f1(c.boostT) + ' s' : '0.0 s', c.boostOn ? '' : T('الـ Boost مقفول', 'Boost off')]);
+      pid.push(['40.46', 'Set 1 sleep boost step', c.boostOn ? f2(c.boostP) + ' bar' : '0.00', c.boostOn ? T('الضغط يطلع لـ ' + f2(c.top) + ' bar قبل النوم', 'Pressure rises to ' + f2(c.top) + ' bar before sleep') : '']);
+      pid.push(['40.47', 'Set 1 wake-up deviation', f2(c.wakeDev) + ' bar', T(f2(c.setpoint) + ' − ' + f2(c.wakeP) + '، فالطرمبة تصحى عند ' + f2(c.wakeP) + ' bar', f2(c.setpoint) + ' − ' + f2(c.wakeP) + ': the pump wakes at ' + f2(c.wakeP) + ' bar')]);
+      pid.push(['40.48', 'Set 1 wake-up delay', f2(c.wakeDelay) + ' s', '']);
+    } else {
+      pid.push(['40.43', 'Set 1 sleep level', '0.0', T('الـ Sleep مقفول', 'Sleep off')]);
+    }
+    g.push({ t: T('الـ PID والنوم', 'PID and sleep'), r: pid });
+    var ipc = [
+      ['76.21', 'Multipump configuration', 'IPC', ''],
+      ['76.22', 'Multipump node number', String(i), T('لازم يكون مختلف في كل إنفرتر', 'Unique on every drive')],
+      ['76.23', 'Master enable', hasSensor ? 'Enabled' : 'Disabled', hasSensor ? '' : T('مفيش حساس، فمينفعش يبقى Master', 'No sensor, so it cannot be master')],
+      ['76.24', 'IPC communication port', 'EFB', T('58.01 هيظهر None / IPC communication', '58.01 shows None / IPC communication')],
+      ['76.25', 'Number of motors', String(N), ''],
+      ['76.26', 'Min number of motors allowed', '1', ''],
+      ['76.27', 'Max number of motors allowed', String(c.maxRun), c.standby ? T('طرمبة واحدة Standby دايماً', 'One pump always on standby') : '']
+    ];
+    for (var k = 1; k <= N - 1; k++) ipc.push(['76.' + (29 + k), 'Start point ' + k, hz(c.startHz), T('دخول الطرمبة رقم ' + (k + 1), 'Pump ' + (k + 1) + ' starts')]);
+    for (var j = 1; j <= N - 1; j++) ipc.push(['76.' + (40 + j), 'Stop point ' + j, hz(c.stopHz), T('خروج الطرمبة رقم ' + (j + 1), 'Pump ' + (j + 1) + ' stops')]);
+    ipc.push(['76.55', 'Start delay', f2(c.startDelay) + ' s', '']);
+    ipc.push(['76.56', 'Stop delay', f2(c.stopDelay) + ' s', '']);
+    ipc.push(['76.62', 'IPC smooth acceleration time', f2(c.smooth) + ' s', T('لازم أكبر من 40.33', 'Must be longer than 40.33')]);
+    ipc.push(['76.63', 'IPC smooth deceleration time', f2(c.smooth) + ' s', T('لازم أكبر من 40.33', 'Must be longer than 40.33')]);
+    ipc.push(['76.70', 'PFC Autochange', 'Even wear', T('بيوزّع ساعات التشغيل', 'Balances running hours')]);
+    ipc.push(['76.72', 'Maximum wear imbalance', '10.00 h', '']);
+    ipc.push(['76.73', 'Autochange level', '90.0 %', T('ما يبدّلش الـ Master على أقصى سرعة', 'No master change at full speed')]);
+    ipc.push(['76.77', 'Pump priority', 'Normal', '']);
+    ipc.push(['76.101', 'IPC parameter synchronization', 'Enable', '']);
+    ipc.push(['76.102', 'IPC synchronization settings', '0b0111', T('يزامن AI والـ PID والـ IPC', 'Synchronizes AI, PID and IPC groups')]);
+    g.push({ t: 'IPC', r: ipc });
+    var roPar = { 1: '10.24', 2: '10.27', 3: '10.30' }, roDef = { 1: 'Damper control', 2: 'Running', 3: 'Fault (-1)' }, ro = [];
+    [1, 2, 3].forEach(function (k) {
+      var t = 'RO' + k;
+      if (k === c.runRO) ro.push([roPar[k], t + ' source', 'Running', T('لمبة التشغيل على ' + t + 'C و' + t + 'B: بيقفل لما الطرمبة دي تشتغل', 'Run lamp on ' + t + 'C–' + t + 'B: closes when this pump runs')]);
+      else if (k === c.faultRO) ro.push([roPar[k], t + ' source', c.faultLogic, c.faultLogic === 'Fault (-1)'
+        ? T('لمبة العطل على ' + t + 'C و' + t + 'A: بتنوّر مع العطل ومع فصل الكهربا', 'Fault lamp on ' + t + 'C–' + t + 'A: lights on fault and on power loss')
+        : T('لمبة العطل على ' + t + 'C و' + t + 'B: بتنوّر مع العطل بس', 'Fault lamp on ' + t + 'C–' + t + 'B: lights on fault only')]);
+      else ro.push([roPar[k], t + ' source', 'Not energized', T('مش مستخدم. الافتراضي ', 'Not used. Default ') + roDef[k]]);
+    });
+    g.push({ t: T('مخارج الريلاي', 'Relay outputs'), r: ro });
+    g.push({ t: T('الهاردوير والحفظ', 'Hardware and save'), r: [
+      ['RS-485', 'Termination switch', isEnd ? 'ON' : 'OFF', isEnd ? T('أول أو آخر إنفرتر على الكابل', 'First or last drive on the cable') : T('إنفرتر في نص الكابل', 'Drive in the middle of the cable')],
+      ['96.07', 'Parameter save manually', 'Save', T('بعد ما تخلص', 'When done')]
+    ]});
+    return g;
+  }
+
+  function diffKeys(c) {
+    var seen = {}, diff = {};
+    for (var i = 1; i <= c.n; i++) {
+      driveGroups(c, i).forEach(function (g) {
+        g.r.forEach(function (r) {
+          if (r[0] in seen) { if (seen[r[0]] !== r[2]) diff[r[0]] = true; }
+          else seen[r[0]] = r[2];
+        });
+      });
+    }
+    return diff;
+  }
+
+  // ---------- render ----------
+  function esc(x) { return String(x).replace(/[&<>"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); }
+  function chip(p) { return '<bdi class="chip" dir="ltr">' + esc(p) + '</bdi>'; }
+  function n(v) { return '<bdi class="num" dir="ltr">' + esc(v) + '</bdi>'; }
+
+  function renderSummary(c, w) {
+    var crit = w.filter(function (a) { return a.lvl === 'crit'; }).length, warn = w.filter(function (a) { return a.lvl === 'warn'; }).length;
+    var st = crit ? '<span class="pill crit">' + T(crit + ' لازم يتصلح', crit + ' to fix') + '</span>'
+      : warn ? '<span class="pill warn">' + T(warn + ' تنبيه', warn + (warn > 1 ? ' warnings' : ' warning')) + '</span>'
+      : '<span class="pill ok">' + T('تمام', 'All good') + '</span>';
+    var tiles = [];
+    tiles.push('<div class="tile"><span class="k">' + T('الطرمبات', 'Pumps') + '</span><span class="v">' + c.n + '</span><span class="s">' +
+      (c.n > 8 ? T('أكتر من حد IPC', 'Above IPC limit') : T('لحد ' + c.maxRun + ' شغالين مع بعض', 'Up to ' + c.maxRun + ' running')) + '</span></div>');
+    tiles.push('<div class="tile"><span class="k">' + T('الضغط المطلوب', 'Setpoint') + '</span><span class="v"><bdi>' + f2(c.setpoint) + '</bdi><span class="u">bar</span></span><span class="s">' +
+      (c.sleep ? T('تصحى عند ', 'Wakes at ') + '<bdi>' + f2(c.wakeP) + ' bar</bdi>' : T('الـ Sleep مقفول', 'Sleep off')) + '</span></div>');
+    tiles.push('<div class="tile"><span class="k">' + T('دخول / خروج طرمبة', 'Stage on / off') + '</span><span class="v"><bdi dir="ltr">' + s(c.startHz) + ' / ' + s(c.stopHz) + '</bdi><span class="u">Hz</span></span><span class="s">' +
+      T('بعد ', 'After ') + s(c.startDelay) + ' / ' + s(c.stopDelay) + ' s</span></div>');
+    tiles.push('<div class="tile"><span class="k">' + T('ضغط البالونة', 'Tank pre-charge') + '</span><span class="v">' + (c.tank ? '<bdi>' + f1(c.precharge) + '</bdi><span class="u">bar</span>' : '—') + '</span><span class="s">' +
+      (c.tank ? T('والطرمبات واقفة', 'Pumps stopped') : T('مفيش بالونة', 'No tank')) + '</span></div>');
+    tiles.push('<div class="tile"><span class="k">' + T('حالة القيم', 'Values check') + '</span><span class="v" style="font-size:1rem;padding-block:6px">' + st + '</span><span class="s">' +
+      T('التفاصيل تحت', 'Details below') + '</span></div>');
+    $('summary').innerHTML = tiles.join('');
+  }
+
+  function renderAlerts(w) {
+    var labels = { crit: T('لازم يتصلح', 'Must fix'), warn: T('انتبه', 'Check'), ok: T('تمام', 'OK') };
+    if (!w.length) w = [{ lvl: 'ok', t: T('القيم متوافقة مع بعض. ابدأ البرمجة بإنفرتر 1.', 'Values are consistent. Start programming with drive 1.') }];
+    $('alerts').innerHTML = w.map(function (a) {
+      return '<div class="alert ' + a.lvl + '"><span class="tag">' + labels[a.lvl] + '</span><span>' + esc(a.t) + '</span></div>';
+    }).join('');
+  }
+
+  function renderSeq(c) {
+    var st = [];
+    var ramp = c.maxHz > 0 ? (c.accel * c.maxHz / (c.motorHz || c.maxHz)) : c.accel;
+    st.push({ t: T('السلكتور على أوتو', 'Selector on auto'),
+      w: T('DI5 بيقفل ' + chip('19.11') + ' فالإنفرترات تروح على EXT2، وكل واحد بيستلم أمر تشغيل من ' + chip('20.08') + '.',
+           'DI5 closes ' + chip('19.11') + ', so the drives switch to EXT2 and each one gets a start command from ' + chip('20.08') + '.'),
+      h: T('الإنفرتر الجاهز اللي ساعات تشغيله أقل بيبقى Master ويبدأ لوحده. الباقيين Follower مستنيين.', 'The ready drive with the fewest running hours becomes master and starts alone. The others wait as followers.') +
+         (c.permissive !== 'none' ? T(' ولو ' + c.permissive + ' (حماية السحب) مفتوح، مفيش طرمبة هتبدأ ' + chip('20.40') + '.', ' If ' + c.permissive + ' (suction protection) is open, no pump starts ' + chip('20.40') + '.') : '') });
+    st.push({ t: T('الـ Startup والطلوع للضغط', 'Start-up and pressure build-up'),
+      w: T('الـ Master بيتسارع لحد ' + n(c.maxHz + ' Hz') + ' في حوالي ' + n(s(ramp) + ' s') + ' ' + chip('28.72') + '.', 'The master ramps up to ' + n(c.maxHz + ' Hz') + ' in about ' + n(s(ramp) + ' s') + ' ' + chip('28.72') + '.'),
+      h: (c.fill ? T('الـ Setpoint بيطلع بالتدريج، فالخط بيتملي بالراحة من غير طرقة مية ' + chip('40.28') + ' ' + n(s(c.fillT) + ' s') + '. ', 'The setpoint rises gradually, so the line fills gently without water hammer ' + chip('40.28') + ' ' + n(s(c.fillT) + ' s') + '. ') : '') +
+         T('الـ PID بيثبّت الضغط على ' + n(f2(c.setpoint) + ' bar') + ' ' + chip('40.21') + '.', 'The PID holds the pressure at ' + n(f2(c.setpoint) + ' bar') + ' ' + chip('40.21') + '.') });
+    if (c.maxRun > 1) {
+      st.push({ t: T('دخول طرمبة زيادة', 'Next pump starts'),
+        w: T('لو سرعة الـ Master فضلت فوق ' + n(c.startHz + ' Hz') + ' ' + chip('76.30') + ' لمدة ' + n(s(c.startDelay) + ' s') + ' ' + chip('76.55') + '.',
+             'If master speed stays above ' + n(c.startHz + ' Hz') + ' ' + chip('76.30') + ' for ' + n(s(c.startDelay) + ' s') + ' ' + chip('76.55') + '.'),
+        h: T('الطرمبة اللي عليها الدور تبدأ وتوصل لسرعة الـ Master في ' + n(s(c.smooth) + ' s') + ' ' + chip('76.62') + '، وبعدين كلهم يمشوا بنفس السرعة. ونفس الكلام لحد ' + n(c.maxRun) + ' طرمبات شغالين' + (c.standby ? '، والأخيرة تفضل Standby.' : '.'),
+             'The next pump in turn starts and reaches master speed in ' + n(s(c.smooth) + ' s') + ' ' + chip('76.62') + ', then all pumps run at the same speed. Up to ' + n(c.maxRun) + ' pumps run' + (c.standby ? '; the last stays on standby.' : '.')) });
+      st.push({ t: T('خروج طرمبة', 'Pump stops'),
+        w: T('لو السرعة نزلت تحت ' + n(c.stopHz + ' Hz') + ' ' + chip('76.41') + ' لمدة ' + n(s(c.stopDelay) + ' s') + ' ' + chip('76.56') + '.',
+             'If speed falls below ' + n(c.stopHz + ' Hz') + ' ' + chip('76.41') + ' for ' + n(s(c.stopDelay) + ' s') + ' ' + chip('76.56') + '.'),
+        h: T('آخر طرمبة دخلت بتقف في ' + n(s(c.smooth) + ' s') + ' ' + chip('76.63') + '، والباقيين يزوّدوا سرعتهم. ده بيتكرر لحد ما تفضل طرمبة واحدة.',
+             'The last pump that started stops in ' + n(s(c.smooth) + ' s') + ' ' + chip('76.63') + ' and the others speed up. This repeats until one pump is left.') });
+    } else {
+      st.push({ t: T('دخول وخروج الطرمبات', 'Staging'), off: true, w: T('مفيش طرمبة زيادة بتدخل، لأن 76.27 = 1.', 'No extra pump starts, because 76.27 = 1.'), h: T('طرمبة واحدة بس شغالة في أي وقت، والتانية Standby.', 'Only one pump runs at a time; the other is on standby.') });
+    }
+    if (c.sleep) {
+      st.push({ t: T('النوم (Sleep)', 'Sleep'),
+        w: T('لما تفضل طرمبة واحدة، وخرج الـ PID يفضل تحت ' + n(c.sleepHz + ' Hz') + ' ' + chip('40.43') + ' لمدة ' + n(s(c.sleepDelay) + ' s') + ' ' + chip('40.44') + '.',
+             'With one pump left, if PID output stays below ' + n(c.sleepHz + ' Hz') + ' ' + chip('40.43') + ' for ' + n(s(c.sleepDelay) + ' s') + ' ' + chip('40.44') + '.'),
+        h: (c.boostOn ? T('الضغط بيطلع الأول لـ ' + n(f2(c.top) + ' bar') + ' لمدة ' + n(s(c.boostT) + ' s') + ' ' + chip('40.45') + chip('40.46') + ' علشان البالونة تتملي، ', 'Pressure first rises to ' + n(f2(c.top) + ' bar') + ' for ' + n(s(c.boostT) + ' s') + ' ' + chip('40.45') + chip('40.46') + ' to fill the tank, ') : '') +
+           T('وبعدين الطرمبة تقف ' + (c.stopMode === 'Ramp' ? 'بالراحة على ' + chip('28.73') : 'مرة واحدة (Coast)') + '. الشاشة هتكتب Master (PID sleep).',
+             'then the pump stops ' + (c.stopMode === 'Ramp' ? 'smoothly on ' + chip('28.73') : 'at once (coast)') + '. The panel shows Master (PID sleep).') });
+      st.push({ t: T('وهي نايمة', 'While asleep'),
+        w: c.tank ? T('البالونة بتغذي السحب الصغير، والضغط بينزل بالراحة من ' + n(f2(c.top) + ' bar') + ' لـ ' + n(f2(c.wakeP) + ' bar') + '.', 'The tank supplies small demand and pressure falls slowly from ' + n(f2(c.top) + ' bar') + ' to ' + n(f2(c.wakeP) + ' bar') + '.')
+                  : T('مفيش بالونة، فأي سحب هينزّل الضغط على طول.', 'No tank, so any demand drops the pressure at once.'),
+        h: T('كل ما البالونة أكبر والسحب أقل، النومة أطول.', 'The bigger the tank and the smaller the demand, the longer the sleep.') });
+      st.push({ t: T('الصحيان', 'Wake-up'),
+        w: T('لو الضغط نزل تحت ' + n(f2(c.wakeP) + ' bar') + '، يعني الـ Setpoint ناقص ' + n(f2(c.wakeDev) + ' bar') + ' ' + chip('40.47') + '، لمدة ' + n(s(c.wakeDelay) + ' s') + ' ' + chip('40.48') + '.',
+             'If pressure falls below ' + n(f2(c.wakeP) + ' bar') + ', i.e. setpoint minus ' + n(f2(c.wakeDev) + ' bar') + ' ' + chip('40.47') + ', for ' + n(s(c.wakeDelay) + ' s') + ' ' + chip('40.48') + '.'),
+        h: T('الـ Master بيصحى ويرجع للخطوة 2.', 'The master wakes and returns to step 2.') });
+    } else {
+      st.push({ t: T('النوم (Sleep)', 'Sleep'), off: true, w: T('الـ Sleep مقفول.', 'Sleep is off.'),
+        h: T('طول ما السلكتور على أوتو، طرمبة واحدة على الأقل هتفضل شغالة على أقل سرعة ' + n(c.minHz + ' Hz') + ' حتى لو مفيش سحب.', 'While on auto, at least one pump keeps running at minimum speed ' + n(c.minHz + ' Hz') + ' even with no demand.') });
+    }
+    if (c.n > 1) {
+      st.push({ t: T('تبديل الـ Master (Autochange)', 'Master change (autochange)'),
+        w: T('لما فرق ساعات التشغيل بين طرمبتين يعدّي ' + n('10 h') + ' ' + chip('76.72') + '، والسرعة تحت ' + n('90 %') + ' ' + chip('76.73') + '، والضغط واصل للـ Setpoint.',
+             'When the running-hour gap between two pumps exceeds ' + n('10 h') + ' ' + chip('76.72') + ', speed is below ' + n('90 %') + ' ' + chip('76.73') + ' and pressure is at setpoint.'),
+        h: T('الـ Master بيتنقل لطرمبة تانية. وقت التبديل ممكن تشتغل طرمبتين لحظات، وده طبيعي.', 'The master role moves to another pump. Two pumps may run briefly during the change; this is normal.') });
+    }
+    st.push({ t: T('المانوال', 'Manual'),
+      w: T('السلكتور على مانوال يقفل DI1 عن طريق البريشر سويتش ' + chip('20.03') + '.', 'Selector on manual closes DI1 through the pressure switch ' + chip('20.03') + '.'),
+      h: T('الطرمبة تشتغل على سرعة ثابتة ' + n(c.manualHz + ' Hz') + ' من غير PID. البريشر سويتش يفصل على ' + n(f2(c.setpoint) + ' bar') + ' ويوصل على ' + n(f2(c.wakeP) + ' bar') + '. اتأكد إن الطرمبة على السرعة دي بتوصل لضغط الفصل، وإلا عمرها ما هتفصل.',
+           'The pump runs at a fixed ' + n(c.manualHz + ' Hz') + ' without PID. The pressure switch cuts out at ' + n(f2(c.setpoint) + ' bar') + ' and back in at ' + n(f2(c.wakeP) + ' bar') + '. Check the pump reaches the cut-out pressure at this speed, or it never stops.') });
+    $('seq').innerHTML = st.map(function (x) {
+      return '<li' + (x.off ? ' class="off"' : '') + '><div class="body"><h3>' + esc(x.t) + '</h3><div class="when">' + x.w + '</div><div class="then">' + x.h + '</div></div></li>';
+    }).join('');
+  }
+
+  function renderLadder(c) {
+    var pts = [];
+    pts.push({ p: c.setpoint, l: T('Setpoint · السويتش يفصل', 'Setpoint · switch cut-out'), col: 'var(--water)', w: 2.2 });
+    if (c.sleep && c.boostOn) pts.push({ p: c.top, l: T('Boost · قبل النوم', 'Boost · before sleep'), col: 'var(--green)', w: 1.4 });
+    if (c.wakeP > 0) pts.push({ p: c.wakeP, l: (c.sleep ? T('الصحيان · ', 'Wake-up · ') : '') + T('السويتش يوصل', 'switch cut-in'), col: 'var(--amp)', w: 1.6 });
+    if (c.tank && c.precharge > 0) pts.push({ p: c.precharge, l: T('ضغط البالونة', 'Tank pre-charge'), col: 'var(--aqua)', w: 1.6 });
+    var vals = pts.map(function (x) { return x.p; });
+    var lo = Math.max(0, Math.floor(Math.min.apply(null, vals) - 0.5));
+    var hi = Math.min(c.range > 0 ? c.range : 100, Math.ceil(Math.max.apply(null, vals) + 0.5));
+    if (hi <= lo) hi = lo + 1;
+    var W = 340, H = 250, y0 = 14, y1 = H - 22, xL = 38, xR = 92, rtl = lang === 'ar';
+    var Y = function (p) { return y1 - (p - lo) / (hi - lo) * (y1 - y0); };
+    pts.sort(function (a, b) { return b.p - a.p; });
+    var ly = pts.map(function (x) { return Y(x.p); });
+    for (var i = 1; i < ly.length; i++) if (ly[i] - ly[i - 1] < 22) ly[i] = ly[i - 1] + 22;
+    var g = [];
+    g.push('<line x1="' + xL + '" x2="' + xL + '" y1="' + y0 + '" y2="' + y1 + '" style="stroke:var(--muted)" stroke-width="1"/>');
+    var step = (hi - lo) > 4 ? 1 : 0.5;
+    for (var t = lo; t <= hi + 1e-9; t += step) {
+      var yy = Y(t);
+      g.push('<line x1="' + (xL - 4) + '" x2="' + xL + '" y1="' + yy + '" y2="' + yy + '" style="stroke:var(--muted)"/>');
+      g.push('<text x="' + (xL - 8) + '" y="' + (yy + 4) + '" text-anchor="end" direction="ltr" font-size="12" style="fill:var(--muted);font-family:var(--f-mono)">' + (+t).toFixed(1) + '</text>');
+    }
+    if (c.sleep && c.wakeP < c.top) g.push('<rect x="' + (xL + 1) + '" y="' + Y(c.top) + '" width="' + (xR - xL - 1) + '" height="' + (Y(c.wakeP) - Y(c.top)) + '" style="fill:var(--water-soft)"/>');
+    pts.forEach(function (x, k) {
+      var yv = Y(x.p), yl = ly[k];
+      g.push('<line x1="' + xL + '" x2="' + xR + '" y1="' + yv + '" y2="' + yv + '" style="stroke:' + x.col + '" stroke-width="' + x.w + '"/>');
+      g.push('<path d="M' + xR + ' ' + yv + ' L' + (xR + 10) + ' ' + yl + '" fill="none" style="stroke:' + x.col + '" stroke-width="1"/>');
+      g.push('<text x="' + (xR + 12) + '" y="' + (yl + 4) + '" text-anchor="start" direction="ltr" font-size="14" font-weight="600" style="fill:' + x.col + ';font-family:var(--f-mono)">' + f2(x.p) + '</text>');
+      g.push('<text x="' + (W - 6) + '" y="' + (yl + 4) + '" text-anchor="' + (rtl ? 'start' : 'end') + '" direction="' + (rtl ? 'rtl' : 'ltr') + '" font-size="13.5" style="fill:var(--ink);font-family:' + (rtl ? 'var(--f-ar)' : 'var(--f-en)') + '">' + esc(x.l) + '</text>');
+    });
+    g.push('<text x="' + xL + '" y="' + (H - 4) + '" text-anchor="middle" font-size="11" style="fill:var(--muted)">bar</text>');
+    $('ladder').innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(T('مستويات الضغط', 'Pressure levels')) + '">' + g.join('') + '</svg>' +
+      (c.sleep ? '<p class="small muted">' + T('المنطقة الملوّنة هي اللي الطرمبة بتنام فيها والبالونة بتغذي السحب.', 'Shaded band: the pump sleeps and the tank supplies demand.') + '</p>' : '');
+  }
+
+  function renderTank(c) {
+    var el = $('tankCard');
+    if (!c.tank) {
+      el.innerHTML = '<h3>' + T('ضغط البالونة', 'Tank pre-charge') + '</h3><p>' + T('مفيش بالونة. لو هتركّب واحدة، علّم على الاختيار في بيانات الموقع وهتطلعلك قيمتها.', 'No pressure tank. Tick the option under site data to get its value.') + '</p>';
+      return;
+    }
+    el.innerHTML = '<h3>' + T('ضغط البالونة (Pre-charge)', 'Tank pre-charge') + '</h3>' +
+      '<div class="big-num">' + f1(c.precharge) + ' bar</div>' +
+      '<p>' + T('0.9 × ضغط الصحيان (' + f2(c.wakeP) + ' bar). كده البالونة تفضل فيها مية لحد ما الطرمبة تصحى، والضغط ما يقعش.', '0.9 × wake-up pressure (' + f2(c.wakeP) + ' bar). The tank keeps water until the pump wakes, so pressure does not drop.') + '</p>' +
+      '<ol><li>' + T('اقفل الطرمبات وافصل الكهربا.', 'Stop the pumps and isolate power.') + '</li><li>' +
+      T('اقفل محبس البالونة وفرّغها لحد ما ضغط المية فيها يبقى صفر.', 'Close the tank valve and drain it until the water side reads zero.') + '</li><li>' +
+      T('قيس على بلف الهوا وظبطه على ' + f1(c.precharge) + ' bar.', 'Measure at the air valve and set it to ' + f1(c.precharge) + ' bar.') + '</li><li>' +
+      T('افتح المحبس وشغّل.', 'Open the valve and restart.') + '</li></ol>' +
+      '<p>' + T('لو ضغط البالونة أعلى من ضغط الصحيان هتفضى قبل ما الطرمبة تصحى، ولو أقل بكتير هتشيل مية أقل والطرمبة هتصحى كتير.', 'Above the wake-up pressure the tank empties before the pump wakes; far below it, the tank holds less water and the pump wakes more often.') + '</p>';
+  }
+
+  function renderChain(c) {
+    var h = [];
+    for (var i = 1; i <= c.n; i++) {
+      var isEnd = (i === 1 || i === c.n);
+      var sens = c.sensorWiring !== 'one' || i === 1;
+      var sensTxt = !sens ? T('لأ', 'No') : c.sensorWiring === 'splitter' ? 'OUT ' + i : c.sensorWiring === 'series' ? T('سلسلة ', 'Loop ') + i : c.sensorWiring === 'own' ? T('خاص', 'Own') : T('متوصّل', 'Yes');
+      if (i > 1) h.push('<div class="link" aria-hidden="true"></div>');
+      h.push('<div class="node"><b>' + drv(i) + '</b>' +
+        '<div class="row"><span>Node</span><span class="mono">' + i + '</span></div>' +
+        '<div class="row"><span>Termination</span><span class="' + (isEnd ? 'on' : 'off') + ' mono">' + (isEnd ? 'ON' : 'OFF') + '</span></div>' +
+        '<div class="row"><span>' + T('حساس', 'Sensor') + '</span><span class="' + (sens ? 'on' : 'off') + '">' + esc(sensTxt) + '</span></div></div>');
+    }
+    $('chain').innerHTML = h.join('');
+    var wn = {
+      splitter: T('+24V من السبلاي على + الحساس، و− الحساس على IN+ بتاع الـ Splitter، وIN− على 0V. ومن كل مخرج: OUT+ على AI2 وOUT− على AGND في إنفرتر واحد. استخدم Splitter معزول (Input/Output/Supply) فيه ' + c.n + ' مخارج (أو أكتر لو فيه PLC)، وكل مخرج يستحمل أكتر من 137 Ω.',
+        '+24V from the supply to sensor +, sensor − to splitter IN+, IN− to 0V. Each output: OUT+ to AI2 and OUT− to AGND of one drive. Use an isolated splitter (input/output/supply) with ' + c.n + ' outputs (more if a PLC also needs the signal); each output must drive more than 137 Ω.'),
+      own: T('كل إنفرتر ليه حساس على نفس الهيدر، بيتغذّى من +24V بتاع الإنفرتر: − الحساس على AI2، وAGND على DGND. ده أعلى اعتمادية، لو حساس باظ الباقيين يكمّلوا.',
+        'Each drive has its own transmitter on the same header, powered from the drive +24V: sensor − to AI2, AGND to DGND. Most reliable: if one sensor fails, the others carry on.'),
+      series: T('+24V على + الحساس، و− الحساس على AI2 إنفرتر 1، وAGND إنفرتر 1 على AI2 إنفرتر 2، وهكذا لحد AGND آخر إنفرتر على 0V. نفس التيار بيعدّي على الكل، بس لو سلك اتفك الكل يقرا صفر.',
+        '+24V to sensor +, sensor − to AI2 of drive 1, AGND of drive 1 to AI2 of drive 2, and so on, until AGND of the last drive goes to 0V. The same current flows through all, but one loose wire makes every drive read zero.'),
+      one: T('الحساس على إنفرتر 1 بس: − الحساس على AI2 وAGND على 0V. الباقيين Follower بس، ولو إنفرتر 1 وقع السيستم يقف.', 'Sensor on drive 1 only: sensor − to AI2, AGND to 0V. The others are followers only; if drive 1 fails, the system stops.')
+    };
+    $('wireNote').textContent = wn[c.sensorWiring] || '';
+  }
+
+  function renderTabs(c) {
+    var h = [];
+    for (var i = 1; i <= c.n; i++) h.push('<button type="button" class="tab" role="tab" id="tab' + i + '" aria-selected="' + (i === active) + '" data-i="' + i + '">' + drv(i) + '</button>');
+    $('tabs').innerHTML = h.join('');
+  }
+
+  function renderTable(c) {
+    var diff = diffKeys(c), groups = driveGroups(c, active), h = [];
+    groups.forEach(function (g) {
+      h.push('<tr class="grp"><td colspan="4">' + esc(g.t) + '</td></tr>');
+      g.r.forEach(function (r) {
+        h.push('<tr' + (diff[r[0]] ? ' class="diff"' : '') + '><td class="par">' + esc(r[0]) + '</td><td class="name">' + esc(r[1]) + '</td><td class="val" dir="auto">' + esc(r[2]) + '</td><td class="note">' + esc(r[3]) + '</td></tr>');
+      });
+    });
+    $('tbody').innerHTML = h.join('');
+    var master = (c.sensorWiring !== 'one' || active === 1) ? 'Master enable' : 'Follower only';
+    $('lcd').textContent = 'Auto  ACH480  ·  Node ' + active + ' / ' + c.n + '  ·  ' + master;
+  }
+
+  function copyText(c) {
+    var lines = [T('إنفرتر ' + active + ' من ' + c.n + ' — إعدادات IPC', 'Drive ' + active + ' of ' + c.n + ' — IPC settings'), 'TrueLoop IPC Calculator'];
+    driveGroups(c, active).forEach(function (g) {
+      lines.push('');
+      lines.push('[' + g.t + ']');
+      g.r.forEach(function (r) { lines.push(r[0] + '  ' + r[1] + ' = ' + r[2] + (r[3] ? '   (' + r[3] + ')' : '')); });
+    });
+    if (c.tank) { lines.push(''); lines.push(T('ضغط البالونة (Pre-charge) = ', 'Tank pre-charge = ') + f1(c.precharge) + ' bar'); }
+    return lines.join('\n');
+  }
+
+  function renderChecks(c) {
+    var bits = '';
+    for (var b = 8; b >= 1; b--) { bits += (b <= c.n ? '1' : '0'); if (b === 5) bits += ' '; }
+    var items = [
+      ['10.02', T('على الأوتو Bit 4 (DI5) = 1 وBit 0 (DI1) = 0، وعلى المانوال العكس.', 'On auto, bit 4 (DI5) = 1 and bit 0 (DI1) = 0; on manual the opposite.')],
+      ['12.21', c.sensorWiring === 'one' ? T('الـ mA على إنفرتر 1 منطقية مع الضغط.', 'mA on drive 1 matches the pressure.') : T('نفس الـ mA تقريباً على كل الإنفرترات، والفرق أقل من 0.1 mA. لو واحد بيقرا أقل، فيه تيار بيهرب من سكة تانية.', 'Same mA on every drive, within 0.1 mA. A lower reading means current is leaking through another path.')],
+      ['12.22 / 40.02', T('قريبين من المانومتر على كل إنفرتر عليه حساس.', 'Close to the pressure gauge on every drive with a sensor.')],
+      ['77.20', T('على كل إنفرتر = ' + bits + '، يعني الـ ' + c.n + ' إنفرترات شايفين بعض.', 'On every drive = ' + bits + ': all ' + c.n + ' drives see each other.')],
+      ['76.105', T('نفس الرقم على كل الإنفرترات، يعني الإعدادات متزامنة.', 'Same value on every drive: settings are synchronized.')],
+      ['76.02', T('في الأوتو: إنفرتر واحد Master والباقي Follower أو Standby. في المانوال: Not ready (Hand mode (EXT1))، وده طبيعي.', 'On auto: one drive Master, the rest Follower or Standby. On manual: Not ready (Hand mode (EXT1)), which is normal.')],
+      ['Sleep', c.sleep ? T('اقفل الاستهلاك واقرا السرعة وهي ماسكة ' + f2(c.setpoint) + ' bar. لازم 40.43 يبقى أعلى منها بـ 1–2 Hz، وبعد ' + s(c.sleepDelay) + ' s لازم 76.02 يكتب Master (PID sleep).',
+        'Close all demand and read the speed at ' + f2(c.setpoint) + ' bar. 40.43 must be 1–2 Hz above it, and after ' + s(c.sleepDelay) + ' s 76.02 must show Master (PID sleep).') : T('الـ Sleep مقفول.', 'Sleep is off.')],
+      [T('البالونة', 'Tank'), c.tank ? T('Pre-charge = ' + f1(c.precharge) + ' bar والطرمبات واقفة والبالونة فاضية.', 'Pre-charge = ' + f1(c.precharge) + ' bar with pumps stopped and the tank drained.') : T('مفيش بالونة.', 'No tank.')],
+      ['10.21', T('الـ Bit بتاع RO' + c.runRO + ' يبقى 1 لما الطرمبة تشتغل', 'The RO' + c.runRO + ' bit is 1 when the pump runs') + (c.faultLogic === 'Fault (-1)' ? T('، والـ Bit بتاع RO' + c.faultRO + ' يبقى 1 طول ما مفيش عطل.', ', and the RO' + c.faultRO + ' bit stays 1 while there is no fault.') : '.')],
+      ['Failover', T('اعمل Off للـ Master، ولازم إنفرتر تاني يبقى Master والضغط ما يقعش.', 'Switch the master Off: another drive must become master without a pressure drop.')]
+    ];
+    $('checks').innerHTML = items.map(function (it) { return '<li><span class="k">' + esc(it[0]) + '</span><span>' + esc(it[1]) + '</span></li>'; }).join('');
+  }
+
+  function syncDisabled() {
+    var sl = $('sleep').checked;
+    ['sleepHz', 'sleepDelay', 'wakeDelay', 'boost'].forEach(function (k) { $(k).disabled = !sl; });
+    var bo = sl && $('boost').checked;
+    ['boostP', 'boostT'].forEach(function (k) { $(k).disabled = !bo; });
+    $('fillT').disabled = !$('fill').checked;
+  }
+
+  function render() {
+    syncDisabled();
+    var c = cfg();
+    save();
+    var w = warnings(c);
+    renderSummary(c, w);
+    renderAlerts(w);
+    var unsupported = c.n > 8;
+    ['s-seq', 's-wiring', 's-drives', 's-checks'].forEach(function (id) { $(id).hidden = unsupported; });
+    if (unsupported) return;
+    if (active > c.n) active = 1;
+    renderSeq(c); renderLadder(c); renderTank(c);
+    renderChain(c); renderTabs(c); renderTable(c); renderChecks(c);
+    $('copyArea').hidden = true; $('copied').hidden = true;
+  }
+
+  // ---------- events ----------
+  $('f').addEventListener('input', render);
+  $('f').addEventListener('change', render);
+  $('f').addEventListener('submit', function (e) { e.preventDefault(); });
+  $('tabs').addEventListener('click', function (e) {
+    var t = e.target.closest('.tab'); if (!t) return;
+    active = parseInt(t.getAttribute('data-i'), 10);
+    var c = cfg(); renderTabs(c); renderTable(c);
+    $('copyArea').hidden = true; $('copied').hidden = true;
+    var nt = $('tab' + active); if (nt) nt.focus();
+  });
+  $('copyBtn').addEventListener('click', function () {
+    var txt = copyText(cfg());
+    var fallback = function () { var a = $('copyArea'); a.value = txt; a.hidden = false; a.focus(); a.select(); };
+    try {
+      navigator.clipboard.writeText(txt).then(function () { $('copied').hidden = false; $('copyArea').hidden = true; }, fallback);
+    } catch (e) { fallback(); }
+  });
+  $('langBtn').addEventListener('click', function () {
+    lang = lang === 'ar' ? 'en' : 'ar';
+    try { localStorage.setItem(LKEY, lang); } catch (e) {}
+    applyLang(); render();
+  });
+
+  // bottom nav: highlight the section in view
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.bottomnav a'));
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        navLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('data-sec') === en.target.id); });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    ['s-inputs', 's-seq', 's-drives', 's-checks'].forEach(function (id) { var el = $(id); if (el) io.observe(el); });
+  }
+
+  lang = pickLang();
+  applyLang();
+  load();
+  render();
+
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+})();
+</script>
+</body>
+</html>
