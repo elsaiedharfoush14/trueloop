@@ -150,7 +150,7 @@ ol{margin:0;padding-inline-start:1.4em;display:grid;gap:6px}
 </div></div>
 
 <main class="wrap">
-  <a class="back" href="../../" data-t="back"></a>
+  <a class="back" id="backLink" href="../../" data-t="back"></a>
   <header class="top">
     <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
     <div class="t">
@@ -415,7 +415,7 @@ cuCap:' (Change limited to 30% per step.)',cuNeedSet:'Added copper {a} ppm. Ente
 </script>
 <script id="i18nx">
 Object.assign(I18N.ar,{
-title:'تشغيل وتظبيط النحاس والفضة',brandSub:'أدوات هندسية مجانية',back:'← TrueLoop · الرئيسية',print:'تقرير PDF',
+title:'تشغيل وتظبيط النحاس والفضة',brandSub:'أدوات هندسية مجانية',back:'← TrueLoop · الرئيسية',backApp:'← TrueLoop · كل الأدوات',print:'تقرير PDF',
 intro:'للفلوميتر التراسونيك (<code>TUF</code>) مع جهاز النحاس والفضة <code>NT Cu/Ag</code>. دخّل بيانات الموقع، والتطبيق يطلّعلك إعدادات الفلوميتر والجهاز، ويراجع القراءات، ويحسبلك التعديل من اختبار النحاس. البيانات بتتحفظ على جهازك بس.',
 p1:'الموقع',p2:'الماسورة',p3:'الفلوميتر',p4:'الجهاز',p5:'القراءات',p6:'النحاس',
 shareT:'شارك التطبيق',shareP:'امسح الباركود من موبايل تاني، أو ابعت اللينك. التطبيق بيتسطّب على الموبايل ويشتغل من غير نت.',copyLink:'نسخ اللينك',linkCopied:'اللينك اتنسخ',installBtn:'تسطيب التطبيق',
@@ -424,7 +424,7 @@ ctaT:'تشغيل محطات المياه من غير تخمين.',ctaP:'TrueLoop
 repLine:'تقرير تشغيل · {s} · {d}'
 });
 Object.assign(I18N.en,{
-title:'Cu/Ag Commissioning',brandSub:'free engineering tools',back:'← TrueLoop · home',print:'PDF report',
+title:'Cu/Ag Commissioning',brandSub:'free engineering tools',back:'← TrueLoop · home',backApp:'← TrueLoop · all tools',print:'PDF report',
 p1:'Site',p2:'Pipe',p3:'Flowmeter',p4:'Controller',p5:'Readings',p6:'Copper',
 shareT:'Share the app',shareP:'Scan from another phone or send the link. It installs on the phone and works offline.',copyLink:'Copy link',linkCopied:'Link copied',installBtn:'Install app',
 installHow:'<b>iPhone:</b> Safari → Share → Add to Home Screen<br><b>Android:</b> Chrome → ⋮ → Install app',
@@ -612,6 +612,8 @@ if(typeof module!=='undefined')module.exports=CALC;
     document.title='TrueLoop · '+t('title');
     document.querySelectorAll('[data-t]').forEach(function(el){var v=t(el.getAttribute('data-t'));if(el.hasAttribute('data-html'))el.innerHTML=v;else el.textContent=v;});
     $('lnAr').setAttribute('aria-pressed',lang==='ar');$('lnEn').setAttribute('aria-pressed',lang==='en');
+    var inApp=false;try{inApp=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||sessionStorage.getItem('tl_app')==='1'||/[?&]app=1/.test(location.search);if(inApp)sessionStorage.setItem('tl_app','1');}catch(e){}
+    if(inApp){$('backLink').href='../../app/';$('backLink').textContent=t('backApp');}
     render();
   }
 

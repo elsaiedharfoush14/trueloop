@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TrueLoop · Ultrasonic Flowmeter Setup</title>
+<meta name="description" content="Clamp-on ultrasonic flowmeter (TUF type) setup: pipe sizing from a tape, menu-by-menu settings, 4-20 mA, pulse, frequency and relay outputs, signal checks.">
+<meta name="theme-color" content="#071b2b">
+<link rel="manifest" href="../../app/manifest.webmanifest">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../app/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../assets/tl.css">
+<style>.outs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.out{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--soft);cursor:pointer;color:var(--ink);font-size:.9rem}
+.out input{width:auto;margin-top:4px}.out b{display:block;font-family:var(--f-display)}.out span{color:var(--muted);font-size:.82rem}
+.grade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;font-size:.78rem;text-align:center}
+.grade div{padding:6px 4px;border-radius:6px;background:var(--soft);border:1px solid var(--line)}
+.grade div.on{outline:2px solid var(--water)}</style>
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <a class="home" id="homeLink" href="../../app/"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop · <span data-t="short"></span></span></a>
+  <span class="offline" id="offBadge" hidden></span>
+  <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
+  <button class="tb pri" id="copyBtn" type="button" data-t="copy"></button>
+  <button class="tb" id="printBtn" type="button" data-t="print"></button>
+  <button class="tb" id="resetBtn" type="button" data-t="reset"></button>
+  <span id="toast" class="toast" role="status"></span>
+</div></div>
+
+<main class="wrap">
+  <a class="back" id="backLink" href="../../"></a>
+  <header class="top">
+    <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div class="t"><div class="brand"><b><span class="lt">True</span>Loop</b> · <span data-t="brandSub"></span></div>
+      <h1 data-t="title"></h1><p class="muted" data-t="intro" data-html></p></div>
+  </header>
+  <p class="rep" id="repLine"></p>
+
+  <section class="card" id="about">
+    <h2><span class="num">؟</span><span data-t="abT"></span></h2>
+    <p data-t="abLead"></p>
+    <div class="ab">
+      <div><h3 data-t="abHowT"></h3><p data-t="abHow"></p></div>
+      <div><h3 data-t="abKeysT"></h3><ul data-t="abKeys" data-html></ul></div>
+      <div class="pro"><h3 data-t="abGoodT"></h3><ul data-t="abGood" data-html></ul></div>
+      <div class="con"><h3 data-t="abLimT"></h3><ul data-t="abLim" data-html></ul></div>
+    </div>
+  </section>
+
+  <nav class="prog" style="--steps:5" aria-label="progress">
+    <a href="#s1" id="pg1"><i>1</i><span data-t="p1"></span></a><a href="#s2" id="pg2"><i>2</i><span data-t="p2"></span></a>
+    <a href="#s3" id="pg3"><i>3</i><span data-t="p3"></span></a><a href="#s4" id="pg4"><i>4</i><span data-t="p4"></span></a>
+    <a href="#s5" id="pg5"><i>5</i><span data-t="p5"></span></a>
+  </nav>
+
+  <section class="card" id="s1">
+    <h2><span class="num">1</span><span data-t="s1"></span></h2>
+    <div class="grid">
+      <label><span data-t="site"></span><input id="site" type="text" autocomplete="off"></label>
+      <label><span data-t="mat"></span><select id="mat">
+        <option value="cs" data-t="mat_cs"></option><option value="ss" data-t="mat_ss"></option><option value="di" data-t="mat_di"></option><option value="ci" data-t="mat_ci"></option>
+        <option value="hdpe" data-t="mat_hdpe" selected></option><option value="ppr" data-t="mat_ppr"></option><option value="pvc" data-t="mat_pvc"></option><option value="cu" data-t="mat_cu"></option></select></label>
+      <label><span data-t="circ"></span><input id="circ" type="number" min="0" step="0.1" inputmode="decimal"></label>
+      <label id="schL"><span>Schedule</span><select id="sch"><option value="10">Sch 10 / 10S</option><option value="40" selected>Sch 40 / 40S</option><option value="80">Sch 80</option></select></label>
+      <label id="pnL"><span>PN (PE100)</span><select id="pn"><option value="21">PN8 · SDR21</option><option value="17">PN10 · SDR17</option><option value="13.6">PN12.5 · SDR13.6</option><option value="11" selected>PN16 · SDR11</option><option value="9">PN20 · SDR9</option><option value="7.4">PN25 · SDR7.4</option></select></label>
+      <label id="sdrL"><span>SDR (PP-R)</span><select id="sdr"><option value="11">SDR11</option><option value="7.4" selected>SDR7.4</option><option value="6">SDR6</option></select></label>
+    </div>
+    <div id="sizeMsg" class="msgs"></div>
+    <div class="grid">
+      <label><span data-t="od"></span><input id="od" type="number" min="0" step="0.1" inputmode="decimal"></label>
+      <label><span data-t="wall"></span><input id="wall" type="number" min="0" step="0.01" inputmode="decimal"></label>
+      <label><span data-t="lining"></span><select id="lin"><option value="0" data-t="lin0"></option><option value="1">Tar Epoxy</option><option value="2">Rubber</option><option value="3">Mortar</option></select></label>
+    </div>
+    <div id="pipeInfo" class="kv"></div>
+  </section>
+
+  <section class="card" id="s2">
+    <h2><span class="num">2</span><span data-t="s2"></span></h2>
+    <div class="grid">
+      <label><span data-t="units"></span><select id="units"><option value="lmin">L/min</option><option value="m3h">m³/h</option></select></label>
+      <label><span data-t="peak"></span><input id="peak" type="number" min="0" step="0.1" inputmode="decimal"></label>
+    </div>
+    <p class="muted" data-t="outP"></p>
+    <div class="outs">
+      <label class="out"><input type="checkbox" id="oMa"><div><b>4–20 mA</b><span data-t="oMa"></span></div></label>
+      <label class="out"><input type="checkbox" id="oPu"><div><b data-t="oPuT"></b><span data-t="oPu"></span></div></label>
+      <label class="out"><input type="checkbox" id="oFr"><div><b data-t="oFrT"></b><span data-t="oFr"></span></div></label>
+      <label class="out"><input type="checkbox" id="oRe"><div><b data-t="oReT"></b><span data-t="oRe"></span></div></label>
+    </div>
+    <div class="grid" id="puBox">
+      <label><span data-t="puVal"></span><select id="puv"><option value="1">1 L</option><option value="10">10 L</option><option value="100">100 L</option><option value="1000">1 m³</option><option value="10000">10 m³</option></select></label>
+      <label><span data-t="puW"></span><select id="puw"><option value="50">50 ms</option><option value="100">100 ms</option><option value="200" selected>200 ms</option><option value="500">500 ms</option></select></label>
+    </div>
+    <div class="grid" id="reBox">
+      <label><span data-t="reMode"></span><select id="rem"><option value="fault" data-t="reFault"></option><option value="run" data-t="reRun"></option><option value="low" data-t="reLow"></option></select></label>
+      <label><span data-t="reTh"></span><input id="reth" type="number" min="0" step="1" value="20" inputmode="decimal"></label>
+    </div>
+    <div id="outMsg" class="msgs"></div>
+  </section>
+
+  <section class="card" id="s3">
+    <h2><span class="num">3</span><span data-t="s3"></span></h2>
+    <p class="muted" data-t="s3note" data-html></p>
+    <div class="tbl stack"><table><thead><tr><th data-t="thMenu"></th><th data-t="thVal"></th><th data-t="thWhy"></th></tr></thead><tbody id="fmRows"></tbody></table></div>
+  </section>
+
+  <section class="card" id="s4">
+    <h2><span class="num">4</span><span data-t="s4"></span></h2>
+    <div class="grid">
+      <label><span>M90 · UP</span><input id="up" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span>M90 · DN</span><input id="dn" type="number" step="0.1" inputmode="decimal"></label>
+      <label><span>M90 · Q</span><input id="q" type="number" step="1" inputmode="decimal"></label>
+      <label><span>M91 · Tom/Tos %</span><input id="m91" type="number" step="0.001" inputmode="decimal"></label>
+    </div>
+    <div class="grade" aria-hidden="true"><div id="g0">&lt; 60<br><span data-t="g0"></span></div><div id="g1">60–75<br><span data-t="g1"></span></div><div id="g2">75–80<br><span data-t="g2"></span></div><div id="g3">&gt; 80<br><span data-t="g3"></span></div></div>
+    <div id="sigMsg" class="msgs"></div>
+  </section>
+
+  <section class="card" id="s5">
+    <h2><span class="num">5</span><span data-t="s5"></span></h2>
+    <div class="tbl"><table><thead><tr><th data-t="thSign"></th><th data-t="thCause"></th><th data-t="thDo"></th></tr></thead><tbody data-t="trRows" data-html></tbody></table></div>
+    <details class="how"><summary data-t="keysT"></summary><ul data-t="keys" data-html></ul></details>
+    <details class="how"><summary data-t="omT"></summary><div class="tbl"><table><thead><tr><th data-t="thWhen"></th><th data-t="thWhat"></th></tr></thead><tbody data-t="omRows" data-html></tbody></table></div></details>
+  </section>
+
+  <section class="card" id="s6">
+    <h2><span class="num">6</span><span data-t="s6"></span></h2>
+    <textarea class="sum" id="summary" readonly aria-label="summary"></textarea>
+  </section>
+
+  <section class="card share-card no-print">
+    <div class="share">
+      <div class="qrb"><img src="qr.png" alt="QR"><span class="ql"><svg aria-hidden="true"><use href="#mark"/></svg></span></div>
+      <div style="display:grid;gap:8px;min-width:0"><h2 data-t="shareT"></h2><p class="muted" data-t="shareP"></p><div class="linkline" id="appLink"></div>
+        <div><button class="pri" id="linkBtn" type="button" data-t="copyLink"></button></div><p class="muted" data-t="installHow" data-html></p></div>
+    </div>
+  </section>
+
+  <section class="cta no-print">
+    <svg class="mk" role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div style="display:grid;gap:4px"><b style="font-family:var(--f-display);font-size:1.08rem" data-t="ctaT"></b><p data-t="ctaP"></p>
+      <p>WhatsApp <a href="https://wa.me/966560861304" target="_blank" rel="noopener">+966 56 086 1304</a> · <span data-t="city"></span></p></div>
+  </section>
+  <p class="foot">TrueLoop · Flowmeter Setup · <span id="verTxt"></span></p>
+</main>
+
+<script src="../../assets/tl-core.js"></script>
+<script>
+(function(){
+var VER='2026.11.14.2',URL_APP='https://elsaiedharfoush14.github.io/trueloop/tools/flowmeter/';
+var D={ar:{
+short:'الفلوميتر',title:'برمجة فلوميتر التراسونيك',
+intro:'لفلوميتر التراسونيك اللي بيتربط على الماسورة من بره (نوع <code>TUF</code>). لف المتر على الماسورة، واختار الخرج اللي محتاجه، والأداة تطلّعلك المنيوهات بالترتيب، وتراجع الإشارة، وتقولك تعمل إيه لو فيه مشكلة.',
+abT:'الجهاز ده بيعمل إيه؟',abLead:'بيقيس فلو المية جوه الماسورة من غير ما تقطعها أو توقف المية. حساسين بيتربطوا على الماسورة من بره، وبيبعتوا صوت عالي التردد (ultrasonic) لبعض مع اتجاه المية وعكسه.',
+abHowT:'بيقيس إزاي',abHow:'الصوت اللي ماشي مع المية بيوصل أسرع شوية من اللي ماشي عكسها. الجهاز بيقيس الفرق ده في الوقت، ومنه يحسب سرعة المية، وبعدين يضربها في مساحة الماسورة من جوه فيطلع الفلو. علشان كده مقاس الماسورة وسُمك الجدار لازم يكونوا مظبوطين.',
+abKeysT:'أهم 4 حاجات',abKeys:'<li><b>المقاس الصح:</b> القطر الخارجي والسُمك والخامة.</li><li><b>المسافة بين الحساسين:</b> من <code>M25</code> بالظبط.</li><li><b>الجل:</b> كتير ومن غير هوا.</li><li><b>مكان التركيب:</b> 10D مستقيم قبل و5D بعد، والحساسات على جنب الماسورة.</li>',
+abGoodT:'فايدته',abGood:'<li>بيتركّب من غير قطع الماسورة ولا وقف التشغيل.</li><li>مفيش أجزاء جوه المية، فمفيش ضغط بيضيع ولا تآكل.</li><li>بيطلّع 4–20 mA ونبضات وتردد وريليه، ويوصل لـ PLC أو أي جهاز تاني.</li>',
+abLimT:'حدوده',abLim:'<li>الماسورة لازم تبقى مليانة مية.</li><li>الهوا والرواسب الكتير بتضعّف الإشارة.</li><li>جدار البلاستيك التخين بيضعّف الإشارة، فممكن تحتاج طريقة Z.</li><li>الدقة بتعتمد على المقاس اللي دخّلته.</li>',
+p1:'الماسورة',p2:'الخرج',p3:'المنيوهات',p4:'الإشارة',p5:'الأعطال',
+s1:'الماسورة',site:'اسم الموقع / الخط',mat:'الخامة',mat_cs:'حديد كربون',mat_ss:'استانلس',mat_di:'زهر مرن (Ductile)',mat_ci:'زهر (Cast iron)',mat_hdpe:'HDPE / PE100',mat_ppr:'PP-R',mat_pvc:'PVC / uPVC',mat_cu:'نحاس',
+circ:'المحيط بالمتر (cm)',od:'القطر الخارجي OD (mm)',wall:'سُمك الجدار (mm)',lining:'البطانة',lin0:'مفيش',
+idTxt:'القطر الداخلي',perMs:'1 m/s =',velPeak:'السرعة عند أقصى فلو',
+size:'المحيط بيدّي قطر {m} mm، وأقرب مقاس قياسي {od} mm{lbl}.',sizeFar:' الفرق {d}%: قيس تاني على حتة نضيفة.',noWall:'السُمك مش في الجدول للخامة دي. اكتبه من على الماسورة.',
+s2:'الخرج المطلوب',units:'وحدة الفلو (M31)',peak:'أقصى فلو متوقع',outP:'الفلوميتر هيبعت إيه وعلى فين؟ اختار واحد أو أكتر.',
+oMa:'لـ PLC أو SCADA أو شاشة: تيار بيتناسب مع الفلو.',oPuT:'نبضات عدّاد',oPu:'نبضة لكل كمية مية، لعدّاد أو PLC بيعدّ.',oFrT:'تردد',oFr:'لأجهزة بتقيس السرعة من التردد، زي جهاز النحاس والفضة.',oReT:'ريليه / إنذار',oRe:'إشارة تشغيل أو عطل أو فلو قليل للوحة.',
+puVal:'كل نبضة =',puW:'عرض النبضة (M54)',reMode:'وظيفة الريليه',reFault:'عطل (مفيش إشارة)',reRun:'تشغيل (فيه فلو)',reLow:'إنذار فلو قليل',reTh:'حد الفلو',
+puOk:'أقصى نبضات على أقصى فلو: {n} في الدقيقة، والفلوميتر يقدر لحد {m}.',puBad:'على أقصى فلو محتاج {n} نبضة في الدقيقة، والفلوميتر أقصاه {m} بعرض النبضة ده. كبّر كمية النبضة أو صغّر العرض.',
+puNote:'لو الجهاز اللي بيستقبل بيقيس طول النبضة مش عددها (زي جهاز النحاس والفضة)، استخدم التردد مش النبضات.',reNote:'الريليه في الجهاز ده ترانزستور (OCT2): محتاج مصدر DC وقطبية صح، ومينفعش يتوصل على 230V.',needPeak:'اكتب أقصى فلو علشان أحسب المدى.',
+s3:'المنيوهات بالترتيب',s3note:'<code>MENU</code> + رقم المنيو، و<code>ENT</code> للتعديل و<code>ENT</code> للتأكيد. في الآخر احفظ بـ <code>M26</code>.',needPipe:'دخّل بيانات الماسورة.',
+r11:'القطر الخارجي.',r12:'سُمك الجدار. القطر الداخلي = {id} mm.',r14o:'الخامة مش في القايمة، فبنختار Other.',r14s:'من قايمة الفلوميتر.',r15:'سرعة الصوت في الجدار، قيمة بداية. عدّلها لحد ما M91 يقرب من 100%.',r16:'البطانة.',r20:'مية.',
+r23:'نوع الحساس حسب المقاس (TS-2: DN25–100، TM-1: DN50–700، TL-1: DN300–6000).',r24z:'ماسورة كبيرة أو جدار بلاستيك تخين: ابدأ بـ Z، أو V لو الإشارة فوق 60.',r24v:'الحساسين على نفس الجنب.',r24zv:'Z (أو V)',r25v:'اقرا الرقم',r25:'ركّب الحساسين على المسافة دي بالظبط.',
+r31:'وحدة الفلو على الشاشة.',r32:'وحدة العدّاد.',r33:'x1 بالاسم؛ رقم 1 في القايمة معناه x0.01.',r33p:'كمية كل نبضة = الوحدة × المضاعف.',r40:'تهدئة القراية، المانوال بيقول 5–10 ثواني.',r41:'قطع الفلو الصغير m/s.',
+r55:'وضع 4–20 mA.',r56:'الفلو عند 4 mA.',r57:'الفلو عند 20 mA = أقصى فلو + 20% احتياطي.',r58:'اختبار التيار: جرّب 4 و12 و20 mA وشوف الـ PLC بيقرا إيه.',
+r54:'عرض النبضة.',r78p:'نبضة لكل كمية مية.',r78f:'تردد بيتناسب مع الفلو.',r67:'مدى التردد.',r68:'صفر فلو = صفر تردد.',r69:'{f} Hz = {m}، يعني كل نبضة = {k}.',
+r79f:'الريليه يقفل لما الإشارة تقطع (عطل).',r79a:'Alarm #1 على الريليه.',r73r:'الحد الأدنى ما يشتغلش أبدًا.',r74r:'يقفل لما الفلو يعدّي الحد.',r73l:'يقفل لما الفلو يقل عن الحد.',r74l:'الحد الأعلى ما يشتغلش أبدًا.',
+r42:'تصفير والمية واقفة والماسورة مليانة.',r26:'حفظ دايم.',grpPipe:'الماسورة والحساسات',grpUnits:'الوحدات والعرض',grpOut:'المخارج',grpEnd:'التشغيل والحفظ',
+s4:'مراجعة الإشارة',g0:'مش هيشتغل',g1:'ضعيف',g2:'كويس',g3:'ممتاز',
+sigOk:'قوة الإشارة {v}: {g}.',sigBad:'قوة الإشارة {v}: مش هيشتغل. جل أكتر، نضّف السطح، راجع المسافة، أو جرّب Z.',sigMid:'قوة الإشارة {v}: ضعيفة. حسّن التركيب قبل التسليم.',
+qOk:'جودة الإشارة Q = {v}.',qBad:'Q = {v} أقل من 60: الجهاز مش هيشتغل كويس.',
+m91Ok:'M91 = {v}%، المقاس والمسافة مظبوطين.',m91Low:'M91 = {v}%: الصوت بيوصل أسرع من المحسوب، يعني الماسورة من جوه أصغر من المدخّل. راجع M11 و M12 والخامة.',m91High:'M91 = {v}%: الصوت بيوصل أبطأ، يعني الماسورة أكبر من المدخّل أو المسافة M25 غلط.',
+s5:'الأعطال وحلولها',
+trRows:'<tr><td>الإشارة أقل من 60</td><td>جل قليل، أو سطح فيه دهان أو صدأ، أو هوا في الماسورة</td><td>نضّف لحد المعدن أو البلاستيك، حط جل كتير، لف الحساسات على جنب الماسورة (ساعة 3 أو 9)، جرّب Z.</td></tr><tr><td>M91 بره 97–103%</td><td>مقاس أو سُمك أو خامة غلط، أو المسافة مش مظبوطة</td><td>قيس المحيط تاني، راجع M11 و M12 و M14، وركّب على مسافة M25 بالظبط.</td></tr><tr><td>القراية بتتنطط</td><td>اضطراب قريب من كوع أو محبس أو طلمبة</td><td>انقل الحساسات لمكان فيه 10D مستقيم قبل و5D بعد، وزوّد M40.</td></tr><tr><td>الفلو بالسالب</td><td>الحساسين متبدلين (UP و DN)</td><td>بدّل كابلات الحساسين، أو اعكس الاتجاه من الإعدادات.</td></tr><tr><td>الحرف جنب الفلو مش R</td><td>كود عطل من M08</td><td>افتح M08 واقرا الكود، وراجع الإشارة.</td></tr><tr><td>الـ PLC مش شايف 4–20 mA</td><td>القطبية أو الـ loop مش مقفول، أو active على active</td><td>جرّب M58، وراجع إن واحد بس فيهم بيغذّي الـ loop.</td></tr><tr><td>الجهاز اللي بيستقبل النبضات بيقرا رقم ثابت</td><td>بيقيس طول النبضة مش عددها</td><td>استخدم خرج التردد (M78 = Flow Rate Pulse).</td></tr><tr><td>الإعدادات ضاعت بعد قطع الكهربا</td><td>ما اتحفظتش</td><td>احفظ بـ M26 بعد أي تعديل.</td></tr>',
+keysT:'الكيبورد والمنيوهات المهمة',keys:'<li><code>MENU</code> + رقمين = تفتح المنيو. <code>ENT</code> = تعديل وتأكيد. الأسهم = تقلّب الاختيارات.</li><li><code>M00</code>–<code>M02</code>: الفلو والعدّادات. <code>M01</code>: الفلو والسرعة. <code>M08</code>: أكواد الأعطال (R = سليم).</li><li><code>M90</code>: قوة وجودة الإشارة. <code>M91</code>: نسبة الوقت (97–103%).</li><li><code>M26</code>: حفظ دايم. <code>M37</code>: تصفير العدّاد. احذر: النقطة ثم ◄ في M37 بترجّع إعدادات المصنع.</li><li><code>M60</code>: التاريخ والوقت. <code>M61</code>: رقم الجهاز والنسخة.</li>',
+omT:'الصيانة الدورية',omRows:'<tr><td>كل يوم</td><td>الحرف جنب الفلو R، والقراية منطقية مع التشغيل.</td></tr><tr><td>كل شهر</td><td>راجع M90 و M91، واربط حزام الحساسات.</td></tr><tr><td>كل 3–6 شهور</td><td>جدّد الجل تحت الحساسات، ونضّف مكانها.</td></tr><tr><td>بعد أي شغل على الماسورة</td><td>أعد التركيب على مسافة M25 وراجع M91.</td></tr>',
+s6:'الملخص'
+},en:{
+short:'Flowmeter',title:'Ultrasonic Flowmeter Setup',
+intro:'For clamp-on ultrasonic flowmeters (<code>TUF</code> type). Tape the pipe, pick the outputs you need, and get the menus in order, a signal check and a fault guide.',
+abT:'What does this meter do?',abLead:'It measures water flow inside a pipe without cutting it or stopping the water. Two transducers clamped on the outside send high-frequency sound to each other, with the flow and against it.',
+abHowT:'How it measures',abHow:'Sound travelling with the flow arrives slightly sooner than sound travelling against it. The meter measures that time difference, works out the water velocity, then multiplies by the inner pipe area to get flow. That is why the pipe size and wall must be right.',
+abKeysT:'The 4 things that matter',abKeys:'<li><b>Correct size:</b> OD, wall and material.</li><li><b>Transducer spacing:</b> exactly as <code>M25</code> says.</li><li><b>Couplant:</b> plenty, no air.</li><li><b>Location:</b> 10D straight before, 5D after, transducers on the side of the pipe.</li>',
+abGoodT:'Benefits',abGood:'<li>Installs without cutting the pipe or stopping operation.</li><li>Nothing in the water: no pressure loss, no wear.</li><li>4–20 mA, pulse, frequency and relay outputs for a PLC or any other device.</li>',
+abLimT:'Limits',abLim:'<li>The pipe must run full.</li><li>Air and heavy solids weaken the signal.</li><li>Thick plastic walls weaken the signal; Z mounting may be needed.</li><li>Accuracy depends on the size you enter.</li>',
+p1:'Pipe',p2:'Outputs',p3:'Menus',p4:'Signal',p5:'Faults',
+s1:'Pipe',site:'Site / line name',mat:'Material',mat_cs:'Carbon steel',mat_ss:'Stainless steel',mat_di:'Ductile iron',mat_ci:'Cast iron',mat_hdpe:'HDPE / PE100',mat_ppr:'PP-R',mat_pvc:'PVC / uPVC',mat_cu:'Copper',
+circ:'Circumference by tape (cm)',od:'Outer diameter OD (mm)',wall:'Wall thickness (mm)',lining:'Lining',lin0:'None',
+idTxt:'Inner diameter',perMs:'1 m/s =',velPeak:'Velocity at peak flow',
+size:'The circumference gives {m} mm; nearest standard size {od} mm{lbl}.',sizeFar:' {d}% off: measure again on a clean part of the pipe.',noWall:'No wall table for this material. Enter it from the pipe marking.',
+s2:'Outputs needed',units:'Flow unit (M31)',peak:'Expected peak flow',outP:'What does the meter send, and to what? Pick one or more.',
+oMa:'To a PLC, SCADA or display: current proportional to flow.',oPuT:'Totaliser pulses',oPu:'One pulse per volume, for a counter or PLC.',oFrT:'Frequency',oFr:'For devices that read rate from frequency, such as the Cu/Ag controller.',oReT:'Relay / alarm',oRe:'Run, fault or low-flow signal to the panel.',
+puVal:'Each pulse =',puW:'Pulse width (M54)',reMode:'Relay function',reFault:'Fault (no signal)',reRun:'Run (flow present)',reLow:'Low-flow alarm',reTh:'Flow threshold',
+puOk:'At peak flow: {n} pulses/min; the meter can give up to {m}.',puBad:'At peak flow you need {n} pulses/min but this pulse width allows {m}. Use a larger volume per pulse or a shorter width.',
+puNote:'If the receiver reads pulse length rather than counting pulses (like the Cu/Ag controller), use frequency instead.',reNote:'This "relay" is a transistor (OCT2): it needs a DC supply and the right polarity, never 230 V.',needPeak:'Enter the peak flow to work out the ranges.',
+s3:'Menus in order',s3note:'<code>MENU</code> + menu number, <code>ENT</code> to edit and <code>ENT</code> to confirm. Save at the end with <code>M26</code>.',needPipe:'Enter the pipe data.',
+r11:'Outer diameter.',r12:'Wall thickness. Inner diameter = {id} mm.',r14o:'Material not in the list, so choose Other.',r14s:'From the meter list.',r15:'Sound speed in the wall, a starting value. Adjust until M91 is close to 100%.',r16:'Lining.',r20:'Water.',
+r23:'Transducer by size (TS-2: DN25–100, TM-1: DN50–700, TL-1: DN300–6000).',r24z:'Large pipe or thick plastic wall: start with Z, or V if the signal is above 60.',r24v:'Both transducers on the same side.',r24zv:'Z (or V)',r25v:'Read it',r25:'Mount the transducers at exactly this spacing.',
+r31:'Flow unit on the display.',r32:'Totaliser unit.',r33:'Choose x1 by name; item 1 in the list is x0.01.',r33p:'Volume per pulse = unit × multiplier.',r40:'Display damping; the manual suggests 5–10 s.',r41:'Low-flow cut-off in m/s.',
+r55:'4–20 mA mode.',r56:'Flow at 4 mA.',r57:'Flow at 20 mA = peak flow + 20% margin.',r58:'Loop test: try 4, 12 and 20 mA and check what the PLC reads.',
+r54:'Pulse width.',r78p:'One pulse per volume.',r78f:'Frequency proportional to flow.',r67:'Frequency range.',r68:'Zero flow = zero frequency.',r69:'{f} Hz = {m}, so 1 pulse = {k}.',
+r79f:'Relay closes when the signal is lost (fault).',r79a:'Alarm #1 on the relay.',r73r:'Low limit never trips.',r74r:'Closes when flow exceeds the threshold.',r73l:'Closes when flow drops below the threshold.',r74l:'High limit never trips.',
+r42:'Zero with the water stopped and the pipe full.',r26:'Permanent save.',grpPipe:'Pipe and transducers',grpUnits:'Units and display',grpOut:'Outputs',grpEnd:'Start-up and save',
+s4:'Signal check',g0:'will not work',g1:'poor',g2:'good',g3:'excellent',
+sigOk:'Signal strength {v}: {g}.',sigBad:'Signal strength {v}: will not work. More couplant, clean surface, check spacing, or try Z.',sigMid:'Signal strength {v}: poor. Improve the mounting before handover.',
+qOk:'Signal quality Q = {v}.',qBad:'Q = {v} is below 60: the meter will not work reliably.',
+m91Ok:'M91 = {v}%: size and spacing are right.',m91Low:'M91 = {v}%: sound arrives sooner than calculated, so the bore is smaller than entered. Check M11, M12 and material.',m91High:'M91 = {v}%: sound arrives later, so the bore is larger than entered or the M25 spacing is wrong.',
+s5:'Faults and fixes',
+trRows:'<tr><td>Signal below 60</td><td>Too little couplant, paint or rust, or air in the pipe</td><td>Clean to bare metal or plastic, plenty of couplant, move the transducers to the side (3 or 9 o\'clock), try Z.</td></tr><tr><td>M91 outside 97–103%</td><td>Wrong size, wall or material, or spacing off</td><td>Measure the circumference again, check M11, M12, M14 and mount at exactly M25.</td></tr><tr><td>Reading jumps</td><td>Turbulence from a bend, valve or pump nearby</td><td>Move to 10D straight before and 5D after; raise M40.</td></tr><tr><td>Negative flow</td><td>Upstream and downstream swapped</td><td>Swap the transducer cables, or reverse direction in the settings.</td></tr><tr><td>Letter next to flow is not R</td><td>Fault code in M08</td><td>Open M08, read the code, check the signal.</td></tr><tr><td>PLC sees no 4–20 mA</td><td>Polarity, open loop, or active-to-active</td><td>Use M58; make sure only one side powers the loop.</td></tr><tr><td>Pulse receiver reads a fixed value</td><td>It reads pulse length, not pulse count</td><td>Use the frequency output (M78 = Flow Rate Pulse).</td></tr><tr><td>Settings lost after a power cut</td><td>Not saved</td><td>Save with M26 after every change.</td></tr>',
+keysT:'Keypad and key menus',keys:'<li><code>MENU</code> + two digits opens a menu. <code>ENT</code> edits and confirms. Arrows scroll options.</li><li><code>M00</code>–<code>M02</code>: flow and totalisers. <code>M01</code>: flow and velocity. <code>M08</code>: fault codes (R = normal).</li><li><code>M90</code>: signal strength and quality. <code>M91</code>: time ratio (97–103%).</li><li><code>M26</code>: permanent save. <code>M37</code>: totaliser reset. Careful: dot then ◄ in M37 restores factory settings.</li><li><code>M60</code>: date and time. <code>M61</code>: serial and version.</li>',
+omT:'Routine maintenance',omRows:'<tr><td>Daily</td><td>Letter next to flow is R and the reading matches operation.</td></tr><tr><td>Monthly</td><td>Check M90 and M91; tighten the transducer strap.</td></tr><tr><td>Every 3–6 months</td><td>Renew the couplant and clean the mounting area.</td></tr><tr><td>After any pipe work</td><td>Remount at the M25 spacing and check M91.</td></tr>',
+s6:'Summary'
+}};
+
+var F=['site','mat','circ','sch','pn','sdr','od','wall','lin','units','peak','oMa','oPu','oFr','oRe','puv','puw','rem','reth','up','dn','q','m91'];
+var st=TL.store('tl_flow_v1',F),manual={od:false,wall:false},$=TL.$,num=TL.num,t=function(k,v){return TL.t(k,v);};
+var MULT=['0. x0.001','1. x0.01','2. x0.1','3. x1','4. x10','5. x100','6. x1000','7. x10000'];
+
+function render(){
+  var mat=$('mat').value;
+  $('schL').hidden=!(mat==='cs'||mat==='ss');$('pnL').hidden=mat!=='hdpe';$('sdrL').hidden=mat!=='ppr';
+  var sz=TL.pipe.sizeFromCirc(mat,num('circ'),{sch:$('sch').value,pn:parseFloat($('pn').value),sdr:parseFloat($('sdr').value)}),sm=[];
+  if(sz){if(!manual.od)$('od').value=sz.od;if(!manual.wall&&sz.wall!=null)$('wall').value=sz.wall;
+    var far=sz.diffPct>3;sm.push([far?'warn':'ok',t('size',{m:sz.measured,od:sz.od,lbl:sz.label?' ('+sz.label+')':''})+(far?t('sizeFar',{d:sz.diffPct.toFixed(1)}):'')]);
+    if(sz.wall==null&&!manual.wall)sm.push(['warn',t('noWall')]);}
+  TL.msg($('sizeMsg'),sm);
+  var od=num('od'),wall=num('wall'),ok=od>0&&wall>0&&od>2*wall,id=ok?od-2*wall:0,pm=ok?TL.pipe.perMs(id):0;
+  var u=$('units').value,uLbl=u==='m3h'?'m³/h':'L/min',peak=num('peak'),peakL=peak>0?(u==='m3h'?peak*1000/60:peak):null;
+  $('pipeInfo').innerHTML=ok?'<span>'+TL.esc(t('idTxt'))+' <b>'+TL.r1(id)+' mm</b></span><span>'+TL.esc(t('perMs'))+' <b>'+(u==='m3h'?(pm*60/1000).toFixed(1)+' m³/h':Math.round(pm)+' L/min')+'</b></span>'+(peakL?'<span>'+TL.esc(t('velPeak'))+' <b>'+(peakL/pm).toFixed(2)+' m/s</b></span>':''):'';
+  TL.prog(1,ok?(TL.worst(sm)==='warn'?'warn':'ok'):'');
+  $('puBox').hidden=!$('oPu').checked;$('reBox').hidden=!$('oRe').checked;
+  var om=[];
+  if(($('oMa').checked||$('oFr').checked)&&!peakL)om.push(['warn',t('needPeak')]);
+  if($('oPu').checked&&peakL){var v=parseFloat($('puv').value),w=parseFloat($('puw').value),need=Math.ceil(peakL/v),max=Math.floor(60000/(2*w));om.push(need<=max*0.8?['ok',t('puOk',{n:need,m:max})]:['bad',t('puBad',{n:need,m:max})]);}
+  if($('oPu').checked)om.push(['warn',t('puNote')]);
+  if($('oRe').checked)om.push(['warn',t('reNote')]);
+  TL.msg($('outMsg'),om);TL.prog(2,($('oMa').checked||$('oPu').checked||$('oFr').checked||$('oRe').checked)?(TL.worst(om)==='bad'?'bad':'ok'):'');
+
+  var rows=[];
+  if(ok){
+    var plastic=mat==='hdpe'||mat==='ppr'||mat==='pvc',z=od>300||(plastic&&wall>20);
+    rows.push(['§',t('grpPipe')],['M11',TL.r1(od),t('r11')],['M12',wall,t('r12',{id:TL.r1(id)})],['M14',TL.pipe.M14[mat],TL.pipe.SOUND[mat]?t('r14o'):t('r14s')]);
+    if(TL.pipe.SOUND[mat])rows.push(['M15',TL.pipe.SOUND[mat],t('r15')]);
+    rows.push(['M16',$('lin').options[$('lin').selectedIndex].value==='0'?'0. None':$('lin').options[$('lin').selectedIndex].text,t('r16')],['M20','0. Water',t('r20')],
+      ['M23',TL.pipe.transducer(od),t('r23')],['M24',z?t('r24zv'):'V',z?t('r24z'):t('r24v')],['M25',t('r25v'),t('r25')]);
+    var pv=$('oPu').checked?parseFloat($('puv').value):1,cubic=pv>=1000,mult=cubic?pv/1000:pv,mi=Math.round(Math.log10(mult))+3;
+    rows.push(['§',t('grpUnits')],['M30','Metric',''],['M31',uLbl,t('r31')],['M32',cubic?'Cubic Meter':'Liter',t('r32')],['M33',MULT[mi],$('oPu').checked?t('r33p'):t('r33')],
+      ['M34 / M35 / M36','On / On / Off',''],['M40','5–10',t('r40')],['M41','0.03',t('r41')]);
+    var anyOut=$('oMa').checked||$('oPu').checked||$('oFr').checked||$('oRe').checked;
+    if(anyOut)rows.push(['§',t('grpOut')]);
+    if($('oMa').checked){var hi=peak>0?Math.ceil(peak*1.2):'?';rows.push(['M55','0. 4-20mA',t('r55'),1],['M56','0',t('r56'),1],['M57',hi+' '+uLbl,t('r57'),1],['M58','4 / 12 / 20 mA',t('r58')]);}
+    if($('oPu').checked){rows.push(['M78','9. POS Int Pulse',t('r78p'),1],['M54',$('puw').value+' ms',t('r54'),1]);}
+    if($('oFr').checked){var need2=Math.max(peakL||0,1)*1.2,fm=[10,20,50].filter(function(f){return f*60>=need2;})[0],m69,k;
+      if(fm){m69=fm*60;k=1;}else{fm=50;m69=Math.ceil(need2/500)*500;k=m69/3000;}
+      var m69u=u==='m3h'?TL.r1(m69*60/1000)+' m³/h':m69+' L/min';
+      rows.push(['M78','24. Flow Rate Pulse',t('r78f'),1],['M67','0 – '+fm+' Hz',t('r67'),1],['M68','0',t('r68'),1],['M69',u==='m3h'?TL.r1(m69*60/1000):m69,t('r69',{f:fm,m:m69u,k:k+' L'}),1]);}
+    if($('oRe').checked){var md=$('rem').value,th=num('reth')||0;
+      if(md==='fault')rows.push(['M79','0. No Signal',t('r79f'),1]);
+      else if(md==='run')rows.push(['M79','6. Alarm #1',t('r79a'),1],['M73','-99999',t('r73r')],['M74',th,t('r74r'),1]);
+      else rows.push(['M79','6. Alarm #1',t('r79a'),1],['M73',th,t('r73l'),1],['M74','99999',t('r74l')]);}
+    rows.push(['§',t('grpEnd')],['M42','Set Zero',t('r42')],['M26','ENT',t('r26')]);
+    $('fmRows').innerHTML=TL.rows(rows);TL.prog(3,'ok');
+  }else{$('fmRows').innerHTML='<tr><td colspan="3" class="muted">'+TL.esc(t('needPipe'))+'</td></tr>';TL.prog(3,'');}
+
+  var sg=[],up=num('up'),dn=num('dn'),q=num('q'),m91=num('m91');
+  ['g0','g1','g2','g3'].forEach(function(g){$(g).className='';});
+  if(up>0||dn>0){var lo=Math.min(up||99,dn||99),gi=lo<60?0:lo<75?1:lo<=80?2:3;$('g'+gi).className='on';
+    sg.push(gi===0?['bad',t('sigBad',{v:lo})]:gi===1?['warn',t('sigMid',{v:lo})]:['ok',t('sigOk',{v:lo,g:t('g'+gi)})]);}
+  if(q>0)sg.push(q>=60?['ok',t('qOk',{v:q})]:['bad',t('qBad',{v:q})]);
+  if(m91>0)sg.push(m91>=97&&m91<=103?['ok',t('m91Ok',{v:m91})]:['bad',t(m91<97?'m91Low':'m91High',{v:m91})]);
+  TL.msg($('sigMsg'),sg);TL.prog(4,TL.worst(sg));TL.prog(5,'');
+  $('summary').value=summary(rows,sg);
+  $('repLine').textContent=t('repLine',{s:$('site').value||'—',d:new Date().toLocaleDateString(TL.lang==='ar'?'ar-EG':'en-GB')});
+  st.save(manual);
+}
+function summary(rows,sg){
+  var L=['*TrueLoop · Flowmeter setup* '+$('site').value];
+  rows.forEach(function(r){if(r[0]==='§')L.push('','*'+r[1]+'*');else if(r[0]!=='M25')L.push(r[0]+' = '+r[1]);});
+  if(num('up')!=null||num('m91')!=null)L.push('','*Signal*','M90 '+(num('up')||'-')+'/'+(num('dn')||'-')+' Q '+(num('q')||'-')+' | M91 '+(num('m91')||'-')+'%');
+  L.push('',URL_APP);return L.join('\n');
+}
+TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'flowmeter',onLang:render});
+var x=st.load();if(x)manual=x;
+F.forEach(function(f){var el=$(f);el.addEventListener(el.type==='checkbox'?'change':'input',function(){
+  if(f==='od')manual.od=$('od').value!=='';if(f==='wall')manual.wall=$('wall').value!=='';
+  if(f==='circ'||f==='mat'||f==='sch'||f==='pn'||f==='sdr'){manual.od=false;manual.wall=false;}render();});});
+$('copyBtn').onclick=function(){TL.copy($('summary').value,null,$('summary'));};
+$('linkBtn').onclick=function(){TL.copy(URL_APP,TL.t('linkCopied'));};
+$('printBtn').onclick=function(){window.print();};
+$('resetBtn').onclick=function(){var b=this;if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent=TL.t('resetConfirm');setTimeout(function(){b.dataset.armed='';b.textContent=TL.t('reset');},3000);return;}
+  st.clear();location.reload();};
+$('appLink').textContent=URL_APP;$('verTxt').textContent='v'+VER;
+if(!$('oMa').checked&&!$('oPu').checked&&!$('oFr').checked&&!$('oRe').checked)$('oMa').checked=true;
+TL.applyLang();
+})();
+</script>
+</body>
+</html>

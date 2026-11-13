@@ -1,0 +1,25 @@
+{
+  "id": "/trueloop/app/",
+  "name": "TrueLoop Field",
+  "short_name": "TrueLoop",
+  "description": "Commissioning tools for water plants: Cu/Ag ionisation, booster sets, ultrasonic flowmeters, loop checks, RO normalization, calibration and parts. Works offline.",
+  "lang": "ar",
+  "dir": "auto",
+  "start_url": "./?source=pwa",
+  "scope": "../",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#071b2b",
+  "theme_color": "#071b2b",
+  "categories": ["utilities","productivity","business"],
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Cu/Ag Commissioning", "url": "../tools/cuag/?app=1", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
+    {"name": "Booster on LS H100", "url": "../tools/booster/?app=1", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
+    {"name": "Flowmeter Setup", "url": "../tools/flowmeter/?app=1", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]}
+  ]
+}

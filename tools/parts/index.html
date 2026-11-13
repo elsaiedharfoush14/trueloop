@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TrueLoop · Parts Finder</title>
+<meta name="description" content="Part numbers for the equipment in TrueLoop tools: drive breakers, ultrasonic transducers, Cu/Ag units and copper test kits, each with its source.">
+<meta name="theme-color" content="#071b2b">
+<link rel="manifest" href="../../app/manifest.webmanifest">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../app/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../assets/tl.css">
+<style>.search{display:flex;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 10px}
+.search input{border:0;background:transparent;font-size:1rem;padding:8px 4px}.search svg{width:20px;height:20px;color:var(--muted);flex:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chips button{border-radius:99px;padding:5px 12px;font-size:.82rem;border-color:var(--line);color:var(--ink);background:var(--card)}
+.chips button[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.part{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:6px;align-content:start;min-width:0}
+.part .pn{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.part .pn code{font-size:.95rem;font-weight:600;background:var(--soft)}
+.part .pn button{padding:3px 10px;font-size:.75rem}
+.part h3{font-size:.95rem}.part .sp{font-size:.85rem;color:var(--muted)}
+.part .src{font-size:.75rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:6px}
+.cat{font-size:.7rem;font-weight:600;letter-spacing:.04em;color:var(--water);text-transform:uppercase;font-family:var(--f-mono)}
+.empty{text-align:center;color:var(--muted);padding:24px}</style>
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <a class="home" id="homeLink" href="../../app/"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop · <span data-t="short"></span></span></a>
+  <span class="offline" id="offBadge" hidden></span>
+  <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
+  <span id="toast" class="toast" role="status"></span>
+</div></div>
+<main class="wrap">
+  <a class="back" id="backLink" href="../../"></a>
+  <header class="top">
+    <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div class="t"><div class="brand"><b><span class="lt">True</span>Loop</b> · <span data-t="brandSub"></span></div>
+      <h1 data-t="title"></h1><p class="muted" data-t="intro"></p></div>
+  </header>
+  <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" data-tp="ph" autocomplete="off" aria-label="search"></div>
+  <div class="chips" id="chips"></div>
+  <div class="plist" id="list"></div>
+  <section class="card"><h2 data-t="reqT"></h2><p class="muted" data-t="reqP"></p><p><a class="back" href="https://wa.me/966560861304?text=Part%20request%20-%20TrueLoop" target="_blank" rel="noopener" data-t="reqA"></a></p></section>
+  <p class="foot">TrueLoop · Parts Finder · <span id="verTxt"></span></p>
+</main>
+<script src="../../assets/tl-core.js"></script>
+<script>
+(function(){
+var VER='2026.11.14.2';
+var D={ar:{short:'قطع الغيار',title:'دليل قطع الغيار',intro:'أرقام القطع للأجهزة اللي في أدوات TrueLoop، وكل رقم معاه مصدره من المانوال. ابحث بالرقم أو الاسم أو المقاس.',ph:'ابحث: HI702، TM-1، 11 kW، LC8K…',
+  all:'الكل',drive:'درايفات وبريكرات',flow:'فلوميتر',cuag:'نحاس وفضة',test:'كيت الاختبار',copy:'نسخ',copiedPn:'رقم القطعة اتنسخ',src:'المصدر',none:'مفيش نتايج. جرّب كلمة تانية.',
+  reqT:'مش لاقي القطعة؟',reqP:'ابعتلنا الموديل أو صورة الـ nameplate، ونضيفها للدليل.',reqA:'اطلب على واتساب ←'},
+ en:{short:'Parts',title:'Parts Finder',intro:'Part numbers for the equipment in TrueLoop tools, each with its manual source. Search by number, name or size.',ph:'Search: HI702, TM-1, 11 kW, LC8K…',
+  all:'All',drive:'Drives & breakers',flow:'Flowmeter',cuag:'Cu/Ag',test:'Test kits',copy:'Copy',copiedPn:'Part number copied',src:'Source',none:'No results. Try another word.',
+  reqT:'Part not here?',reqP:'Send us the model or a nameplate photo and we will add it.',reqA:'Request on WhatsApp →'}};
+var M_H100='LS H100 manual §11.4',M_TUF='Ultrasonic flowmeter manual §4',M_CSI='NT Cu/Ag CSI manual',M_HI='CSI manual (Hanna HI-702 pages)';
+var P=[
+ ['ABS33c','drive','LS MCCB for H100 0.75–1.5 kW (400 V)','LS MCCB · H100 0.75–1.5 kW (400 V)','10 A',M_H100],
+ ['ABS33c','drive','LS MCCB for H100 2.2–3.7 kW (400 V)','LS MCCB · H100 2.2–3.7 kW (400 V)','15 A',M_H100],
+ ['ABS33c','drive','LS MCCB for H100 5.5–7.5 kW (400 V)','LS MCCB · H100 5.5–7.5 kW (400 V)','30 A',M_H100],
+ ['ABS53c','drive','LS MCCB for H100 11 kW (400 V)','LS MCCB · H100 11 kW (400 V)','50 A',M_H100],
+ ['ABS63c','drive','LS MCCB for H100 15 kW (400 V)','LS MCCB · H100 15 kW (400 V)','60 A',M_H100],
+ ['ABS103c','drive','LS MCCB for H100 18.5–22 kW (400 V)','LS MCCB · H100 18.5–22 kW (400 V)','100 A',M_H100],
+ ['TS-2','flow','حساس تراسونيك صغير clamp-on','Small clamp-on transducer','DN25–100 · −30…90 °C',M_TUF],
+ ['TM-1','flow','حساس تراسونيك متوسط clamp-on','Medium clamp-on transducer','DN50–700 · −30…90 °C',M_TUF],
+ ['TL-1','flow','حساس تراسونيك كبير clamp-on','Large clamp-on transducer','DN300–6000 · −30…90 °C',M_TUF],
+ ['TS-2-HT','flow','حساس صغير لدرجة حرارة عالية','Small high-temperature transducer','DN25–100 · −30…160 °C',M_TUF],
+ ['TM-1-HT','flow','حساس متوسط لدرجة حرارة عالية','Medium high-temperature transducer','DN50–700 · −30…160 °C',M_TUF],
+ ['TL-1-HT','flow','حساس كبير لدرجة حرارة عالية','Large high-temperature transducer','DN300–6000 · −30…160 °C',M_TUF],
+ ['LC1K','cuag','وحدة نحاس وفضة، قطب 1 كيلو','Cu/Ag unit, 1 kg electrode','≈ 3.5 l/s (210 L/min) · Cu 0.9 / Ag 0.1 kg',M_CSI],
+ ['LC1K Dual','cuag','وحدة نحاس وفضة مزدوجة 1 كيلو','Cu/Ag dual unit, 1 kg','≈ 7 l/s (420 L/min) · 1.6 kg',M_CSI],
+ ['LC8K','cuag','وحدة نحاس وفضة، قطب 8 كيلو','Cu/Ag unit, 8 kg electrode','≈ 15 l/s (900 L/min) · Cu 7.2 / Ag 0.8 kg',M_CSI],
+ ['LC8K Dual','cuag','وحدة نحاس وفضة مزدوجة 8 كيلو','Cu/Ag dual unit, 8 kg','≈ 30 l/s (1800 L/min) · 16 kg',M_CSI],
+ ['LC16K','cuag','وحدة نحاس وفضة، قطب 16 كيلو','Cu/Ag unit, 16 kg electrode','≈ 40 l/s (2400 L/min) · 16 kg',M_CSI],
+ ['LC16K Dual','cuag','وحدة نحاس وفضة مزدوجة 16 كيلو','Cu/Ag dual unit, 16 kg','≈ 80 l/s (4800 L/min) · 32 kg',M_CSI],
+ ['HI702','test','جهاز Hanna لقياس النحاس (مدى عالي)','Hanna copper checker, high range','0.00–5.00 ppm · ±0.05 ppm ±5%',M_HI],
+ ['HI702-0','test','أكياس كاشف لجهاز HI702','Reagent packets for HI702','1 packet / test',M_HI],
+ ['HI731318','test','قماشة تنضيف الكوفيت','Cuvette cleaning cloth','',M_HI],
+ ['HI96747','test','فوتوميتر Hanna نحاس مدى منخفض','Hanna copper photometer, low range','for the 0.2 ppm target',M_CSI]
+];
+var cat='all';
+function render(){
+  var q=(TL.$('q').value||'').trim().toLowerCase(),cats=['all','drive','flow','cuag','test'];
+  TL.$('chips').innerHTML=cats.map(function(c){return '<button type="button" data-c="'+c+'" aria-pressed="'+(c===cat)+'">'+TL.esc(TL.t(c))+'</button>';}).join('');
+  var rows=P.filter(function(p){if(cat!=='all'&&p[1]!==cat)return false;if(!q)return true;return (p.join(' ')).toLowerCase().indexOf(q)>-1;});
+  TL.$('list').innerHTML=rows.length?rows.map(function(p){return '<article class="part"><div class="pn"><code>'+TL.esc(p[0])+'</code><button type="button" data-pn="'+TL.esc(p[0])+'">'+TL.esc(TL.t('copy'))+'</button></div><span class="cat">'+TL.esc(TL.t(p[1]))+'</span><h3>'+TL.esc(TL.lang==='ar'?p[2]:p[3])+'</h3>'+(p[4]?'<div class="sp">'+TL.esc(p[4])+'</div>':'')+'<div class="src">'+TL.esc(TL.t('src'))+': '+TL.esc(p[5])+'</div></article>';}).join(''):'<div class="empty">'+TL.esc(TL.t('none'))+'</div>';
+}
+TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'parts',onLang:render});
+TL.$('q').addEventListener('input',render);
+TL.$('chips').addEventListener('click',function(e){var c=e.target.getAttribute('data-c');if(c){cat=c;render();}});
+TL.$('list').addEventListener('click',function(e){var pn=e.target.getAttribute('data-pn');if(pn)TL.copy(pn,TL.t('copiedPn'));});
+TL.$('verTxt').textContent='v'+VER;
+TL.applyLang();
+})();
+</script>
+</body>
+</html>

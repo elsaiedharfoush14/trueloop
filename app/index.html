@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TrueLoop Field</title>
+<meta name="description" content="TrueLoop field app: commissioning tools for water plants — Cu/Ag ionisation, booster sets on LS H100, ultrasonic flowmeters, loop checks, RO normalization, calibration and parts. Works offline.">
+<meta name="theme-color" content="#071b2b">
+<meta property="og:image" content="https://elsaiedharfoush14.github.io/trueloop/og-image.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TrueLoop">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/tl.css">
+<style>
+/* Layout: app home. Navy hero (greeting, search) -> category chips -> recent strip -> tool grid with drawn icons -> share/install -> company strip. */
+.hero{background:radial-gradient(120% 140% at 85% -10%,#12466e 0%,#0a2a43 45%,#071b2b 100%);color:#fff;border-radius:18px;padding:22px 20px 18px;display:grid;gap:14px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto -40px -60px auto;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(22,185,224,.35),transparent 70%);pointer-events:none}
+[dir=rtl] .hero::after{inset:auto auto -60px -40px}
+.hero .hi{font-size:.9rem;color:#9fd8ea}
+.hero h1{font-size:clamp(1.5rem,5vw,2.2rem);color:#fff}
+.hero h1 .lt{font-weight:300}
+.hero p{color:#c7dbe6;font-size:.95rem}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stats span{font-size:.78rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:99px;padding:3px 10px;color:#d9ecf4}
+.search{display:flex;gap:8px;align-items:center;background:#fff;border-radius:12px;padding:4px 12px;position:relative;z-index:1}
+.search input{border:0;background:transparent;font-size:1rem;padding:10px 2px;color:#071b2b}
+.search svg{width:20px;height:20px;color:#566a77;flex:none}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{border-radius:99px;padding:6px 14px;font-size:.84rem;border-color:var(--line);color:var(--ink);background:var(--card);white-space:nowrap;flex:none}
+.chips button[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.sec-h h2{font-size:1rem}
+.recent{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none}
+.recent::-webkit-scrollbar{display:none}
+.recent a{flex:none;display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;text-decoration:none;color:var(--ink);font-weight:600;font-size:.88rem}
+.recent a .ic{width:32px;height:32px;border-radius:9px}
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tool{position:relative;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;text-decoration:none;color:var(--ink);transition:transform .15s,border-color .15s,box-shadow .15s;min-width:0}
+.tool:hover{border-color:var(--aqua);box-shadow:0 6px 24px -12px rgba(18,104,211,.45)}
+@media (prefers-reduced-motion:no-preference){.tool:hover{transform:translateY(-2px)}}
+.tool h3{font-size:1rem}
+.tool p{font-size:.86rem;color:var(--muted);margin-top:2px}
+.tool .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tool .meta span{font-size:.7rem;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--soft);border:1px solid var(--line);color:var(--muted)}
+.tool .meta span.new{background:var(--bolt);border-color:var(--bolt);color:#3a2500}
+.tool .meta span.off{background:var(--good-bg);border-color:transparent;color:var(--good)}
+.ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;flex:none}
+.ic svg{width:28px;height:28px}
+.ic.c1{background:linear-gradient(135deg,#1268d3,#16b9e0);color:#fff}
+.ic.c2{background:linear-gradient(135deg,#0f766e,#1db57a);color:#fff}
+.ic.c3{background:linear-gradient(135deg,#ff8a00,#ffb21e);color:#3a2500}
+.ic.c4{background:linear-gradient(135deg,#071b2b,#29506a);color:#7fe3f5}
+.tool.req{border-style:dashed;background:transparent}
+.empty{text-align:center;color:var(--muted);padding:18px}
+.install{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+@media (max-width:620px){.install{grid-template-columns:1fr}.install .qrb{margin-inline:auto}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <a class="home" href="./"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop</span></a>
+  <span class="offline" id="offBadge" hidden></span>
+  <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
+  <button class="tb pri" id="installBtn" type="button" data-t="install" hidden></button>
+  <span id="toast" class="toast" role="status"></span>
+</div></div>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="hi" id="greet"></div>
+    <h1><span class="lt">True</span>Loop <span data-t="field"></span></h1>
+    <p data-t="lead"></p>
+    <div class="stats"><span id="stTools"></span><span data-t="stOff"></span><span data-t="stLang"></span></div>
+    <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" data-tp="ph" autocomplete="off" aria-label="search"></label>
+  </section>
+
+  <div class="chips" id="chips" role="toolbar"></div>
+
+  <section id="recentSec" hidden>
+    <div class="sec-h"><h2 data-t="recent"></h2></div>
+    <div class="recent" id="recent"></div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <div class="sec-h"><h2 data-t="toolsH"></h2><span class="muted" id="count"></span></div>
+    <div class="tools" id="tools"></div>
+  </section>
+
+  <section class="card share-card">
+    <div class="install">
+      <div class="qrb"><img src="qr.png" alt="QR"><span class="ql"><svg aria-hidden="true"><use href="#mark"/></svg></span></div>
+      <div style="display:grid;gap:8px;min-width:0"><h2 data-t="shareT2"></h2><p class="muted" data-t="shareP2"></p><div class="linkline" id="appLink"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="pri" id="linkBtn" type="button" data-t="copyLink"></button><button id="installBtn2" type="button" data-t="install" hidden></button></div>
+        <p class="muted" data-t="installHow" data-html></p></div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <svg class="mk" role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div style="display:grid;gap:4px"><b style="font-family:var(--f-display);font-size:1.08rem" data-t="ctaT"></b><p data-t="ctaP"></p>
+      <p>WhatsApp <a href="https://wa.me/966560861304" target="_blank" rel="noopener">+966 56 086 1304</a> · <a href="../" data-t="site"></a> · <span data-t="city"></span></p></div>
+  </section>
+  <p class="foot">TrueLoop Field · <span id="verTxt"></span></p>
+</main>
+
+<script src="../assets/tl-core.js"></script>
+<script>
+(function(){
+var VER='2026.11.14.2',URL_APP='https://elsaiedharfoush14.github.io/trueloop/app/';
+var IC={
+ cuag:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 4c0 0-8 9-8 15a8 8 0 0 0 16 0c0-6-8-15-8-15z"/><circle cx="13" cy="19" r="2" fill="currentColor"/><circle cx="19" cy="21" r="1.6" fill="currentColor"/></svg>',
+ booster:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="13" cy="18" r="8"/><path d="M13 18l5-4M21 18h8M13 10V4h12"/><path d="M9 28h8"/></svg>',
+ flow:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12h26M3 22h26"/><rect x="9" y="5" width="5" height="5" rx="1"/><rect x="18" y="24" width="5" height="5" rx="1"/><path d="M12 10l8 14" stroke-dasharray="2 3"/></svg>',
+ parts:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M5 10l11-6 11 6v12l-11 6-11-6z"/><path d="M5 10l11 6 11-6M16 16v12"/></svg>',
+ loop:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="6" y="4" width="20" height="25" rx="2"/><path d="M11 11l2 2 4-4M11 19l2 2 4-4M20 12h2M20 20h2"/></svg>',
+ ro:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 24l7-8 6 5 11-12"/><path d="M22 9h6v6"/><path d="M4 28h24"/></svg>',
+ cal:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="16" cy="17" r="11"/><path d="M16 17l6-6M9 21h0M23 21h0M16 8v2"/><circle cx="16" cy="17" r="1.5" fill="currentColor"/></svg>',
+ req:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 8v16M8 16h16"/></svg>'};
+var TOOLS=[
+ {id:'cuag',url:'../tools/cuag/',ic:'cuag',c:'c1',cats:['water','comm'],nw:1,off:1,ar:['تشغيل النحاس والفضة','لف المتر على الماسورة، وخد إعدادات الفلوميتر وجهاز Cu/Ag، واحسب الجرعة من اختبار النحاس. وفيها الصيانة.'],en:['Cu/Ag Commissioning','Tape the pipe, get flowmeter and Cu/Ag controller settings, set the dose from the copper test. O&M included.']},
+ {id:'booster',url:'../tools/booster/',ic:'booster',c:'c2',cats:['elec','comm','pump'],nw:1,off:1,ar:['البوستر على LS H100','Duty وAssist وStandby وتبديل من غير PLC: رسومات اللوحة، وباراميترات كل درايف، واختبار وصيانة.'],en:['Booster on LS H100','Duty, assist, standby and changeover without a PLC: panel drawings, every drive\'s parameters, tests and O&M.']},
+ {id:'flowmeter',url:'../tools/flowmeter/',ic:'flow',c:'c1',cats:['inst','comm'],nw:1,off:1,ar:['برمجة فلوميتر التراسونيك','من المحيط للمنيوهات بالترتيب: 4–20 mA ونبضات وتردد وريليه، ومراجعة M90 وM91، والأعطال.'],en:['Ultrasonic Flowmeter Setup','From tape to menus in order: 4–20 mA, pulse, frequency and relay, M90/M91 checks and faults.']},
+ {id:'parts',url:'../tools/parts/',ic:'parts',c:'c4',cats:['parts'],nw:1,off:1,ar:['دليل قطع الغيار','أرقام القطع للبريكرات والحساسات ووحدات Cu/Ag وكيت الاختبار، ومصدر كل رقم.'],en:['Parts Finder','Part numbers for breakers, transducers, Cu/Ag units and test kits, each with its source.']},
+ {id:'loop',url:'../tools/loop-check.html',ic:'loop',c:'c3',cats:['comm','inst'],off:1,ar:['Loop Check و FAT','الصق قائمة الإشارات، واطلع بنماذج فحص الـ loops وقايمة FAT.'],en:['Loop Check & FAT','Paste the I/O list and get loop check sheets and a FAT checklist.']},
+ {id:'ro',url:'../tools/ro-normalization.html',ic:'ro',c:'c2',cats:['water'],off:1,ar:['RO Normalization','حالة الأغشية الحقيقية بعد تصحيح الحرارة والضغط والملوحة، وإمتى الغسيل الكيميائي.'],en:['RO Normalization','True membrane condition after temperature, pressure and salinity correction; when CIP is due.']},
+ {id:'cal',url:'../tools/calibration-certificate.html',ic:'cal',c:'c3',cats:['inst'],off:1,ar:['شهادة معايرة','دخّل القراءات، وخد شهادة جاهزة بحساب الخطأ والنتيجة.'],en:['Calibration Certificate','Enter readings and get a ready certificate with error and pass/fail.']}
+];
+var CATS=['all','comm','water','pump','elec','inst','parts'];
+var D={ar:{field:'Field',lead:'أدوات التشغيل والتظبيط في الموقع، في تطبيق واحد. بتشتغل من غير نت، وبالعربي والإنجليزي.',ph:'ابحث عن أداة: فلوميتر، بوستر، نحاس…',
+  stTools:'{n} أدوات',stOff:'بتشتغل من غير نت',stLang:'عربي · English',recent:'آخر حاجة فتحتها',toolsH:'الأدوات',count:'{n} أداة',none:'مفيش أداة بالاسم ده.',
+  all:'الكل',comm:'تشغيل',water:'معالجة مياه',pump:'طلمبات',elec:'كهرباء',inst:'أجهزة قياس',parts:'قطع غيار',
+  nw:'جديد',off:'أوفلاين',open:'افتح',reqT:'محتاج أداة تانية؟',reqP:'قولنا الجهاز أو الحسبة اللي بتعملها في الموقع، ونعملهالك.',
+  install:'تسطيب التطبيق',shareT2:'سطّب TrueLoop على موبايلك',shareP2:'امسح الباركود أو ابعت اللينك لزمايلك. التطبيق بيتسطّب زي أي أبلكيشن ويشتغل من غير نت.',site:'موقع الشركة',
+  g1:'صباح الخير يا باشمهندس',g2:'مساء الخير يا باشمهندس',g3:'شغل الليل يا باشمهندس؟'},
+ en:{field:'Field',lead:'Site commissioning and set-up tools in one app. Works offline, in Arabic and English.',ph:'Search tools: flowmeter, booster, copper…',
+  stTools:'{n} tools',stOff:'Works offline',stLang:'English · عربي',recent:'Recently opened',toolsH:'Tools',count:'{n} tools',none:'No tool by that name.',
+  all:'All',comm:'Commissioning',water:'Water treatment',pump:'Pumps',elec:'Electrical',inst:'Instruments',parts:'Parts',
+  nw:'New',off:'Offline',open:'Open',reqT:'Need another tool?',reqP:'Tell us the device or the calculation you do on site, and we will build it.',
+  install:'Install app',shareT2:'Install TrueLoop on your phone',shareP2:'Scan the code or send the link to your team. It installs like any app and works offline.',site:'Company site',
+  g1:'Good morning, engineer',g2:'Good evening, engineer',g3:'Night shift, engineer?'}};
+var cat='all',deferred=null,$=TL.$;
+function L(x){return TL.lang==='ar'?x.ar:x.en;}
+function card(x){var l=L(x);return '<a class="tool" href="'+x.url+'?app=1"><span class="ic '+x.c+'">'+IC[x.ic]+'</span><div style="min-width:0"><h3>'+TL.esc(l[0])+'</h3><p>'+TL.esc(l[1])+'</p><div class="meta">'+(x.nw?'<span class="new">'+TL.t('nw')+'</span>':'')+(x.off?'<span class="off">'+TL.t('off')+'</span>':'')+x.cats.map(function(c){return '<span>'+TL.esc(TL.t(c))+'</span>';}).join('')+'</div></div></a>';}
+function render(){
+  var h=new Date().getHours();$('greet').textContent=TL.t(h>=5&&h<12?'g1':(h>=12&&h<22?'g2':'g3'));
+  $('stTools').textContent=TL.t('stTools',{n:TOOLS.length});
+  $('chips').innerHTML=CATS.map(function(c){return '<button type="button" data-c="'+c+'" aria-pressed="'+(c===cat)+'">'+TL.esc(TL.t(c))+'</button>';}).join('');
+  var q=($('q').value||'').trim().toLowerCase();
+  var list=TOOLS.filter(function(x){if(cat!=='all'&&x.cats.indexOf(cat)<0)return false;if(!q)return true;return (x.ar.join(' ')+' '+x.en.join(' ')+' '+x.id).toLowerCase().indexOf(q)>-1;});
+  $('tools').innerHTML=(list.length?list.map(card).join(''):'<div class="empty">'+TL.esc(TL.t('none'))+'</div>')+
+    '<a class="tool req" href="https://wa.me/966560861304?text=TrueLoop%20tool%20request" target="_blank" rel="noopener"><span class="ic c4">'+IC.req+'</span><div><h3>'+TL.esc(TL.t('reqT'))+'</h3><p>'+TL.esc(TL.t('reqP'))+'</p></div></a>';
+  $('count').textContent=TL.t('count',{n:list.length});
+  var rec=[];try{rec=JSON.parse(localStorage.getItem('tl_recent')||'[]');if(localStorage.getItem('tl_cuag_v1')&&rec.indexOf('cuag')<0)rec.push('cuag');}catch(e){}
+  var rt=rec.map(function(id){return TOOLS.filter(function(x){return x.id===id;})[0];}).filter(Boolean).slice(0,4);
+  $('recentSec').hidden=!rt.length||!!q||cat!=='all';
+  $('recent').innerHTML=rt.map(function(x){return '<a href="'+x.url+'?app=1"><span class="ic '+x.c+'">'+IC[x.ic]+'</span>'+TL.esc(L(x)[0])+'</a>';}).join('');
+}
+TL.init({root:'../',dict:D,title:'field',ver:VER,id:'app',onLang:render});
+try{sessionStorage.setItem('tl_app','1');}catch(e){}
+$('q').addEventListener('input',render);
+$('chips').addEventListener('click',function(e){var c=e.target.getAttribute('data-c');if(c){cat=c;render();}});
+$('linkBtn').onclick=function(){TL.copy(URL_APP,TL.t('linkCopied'));};
+function showInstall(on){$('installBtn').hidden=!on;$('installBtn2').hidden=!on;}
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;showInstall(true);});
+window.addEventListener('appinstalled',function(){showInstall(false);});
+[$('installBtn'),$('installBtn2')].forEach(function(b){b.onclick=function(){if(deferred){deferred.prompt();deferred=null;showInstall(false);}};});
+$('appLink').textContent=URL_APP;$('verTxt').textContent='v'+VER;
+TL.applyLang();
+document.title='TrueLoop Field';
+})();
+</script>
+</body>
+</html>
