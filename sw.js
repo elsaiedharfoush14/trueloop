@@ -1,8 +1,8 @@
 /* TrueLoop Field service worker: precaches the app and tools so they open offline; network first (revalidated) for pages so a refresh always gets the newest release. */
-const CACHE='tl-app-2026.11.14.3';
+const CACHE='tl-app-2026.11.14.4';
 const ASSETS=['./','index.html','favicon.svg','assets/tl.css','assets/tl-core.js',
   'app/','app/index.html','app/manifest.webmanifest','app/icon-192.png','app/icon-512.png','app/maskable-512.png','app/apple-touch-icon.png','app/qr.png',
-  'tools/booster/','tools/booster/qr.png','tools/booster/ls-h100/','tools/booster/ls-h100/qr.png','tools/flowmeter/','tools/flowmeter/qr.png','tools/parts/','tools/ipc-calculator/',
+  'tools/booster/','tools/booster/qr.png','tools/booster/ls-h100/','tools/booster/ls-h100/qr.png','tools/flowmeter/','tools/flowmeter/qr.png','tools/parts/','tools/instruments/','tools/instruments/qr.png','tools/chw/','tools/chw/qr.png','tools/ipc-calculator/',
   'tools/loop-check.html','tools/ro-normalization.html','tools/calibration-certificate.html'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.all(ASSETS.map(a=>c.add(a).catch(()=>{})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('tl-app-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

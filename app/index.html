@@ -112,7 +112,7 @@
 <script src="../assets/tl-core.js"></script>
 <script>
 (function(){
-var VER='2026.11.14.3',URL_APP='https://elsaiedharfoush14.github.io/trueloop/app/';
+var VER='2026.11.14.4',URL_APP='https://elsaiedharfoush14.github.io/trueloop/app/';
 var IC={
  cuag:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 4c0 0-8 9-8 15a8 8 0 0 0 16 0c0-6-8-15-8-15z"/><circle cx="13" cy="19" r="2" fill="currentColor"/><circle cx="19" cy="21" r="1.6" fill="currentColor"/></svg>',
  booster:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="13" cy="18" r="8"/><path d="M13 18l5-4M21 18h8M13 10V4h12"/><path d="M9 28h8"/></svg>',
@@ -121,12 +121,16 @@ var IC={
  loop:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="6" y="4" width="20" height="25" rx="2"/><path d="M11 11l2 2 4-4M11 19l2 2 4-4M20 12h2M20 20h2"/></svg>',
  ro:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 24l7-8 6 5 11-12"/><path d="M22 9h6v6"/><path d="M4 28h24"/></svg>',
  cal:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="16" cy="17" r="11"/><path d="M16 17l6-6M9 21h0M23 21h0M16 8v2"/><circle cx="16" cy="17" r="1.5" fill="currentColor"/></svg>',
+ inst:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="16" cy="14" r="10"/><path d="M16 14l5-5M10 14h1M21 14h1M16 8v1"/><path d="M12 28h8M16 24v4"/></svg>',
+ chw:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h16l-2 8H10z"/><path d="M10 14c0 6 2 12 6 12s6-6 6-12"/><path d="M13 19h6"/></svg>',
  req:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 8v16M8 16h16"/></svg>'};
 var TOOLS=[
  {id:'cuag',url:'../tools/cuag/',ic:'cuag',c:'c1',cats:['water','comm'],nw:1,off:1,ar:['تشغيل النحاس والفضة','لف المتر على الماسورة، وخد إعدادات الفلوميتر وجهاز Cu/Ag، واحسب الجرعة من اختبار النحاس. وفيها الصيانة.'],en:['Cu/Ag Commissioning','Tape the pipe, get flowmeter and Cu/Ag controller settings, set the dose from the copper test. O&M included.']},
  {id:'booster',url:'../tools/booster/',ic:'booster',c:'c2',cats:['elec','comm','pump'],nw:1,off:1,ar:['برمجة البوستر','اختار ماركة الدرايفات: LS H100 (من غير PLC) أو ABB ACH480 (IPC على RS-485)، وخد الباراميترات والتوصيل والاختبار والصيانة.'],en:['Booster Programming','Pick the drive make: LS H100 (no PLC) or ABB ACH480 (IPC over RS-485), and get parameters, wiring, tests and O&M.']},
  {id:'booster-ls',sub:1,url:'../tools/booster/ls-h100/',ic:'booster',c:'c2',cats:['elec','pump'],ar:['البوستر · LS H100','MMC بالأسلاك لـ 2–4 طلمبات: رسومات اللوحة وباراميترات كل درايف.'],en:['Booster · LS H100','Hard-wired MMC for 2–4 pumps: panel drawings and drive parameters.']},
   {id:'ipc',sub:1,url:'../tools/ipc-calculator/',ic:'booster',c:'c3',cats:['elec','comm','pump'],nw:1,off:1,ar:['IPC Multipump على ABB ACH480','إعدادات IPC لـ 2 لحد 8 طلمبات: ترتيب التشغيل، والسليب، وشحن التانك، ومخارج الريليه.'],en:['IPC Multipump · ABB ACH480','IPC settings for 2 to 8 pumps: operating sequence, sleep, tank pre-charge and relay outputs.']},
+ {id:'instruments',url:'../tools/instruments/',ic:'inst',c:'c4',cats:['inst','comm'],nw:1,off:1,ar:['تشغيل أجهزة القياس','ضغط وحرارة وفلو مغناطيسي وعكارة وكلور وأكسجين و pH: الخطوات، وloop check بالنجاح والرسوب، وتحويل الـ PLC.'],en:['Instrumentation Commissioning','Pressure, temperature, mag flow, turbidity, chlorine, DO and pH: steps, loop check with pass/fail, PLC scaling.']},
+ {id:'chw',url:'../tools/chw/',ic:'chw',c:'c1',cats:['water','comm'],nw:1,off:1,ar:['معالجة مياه التشيلر والكولينج تاور','دايرة مقفولة أو برج، بسنسورات أو تايمرات: الإعدادات والشحنة والجرعات والتصريف والإنذارات.'],en:['CHW & Cooling Tower Treatment','Closed loop or tower, sensors or timers: settings, charge, dosing, blowdown and alarms.']},
  {id:'flowmeter',url:'../tools/flowmeter/',ic:'flow',c:'c1',cats:['inst','comm'],nw:1,off:1,ar:['برمجة فلوميتر التراسونيك','من المحيط للمنيوهات بالترتيب: 4–20 mA ونبضات وتردد وريليه، ومراجعة M90 وM91، والأعطال.'],en:['Ultrasonic Flowmeter Setup','From tape to menus in order: 4–20 mA, pulse, frequency and relay, M90/M91 checks and faults.']},
  {id:'parts',url:'../tools/parts/',ic:'parts',c:'c4',cats:['parts'],nw:1,off:1,ar:['دليل قطع الغيار','أرقام القطع للبريكرات والحساسات ووحدات Cu/Ag وكيت الاختبار، ومصدر كل رقم.'],en:['Parts Finder','Part numbers for breakers, transducers, Cu/Ag units and test kits, each with its source.']},
  {id:'loop',url:'../tools/loop-check.html',ic:'loop',c:'c3',cats:['comm','inst'],off:1,ar:['Loop Check و FAT','الصق قائمة الإشارات، واطلع بنماذج فحص الـ loops وقايمة FAT.'],en:['Loop Check & FAT','Paste the I/O list and get loop check sheets and a FAT checklist.']},

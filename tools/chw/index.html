@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TrueLoop · Chilled Water & Cooling Tower Treatment</title>
+<meta name="description" content="Water treatment commissioning for chilled water loops and cooling towers, with or without sensors: controller settings, initial charge, inhibitor, blowdown, biocide, alarms, BMS and checks.">
+<meta name="theme-color" content="#071b2b">
+<link rel="manifest" href="../../app/manifest.webmanifest">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../app/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../assets/tl.css">
+<style>
+.modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mode{display:grid;gap:4px;border:2px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soft);cursor:pointer;text-align:start;color:var(--ink);font:inherit}
+.mode b{font-family:var(--f-display);font-size:.98rem}.mode span{font-size:.82rem;color:var(--muted)}
+.mode[aria-pressed=true]{border-color:var(--water);background:color-mix(in srgb,var(--aqua) 10%,var(--card))}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.kpi div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--soft);display:grid;gap:2px}
+.kpi b{font-family:var(--f-display);font-size:1.25rem;font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;text-align:start}
+.kpi span{font-size:.8rem;color:var(--muted)}
+.chk2{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.chk2 label{display:flex;gap:8px;align-items:center;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:.88rem}
+.chk2 input{width:auto}
+.note{font-size:.85rem;color:var(--muted);background:var(--soft);border-radius:8px;padding:8px 10px}
+.out h3{margin-top:4px}
+@media (max-width:620px){.modes{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <a class="home" id="homeLink" href="../../app/"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop · <span data-t="short"></span></span></a>
+  <span class="offline" id="offBadge" hidden></span>
+  <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
+  <button class="tb pri" id="copyBtn" type="button" data-t="copy"></button>
+  <button class="tb" id="printBtn" type="button" data-t="print"></button>
+  <button class="tb" id="resetBtn" type="button" data-t="reset"></button>
+  <span id="toast" class="toast" role="status"></span>
+</div></div>
+<main class="wrap">
+  <a class="back" id="backLink" href="../../"></a>
+  <header class="top">
+    <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div class="t"><div class="brand"><b><span class="lt">True</span>Loop</b> · <span data-t="brandSub"></span></div>
+      <h1 data-t="title"></h1><p class="muted" data-t="intro" data-html></p></div>
+  </header>
+  <p class="rep" id="repLine"></p>
+
+  <section class="card" id="about">
+    <h2><span class="num">؟</span><span data-t="abT"></span></h2>
+    <p data-t="abLead"></p>
+    <div class="ab">
+      <div><h3 data-t="ab1T"></h3><ul data-t="ab1" data-html></ul></div>
+      <div><h3 data-t="ab2T"></h3><ul data-t="ab2" data-html></ul></div>
+      <div><h3 data-t="ab3T"></h3><ul data-t="ab3" data-html></ul></div>
+      <div><h3 data-t="ab4T"></h3><ul data-t="ab4" data-html></ul></div>
+    </div>
+  </section>
+
+  <section class="card" id="s1">
+    <h2><span class="num">1</span><span data-t="s1"></span></h2>
+    <div class="grid"><label><span data-t="site"></span><input id="site" type="text" autocomplete="off"></label><label><span data-t="eng"></span><input id="eng" type="text" autocomplete="off"></label></div>
+    <div class="modes" role="group" aria-label="system">
+      <button type="button" class="mode" data-sys="closed"><b data-t="mClosed"></b><span data-t="mClosedS"></span></button>
+      <button type="button" class="mode" data-sys="tower"><b data-t="mTower"></b><span data-t="mTowerS"></span></button>
+    </div>
+    <div class="modes" role="group" aria-label="control">
+      <button type="button" class="mode" data-ctl="sens"><b data-t="mSens"></b><span data-t="mSensS"></span></button>
+      <button type="button" class="mode" data-ctl="none"><b data-t="mNone"></b><span data-t="mNoneS"></span></button>
+    </div>
+  </section>
+
+  <section class="card" id="s2">
+    <h2><span class="num">2</span><span data-t="s2"></span></h2>
+    <div class="grid" id="gClosed">
+      <label><span data-t="V"></span><input id="V" type="number" step="0.1" value="40" inputmode="decimal"></label>
+      <label><span data-t="C0"></span><input id="C0" type="number" value="1000" inputmode="decimal"></label>
+      <label><span data-t="k"></span><input id="k" type="number" value="140" inputmode="decimal"></label>
+      <label><span data-t="nLo"></span><input id="nLo" type="number" value="715" inputmode="decimal"></label>
+      <label><span data-t="nHi"></span><input id="nHi" type="number" value="860" inputmode="decimal"></label>
+    </div>
+    <div class="grid" id="gTower">
+      <label><span data-t="Q"></span><input id="Q" type="number" value="500" inputmode="decimal"></label>
+      <label><span data-t="dT"></span><input id="dT" type="number" step="0.1" value="5.5" inputmode="decimal"></label>
+      <label><span data-t="coc"></span><input id="coc" type="number" step="0.1" value="4" inputmode="decimal"></label>
+      <label><span data-t="Cm"></span><input id="Cm" type="number" value="400" inputmode="decimal"></label>
+      <label><span data-t="Vt"></span><input id="Vt" type="number" step="0.1" value="30" inputmode="decimal"></label>
+      <label><span data-t="drift"></span><input id="drift" type="number" step="0.001" value="0.01" inputmode="decimal"></label>
+      <label><span data-t="valve"></span><input id="valve" type="number" step="0.1" value="5" inputmode="decimal"></label>
+      <label><span data-t="ppm"></span><input id="ppm" type="number" value="100" inputmode="decimal"></label>
+    </div>
+    <div class="grid">
+      <label><span data-t="pLo"></span><input id="pLo" type="number" step="0.1" value="8.5" inputmode="decimal"></label>
+      <label><span data-t="pHi"></span><input id="pHi" type="number" step="0.1" value="10.0" inputmode="decimal"></label>
+    </div>
+  </section>
+
+  <section class="card" id="s3">
+    <h2><span class="num">3</span><span data-t="s3"></span></h2>
+    <h3 data-t="inhT"></h3>
+    <div class="grid">
+      <label><span data-t="Qi"></span><input id="Qi" type="number" step="0.1" value="2" inputmode="decimal"></label>
+      <label id="SiL"><span data-t="Si"></span><input id="Si" type="number" value="30" inputmode="decimal"></label>
+      <label id="rhoL"><span data-t="iRho"></span><input id="iRho" type="number" step="0.01" value="1.10" inputmode="decimal"></label>
+      <label><span data-t="Ti"></span><input id="Ti" type="number" value="200" inputmode="decimal"></label>
+      <label id="kgL"><span data-t="kgFill"></span><input id="kgFill" type="number" step="0.5" value="3" inputmode="decimal"></label>
+      <label id="tlfL"><span data-t="tlf"></span><input id="tlf" type="number" step="0.1" value="1.2" inputmode="decimal"></label>
+    </div>
+    <h3 data-t="bioT"></h3>
+    <div class="grid">
+      <label><span data-t="bDose"></span><input id="bDose" type="number" value="560" inputmode="decimal"></label>
+      <label><span data-t="bAct"></span><input id="bAct" type="number" value="25" inputmode="decimal"></label>
+      <label><span data-t="bRho"></span><input id="bRho" type="number" step="0.01" value="1.00" inputmode="decimal"></label>
+      <label><span data-t="Qb"></span><input id="Qb" type="number" value="133" inputmode="decimal"></label>
+      <label><span data-t="wk"></span><select id="wk"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+      <label><span data-t="day"></span><select id="day"><option value="Monday" data-t="d1"></option><option value="Tuesday" data-t="d2"></option><option value="Wednesday" data-t="d3"></option><option value="Thursday" data-t="d4"></option><option value="Friday" data-t="d5"></option><option value="Saturday" data-t="d6"></option><option value="Sunday" data-t="d7" selected></option></select></label>
+      <label><span data-t="bt"></span><input id="bt" type="time" value="02:00"></label>
+    </div>
+    <div class="chk2" id="hw">
+      <label><input type="checkbox" id="hwFlow"><span data-t="hwFlow"></span></label>
+      <label><input type="checkbox" id="hwLvl"><span data-t="hwLvl"></span></label>
+      <label><input type="checkbox" id="hwT"><span data-t="hwT"></span></label>
+      <label id="chgL"><input type="checkbox" id="hwChg" checked><span data-t="hwChg"></span></label>
+    </div>
+  </section>
+
+  <section class="card out" id="s4">
+    <h2><span class="num">4</span><span data-t="s4"></span></h2>
+    <div class="kpi" id="kpi"></div>
+    <div class="msgs" id="warn"></div>
+    <div id="outBody"></div>
+  </section>
+
+  <section class="card" id="s5">
+    <h2><span class="num">5</span><span data-t="s5"></span></h2>
+    <div class="tbl"><table><thead><tr><th data-t="thWhen"></th><th data-t="thWhat"></th></tr></thead><tbody id="omRows"></tbody></table></div>
+    <details class="how"><summary data-t="flT"></summary><div class="tbl"><table><thead><tr><th data-t="thSign"></th><th data-t="thCause"></th><th data-t="thDo"></th></tr></thead><tbody data-t="flRows" data-html></tbody></table></div></details>
+  </section>
+
+  <section class="card" id="s6"><h2><span class="num">6</span><span data-t="s6"></span></h2><textarea class="sum" id="summary" readonly aria-label="summary"></textarea></section>
+
+  <section class="card share-card no-print">
+    <div class="share"><div class="qrb"><img src="qr.png" alt="QR"><span class="ql"><svg aria-hidden="true"><use href="#mark"/></svg></span></div>
+      <div style="display:grid;gap:8px;min-width:0"><h2 data-t="shareT"></h2><p class="muted" data-t="shareP"></p><div class="linkline" id="appLink"></div><div><button class="pri" id="linkBtn" type="button" data-t="copyLink"></button></div></div></div>
+  </section>
+  <section class="cta no-print"><svg class="mk" role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div style="display:grid;gap:4px"><b style="font-family:var(--f-display);font-size:1.08rem" data-t="ctaT"></b><p data-t="ctaP"></p><p>WhatsApp <a href="https://wa.me/966560861304" target="_blank" rel="noopener">+966 56 086 1304</a> · <span data-t="city"></span></p></div></section>
+  <p class="foot">TrueLoop · CHW &amp; Cooling Tower Treatment · <span id="verTxt"></span></p>
+</main>
+<script src="../../assets/tl-core.js"></script>
+<script>
+(function(){
+var VER='2026.11.14.4',URL_APP='https://elsaiedharfoush14.github.io/trueloop/tools/chw/';
+var D={ar:{
+short:'معالجة التشيلر',title:'معالجة مياه التشيلر والكولينج تاور',
+intro:'تشغيل وتظبيط معالجة المية الكيماوية لدايرة التشيلد ووتر المقفولة أو الكولينج تاور، بسنسورات على كنترولر <code>EMEC MTOWER PLUS</code> أو من غيرها بتايمرات. الأداة بتطلّع الإعدادات والشحنة الأولى والجرعات والإنذارات واختبار التشغيل.',
+abT:'المعالجة دي بتعمل إيه؟',abLead:'مية التكييف لو اتسابت من غير معالجة بتأكّل المواسير، وبتعمل قشور على المبادلات، وبيطلع فيها بكتيريا وطحالب. المعالجة بتحط كيماويات بكميات محسوبة علشان تحمي المعدات وتحافظ على كفاءة التبريد.',
+ab1T:'دايرة مقفولة (Chilled water)',ab1:'<li>المية بتلف في دايرة مقفولة ومش بتتبخر، فالكيماويات بتفضل فيها.</li><li><b>مانع التآكل (نيتريت):</b> بيتحط شحنة أولى، وبعدين نزوّد بس اللي بيقل.</li><li><b>الكنترولر</b> بيقيس الموصلية (µS) لأن النيتريت بيزوّدها، فبيشغّل طلمبة المانع لما تقل.</li><li><b>بايوسايد</b> كل أسبوع أو أسبوعين ضد البكتيريا.</li>',
+ab2T:'دايرة مفتوحة (Cooling tower)',ab2:'<li>المية بتتبخر في البرج، فالأملاح بتتركّز (Cycles of concentration).</li><li><b>Blowdown:</b> بنصرّف جزء من المية لما الموصلية تعلى، ونعوّض بمية جديدة.</li><li><b>مانع قشور وتآكل</b> بيتحط على قد المية الجديدة.</li><li><b>بايوسايد</b> بالتبادل، مع تصريف قبله وقفل التصريف بعده علشان ياخد وقته.</li>',
+ab3T:'بسنسورات ولا من غير؟',ab3:'<li><b>بسنسورات:</b> الكنترولر بيقيس الموصلية والـ pH، ويشغّل الطلمبات والمحبس لوحده، ويبعت إنذارات للـ BMS. أدق وأأمن.</li><li><b>من غير سنسورات:</b> تايمرات للطلمبات والمحبس، والفني بيعمل اختبار يدوي ويعدّل. أرخص، بس محتاج متابعة أسبوعية.</li>',
+ab4T:'اللي ما تعملهوش',ab4:'<li>ما تخلّيش إنذار الموصلية الواطية ABS في الكنترولر: بيوقف طلمبة المانع اللي بتصلّح المشكلة.</li><li>ما تحطش بايوسايد والتصريف شغال (في البرج).</li><li>ما تعتمدش على الأرقام من غير اختبار معمل بعد 24 ساعة.</li><li>الأرقام بداية: الجرعات النهائية بتتأكد مع مورّد الكيماويات.</li>',
+s1:'السيستم',site:'المشروع / الموقع',eng:'المهندس',mClosed:'دايرة مقفولة',mClosedS:'Chilled water، من غير تبخر',mTower:'كولينج تاور',mTowerS:'دايرة مفتوحة بتبخر وتصريف',mSens:'بسنسورات',mSensS:'موصلية و pH على الكنترولر',mNone:'من غير سنسورات',mNoneS:'تايمرات + اختبار يدوي',
+s2:'المية',V:'حجم الدايرة (m³)',C0:'موصلية مية التعبئة C0 (µS/cm)',k:'µS لكل 100 mg/L نيتريت',nLo:'النيتريت الأدنى (mg/L NaNO2)',nHi:'النيتريت الأعلى (mg/L NaNO2)',
+Q:'فلو التدوير (m³/h)',dT:'فرق الحرارة على البرج (°C)',coc:'دورات التركيز المطلوبة (COC)',Cm:'موصلية مية التعويض (µS/cm)',Vt:'حجم مية الدايرة (m³)',drift:'الرذاذ % من التدوير',valve:'فلو محبس التصريف (m³/h)',ppm:'تركيز المانع في الدايرة (mg/L منتج)',
+pLo:'pH الأدنى',pHi:'pH الأعلى',
+s3:'الكيماويات والمعدات',inhT:'مانع التآكل / القشور',Qi:'طلمبة المانع (L/h)',Si:'تركيز المحلول (% w/v)',iRho:'كثافة المنتج (kg/L)',Ti:'التانك (L)',kgFill:'كيلو لكل تعبئة pot feeder',tlf:'معامل Time Limit',
+bioT:'البايوسايد',bDose:'الجرعة (mg/L منتج)',bAct:'المادة الفعالة %',bRho:'الكثافة (kg/L)',Qb:'طلمبة البايوسايد (mL/min)',wk:'كل كام أسبوع',day:'اليوم',bt:'الساعة',
+d1:'الاتنين',d2:'التلات',d3:'الأربع',d4:'الخميس',d5:'الجمعة',d6:'السبت',d7:'الحد',
+hwFlow:'فيه flow switch على الدايرة',hwLvl:'فيه حساسات مستوى في التانكات',hwT:'فيه حساس حرارة',hwChg:'الشحنة الأولى لسه ما خلصتش',
+s4:'الإعدادات والنتايج',s5:'التشغيل والصيانة (O&M)',flT:'الأعطال وحلولها',s6:'الملخص',
+k1:'µS تشغيل / إيقاف المانع',k2:'زيادة الموصلية أثناء الحقن',k3:'نيتريت الشحنة الأولى',k4:'بايوسايد كل جرعة',k5:'تبخر',k6:'تصريف (Blowdown)',k7:'مية تعويض',k8:'المانع في اليوم',k9:'نقطة التصريف',
+noWarn:'مفيش تحذيرات للأرقام دي.',
+w1:'الـ Setpoint مش أعلى من مية التعبئة: علّي نطاق النيتريت أو قيس C0 تاني.',w2:'النطاق أقل من 50 µS: الطلمبة هتشتغل وتقف كتير. وسّع النطاق.',w3:'Time Limit {h} ساعة أكتر من 12h00 (أطول قيمة اتجربت على الكنترولر). علّي الطلمبة أو تركيز المحلول، أو ضيّق النطاق.',w4:'النطاق بيخلص في أقل من 15 دقيقة: الطلمبة كبيرة على الدايرة. قلّل الـ stroke أو التركيز.',w5:'النيتريت الأدنى لازم يكون أقل من الأعلى.',w6:'جرعة البايوسايد أطول من 6 ساعات: راجع الطلمبة والجرعة.',w7:'NUMBER WEEK = {n}: برمج الجرعة في Week 1 بس وسيب باقي الأسابيع Off، وإلا هتحقن كل أسبوع.',w8:'مدى الموصلية mA اتعلّى لـ 0–{s} µS: بلّغ مقاول الـ BMS.',
+w9:'COC لازم يكون أكبر من 1.',w10:'المحبس هيفتح {p}% من الوقت: محبس صغير على التصريف. كبّر المحبس.',w11:'طلمبة المانع محتاجة {q} L/h وهي شغالة مع التصريف بس. طلمبتك {Qi} L/h.',w12:'COC أكبر من 6 مع مية تعويض موصليتها عالية: خطر قشور. اتأكد مع المورّد.',
+gA:'A. مانع التآكل · قايمة Bleed (معكوسة) + Inhibitor',gB:'B. الشحنة الأولى (قبل التحكم الأوتوماتيك)',gC:'C. البايوسايد · قايمة Biocide 2',gD:'D. إنذارات الكنترولر · Alarm / Options',gE:'E. إنذارات الـ BMS',gF:'F. اختبار التشغيل',
+gT1:'A. ميزان المية في البرج',gT2:'B. التصريف · قايمة Bleed (عادية)',gT3:'C. مانع القشور والتآكل',gT4:'D. البايوسايد مع تصريف قبله وقفل بعده',gT5:'E. الإنذارات',gT6:'F. اختبار التشغيل',
+gN1:'A. الشحنة الأولى',gN2:'B. التعويض من اختبار النيتريت',gN3:'C. البايوسايد بالتايمر',gN4:'D. اختبار أسبوعي',
+gNt1:'A. ميزان المية',gNt2:'B. تايمر محبس التصريف',gNt3:'C. تايمر طلمبة المانع',gNt4:'D. البايوسايد بالتايمر',gNt5:'E. اختبار أسبوعي وتعديل التايمرات',
+thMenuF:'القايمة',thField:'الإعداد',thStep:'الخطوة',thNote:'ملاحظة',thAlarm:'الإنذار',thLogic:'الشرط',thDelay:'التأخير',thAct:'تعمل إيه',thItem:'البند',thExp:'المتوقع',
+srcNote:'أسماء القوايم من مانوال EMEC MTOWER PLUS (Bleed ص24، Biocide ص23، Alarm ص33، Options ص34). الأرقام بداية؛ النطاق والجرعات بتتأكد مع مهندس العملية ومورّد الكيماويات، ومعامل µS بيتصحح باختبار نيتريت بعد 24 ساعة.',
+towNote:'قيم البرج بداية مبنية على ميزان المية. أسماء الإعدادات على الكنترولر ممكن تختلف حسب الإصدار؛ طابقها على الشاشة، وأكّد الجرعات مع المورّد.',
+om1:'كل يوم',om2:'كل أسبوع',om3:'كل شهر',om4:'كل 3 شهور',om5:'كل سنة',
+omC1:'اقرا الموصلية والـ pH، وشوف مستوى التانكات، ومفيش إنذار.',omC2:'اختبار نيتريت (أو مانع البرج) والـ pH يدوي، وقارن بالكنترولر. سجّل استهلاك الكيماويات.',omC3:'نضّف سنسور الموصلية والـ pH، ومعايرة الـ pH بمحاليل. معايرة الطلمبات بمخبار. شوف التسريب عند نقطة الحقن.',omC4:'معايرة سنسور الموصلية بمحلول قياسي. اختبار بكتيريا (dip slide) وفي البرج اختبار Legionella حسب الاشتراطات.',omC5:'تفتيش المبادلات أو البرج على القشور والتآكل (coupons إن وجدت)، ومراجعة الجرعات مع المورّد.',
+omN2:'اختبار نيتريت (أو موصلية البرج) يدوي، وعدّل الشحنة أو التايمرات بالحسبة في الأداة. سجّل الأرقام.',
+flRows:'<tr><td>الموصلية بتنزل والطلمبة شغالة</td><td>التانك فاضي، أو الطلمبة مش بتحقن (هوا / صمام)</td><td>اعمل priming، نضّف الصمامات، املا التانك. شوف Bleed Timeout.</td></tr><tr><td>الموصلية عالية جدًا (مقفولة)</td><td>جرعة زيادة أو المية اتعوّضت قليل</td><td>وقّف الحقن، اختبر نيتريت، وصرّف جزء لو فوق الحد.</td></tr><tr><td>الموصلية عالية (برج)</td><td>المحبس مش بيفتح، أو مسدود</td><td>جرّب المحبس من Manual، ونضّف المصفاة.</td></tr><tr><td>Bleed Timeout</td><td>Time Limit قصير، أو الطلمبة ضعيفة</td><td>راجع الحسبة، ومعايرة الطلمبة.</td></tr><tr><td>البايوسايد ما اتحقنش</td><td>الساعة غلط، أو التانك فاضي، أو NUMBER WEEK</td><td>راجع الساعة واليوم وStatus Biocide.</td></tr><tr><td>قراية الـ pH بتتأرجح</td><td>سنسور محتاج تنضيف أو معايرة</td><td>نضّف وعاير بمحلولين.</td></tr><tr><td>كل المخارج واقفة</td><td>إنذار ABS (HIC / HPH) أو مفيش flow</td><td>اقرا Status Alarm، وشوف flow switch.</td></tr>'
+},en:{
+short:'CHW treatment',title:'Chilled Water & Cooling Tower Treatment',
+intro:'Commissioning chemical treatment for a closed chilled-water loop or a cooling tower, with sensors on an <code>EMEC MTOWER PLUS</code> controller or without them on timers. The tool gives settings, initial charge, dosing, alarms and commissioning checks.',
+abT:'What does treatment do?',abLead:'HVAC water left untreated corrodes pipes, scales heat exchangers and grows bacteria and algae. Treatment adds measured chemicals to protect the equipment and keep cooling efficient.',
+ab1T:'Closed loop (chilled water)',ab1:'<li>Water circulates in a closed loop and does not evaporate, so chemicals stay in it.</li><li><b>Corrosion inhibitor (nitrite):</b> an initial charge, then only the losses are topped up.</li><li><b>The controller</b> reads conductivity (µS), which nitrite raises, and runs the inhibitor pump when it falls.</li><li><b>Biocide</b> every one or two weeks against bacteria.</li>',
+ab2T:'Open loop (cooling tower)',ab2:'<li>Water evaporates in the tower, so salts concentrate (cycles of concentration).</li><li><b>Blowdown:</b> part of the water is drained when conductivity rises and replaced with makeup.</li><li><b>Scale/corrosion inhibitor</b> dosed in line with makeup water.</li><li><b>Biocide</b>, alternating products, with a pre-bleed before and a bleed lockout after for contact time.</li>',
+ab3T:'With sensors or without?',ab3:'<li><b>With sensors:</b> the controller reads conductivity and pH, runs pumps and valve by itself, and alarms the BMS. More accurate and safer.</li><li><b>Without sensors:</b> timers on pumps and valve; a technician tests by hand and adjusts. Cheaper, needs weekly follow-up.</li>',
+ab4T:'Do not',ab4:'<li>Set the low-conductivity alarm to ABS in the controller: it stops the very inhibitor pump that fixes it.</li><li>Dose biocide while bleeding (towers).</li><li>Rely on the numbers without a lab test after 24 h.</li><li>Treat values as final: confirm doses with the chemical supplier.</li>',
+s1:'System',site:'Project / site',eng:'Engineer',mClosed:'Closed loop',mClosedS:'Chilled water, no evaporation',mTower:'Cooling tower',mTowerS:'Open loop with evaporation and blowdown',mSens:'With sensors',mSensS:'Conductivity and pH on the controller',mNone:'Without sensors',mNoneS:'Timers + manual tests',
+s2:'Water',V:'Loop volume (m³)',C0:'Fill water conductivity C0 (µS/cm)',k:'µS per 100 mg/L nitrite',nLo:'Nitrite LOW (mg/L NaNO2)',nHi:'Nitrite HIGH (mg/L NaNO2)',
+Q:'Circulation flow (m³/h)',dT:'Tower range ΔT (°C)',coc:'Target cycles (COC)',Cm:'Makeup conductivity (µS/cm)',Vt:'System water volume (m³)',drift:'Drift % of circulation',valve:'Blowdown valve flow (m³/h)',ppm:'Inhibitor in system (mg/L product)',
+pLo:'pH low',pHi:'pH high',
+s3:'Chemicals and hardware',inhT:'Corrosion / scale inhibitor',Qi:'Inhibitor pump (L/h)',Si:'Solution strength (% w/v)',iRho:'Product density (kg/L)',Ti:'Tank (L)',kgFill:'kg per pot fill',tlf:'Time Limit factor',
+bioT:'Biocide',bDose:'Dose (mg/L product)',bAct:'Active %',bRho:'Density (kg/L)',Qb:'Biocide pump (mL/min)',wk:'Every N weeks',day:'Day',bt:'Time',
+d1:'Monday',d2:'Tuesday',d3:'Wednesday',d4:'Thursday',d5:'Friday',d6:'Saturday',d7:'Sunday',
+hwFlow:'Flow switch on the loop',hwLvl:'Level probes in the tanks',hwT:'Temperature probe',hwChg:'Initial charge not finished yet',
+s4:'Settings and results',s5:'Operation and maintenance (O&M)',flT:'Faults and fixes',s6:'Summary',
+k1:'µS inhibitor ON / OFF',k2:'conductivity rise while dosing',k3:'NaNO2 initial charge',k4:'biocide per shot',k5:'evaporation',k6:'blowdown',k7:'makeup',k8:'inhibitor per day',k9:'bleed setpoint',
+noWarn:'No warnings for these inputs.',
+w1:'Setpoint is not above the fill water: raise the nitrite band or re-measure C0.',w2:'Band below 50 µS: the pump will cycle often. Widen the band.',w3:'Time Limit {h} h is above 12h00 (the longest value tested on this controller). Raise the pump stroke or solution strength, or narrow the band.',w4:'Band covered in under 15 min: the pump is oversized for this loop. Reduce stroke or strength.',w5:'Nitrite LOW must be below HIGH.',w6:'Biocide shot longer than 6 h: check pump size and dose.',w7:'NUMBER WEEK = {n}: program the dose in Week 1 only and leave the other weeks Off, otherwise it doses every week.',w8:'Conductivity mA scale raised to 0–{s} µS: tell the BMS contractor.',
+w9:'COC must be above 1.',w10:'The valve would be open {p}% of the time: the blowdown valve is small. Fit a larger one.',w11:'The inhibitor pump needs {q} L/h while it runs only with blowdown. Your pump is {Qi} L/h.',w12:'COC above 6 with high-conductivity makeup: scaling risk. Confirm with the supplier.',
+gA:'A. Corrosion inhibitor · Bleed menu (inverted) + Inhibitor',gB:'B. Initial charge (before automatic control)',gC:'C. Biocide · Biocide 2 menu',gD:'D. Controller alarms · Alarm / Options',gE:'E. BMS alarms',gF:'F. Commissioning checks',
+gT1:'A. Tower water balance',gT2:'B. Blowdown · Bleed menu (normal)',gT3:'C. Scale and corrosion inhibitor',gT4:'D. Biocide with pre-bleed and lockout',gT5:'E. Alarms',gT6:'F. Commissioning checks',
+gN1:'A. Initial charge',gN2:'B. Top-up from a nitrite test',gN3:'C. Biocide on a timer',gN4:'D. Weekly test',
+gNt1:'A. Water balance',gNt2:'B. Blowdown valve timer',gNt3:'C. Inhibitor pump timer',gNt4:'D. Biocide on a timer',gNt5:'E. Weekly test and timer correction',
+thMenuF:'Menu',thField:'Field',thStep:'Step',thNote:'Note',thAlarm:'Alarm',thLogic:'Logic',thDelay:'Delay',thAct:'Action',thItem:'Item',thExp:'Expected',
+srcNote:'Menu names follow the EMEC MTOWER PLUS manual (Bleed p.24, Biocide p.23, Alarm p.33, Options p.34). Values are a starting point: confirm the band and doses with the process engineer and chemical supplier, and correct the µS factor with a lab nitrite test after 24 h.',
+towNote:'Tower values are a starting point from the water balance. Controller field names may differ by version; match them on the display and confirm doses with the supplier.',
+om1:'Daily',om2:'Weekly',om3:'Monthly',om4:'Every 3 months',om5:'Yearly',
+omC1:'Read conductivity and pH, check tank levels, no alarm.',omC2:'Manual nitrite (or tower inhibitor) and pH test; compare with the controller. Log chemical use.',omC3:'Clean conductivity and pH probes; calibrate pH with buffers. Calibrate pumps with a cylinder. Check the injection point for leaks.',omC4:'Calibrate the conductivity probe with a standard. Bacteria dip slide; Legionella test on towers as required.',omC5:'Inspect exchangers or the tower for scale and corrosion (coupons if fitted); review doses with the supplier.',
+omN2:'Manual nitrite (or tower conductivity) test; adjust the top-up or timers with this tool. Log the figures.',
+flRows:'<tr><td>Conductivity falls while the pump runs</td><td>Empty tank, or pump not delivering (air / valve)</td><td>Prime, clean valves, refill the tank. Check Bleed Timeout.</td></tr><tr><td>Very high conductivity (closed)</td><td>Overdose or little makeup</td><td>Stop dosing, test nitrite, drain some water if above the limit.</td></tr><tr><td>High conductivity (tower)</td><td>Blowdown valve not opening or blocked</td><td>Test the valve in Manual; clean the strainer.</td></tr><tr><td>Bleed Timeout</td><td>Time Limit too short, or weak pump</td><td>Recheck the calculation; calibrate the pump.</td></tr><tr><td>Biocide not dosed</td><td>Clock wrong, tank empty, or NUMBER WEEK</td><td>Check clock, day and Status Biocide.</td></tr><tr><td>pH reading drifts</td><td>Probe needs cleaning or calibration</td><td>Clean and calibrate with two buffers.</td></tr><tr><td>All outputs stopped</td><td>ABS alarm (HIC / HPH) or no flow</td><td>Read Status Alarm; check the flow switch.</td></tr>'
+}};
+
+var F=['site','eng','V','C0','k','nLo','nHi','Q','dT','coc','Cm','Vt','drift','valve','ppm','pLo','pHi','Qi','Si','iRho','Ti','kgFill','tlf','bDose','bAct','bRho','Qb','wk','day','bt','hwFlow','hwLvl','hwT','hwChg'];
+var st=TL.store('tl_chw_v1',F),$=TL.$,t=function(k,v){return TL.t(k,v);},mode={sys:'closed',ctl:'sens'};
+function n(id){var v=TL.num(id);return v==null?0:v;}
+function p2(x){return (x<10?'0':'')+x;}function hm(min){min=Math.round(min);return p2(Math.floor(min/60))+'h'+p2(min%60);}function hhmm(min){min=Math.round(min);return p2(Math.floor(min/60))+' '+p2(min%60);}
+function r(x,d){var f=Math.pow(10,d||0);return Math.round(x*f)/f;}function rup(x,s){return Math.ceil(x/s)*s;}
+function tbl(head,rows){return '<div class="tbl"><table><thead><tr>'+head.map(function(h){return '<th>'+TL.esc(t(h))+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(rw){return '<tr>'+rw.map(function(c,i){return '<td'+(i===2&&head.length===4?' class="v"':'')+'>'+c+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';}
+function sec(h,body,note){return '<h3>'+TL.esc(t(h))+'</h3>'+body+(note?'<div class="note">'+note+'</div>':'');}
+function kpi(list){$('kpi').innerHTML=list.map(function(k){return '<div><b>'+TL.esc(k[0])+'</b><span>'+TL.esc(k[1])+'</span></div>';}).join('');}
+var AR=function(){return TL.lang==='ar';};
+function L(ar,en){return AR()?ar:en;}
+
+/* ---------- closed loop with sensors: rules from the validated kit tool ---------- */
+function closedSens(x){
+  var o={},w=[];
+  o.SP=Math.round((x.C0+x.nLo*x.k/100)/10)*10;o.UP=Math.round((x.C0+x.nHi*x.k/100)/10)*10;o.DB=-(o.UP-o.SP);
+  o.mgph=x.Qi*x.Si*10*1000/(x.V*1000);o.usph=o.mgph*x.k/100;o.tBand=(o.UP-o.SP)/o.usph;o.TLh=Math.max(1,Math.ceil(o.tBand*x.tlf));
+  o.kgInit=x.V*x.nHi/1000;o.fills=Math.ceil(o.kgInit/x.kgFill);o.kgTank=x.Ti*x.Si/100;
+  o.HIC=rup(o.UP+0.5*(o.UP-x.C0),100);o.bmsLo=o.SP-Math.round((o.UP-o.SP)/10)*10;o.bmsHi=o.HIC-200;
+  o.cdHigh=[2000,5000,10000,20000].filter(function(s){return s>=1.5*o.HIC;})[0]||20000;
+  o.bL=x.V*x.bDose/1000/x.bRho;o.bMin=o.bL*1000/x.Qb;o.bActv=x.bDose*x.bAct/100;o.bYear=o.bL*52/x.wk;
+  if(o.SP<=x.C0)w.push(['bad',t('w1')]);if(o.DB>-50)w.push(['warn',t('w2')]);if(o.TLh>12)w.push(['warn',t('w3',{h:o.TLh})]);
+  if(o.tBand<0.25)w.push(['warn',t('w4')]);if(x.nLo>=x.nHi)w.push(['bad',t('w5')]);if(o.bMin>360)w.push(['warn',t('w6')]);
+  if(x.wk>1)w.push(['warn',t('w7',{n:x.wk})]);if(o.cdHigh>5000)w.push(['warn',t('w8',{s:o.cdHigh})]);
+  kpi([[o.SP+' / '+o.UP,t('k1')],[r(o.usph,1)+' µS/h',t('k2')],[r(o.kgInit,1)+' kg',t('k3')+' ('+o.fills+')'],[r(o.bL,1)+' L · '+hhmm(o.bMin),t('k4')]]);
+  var M=['thMenuF','thField','thVal','thWhy'],h='';
+  h+=sec('gA',tbl(M,[['Bleed','Setpoint',o.SP+' µS','C0 '+x.C0+' + '+x.nLo+' × '+x.k+'/100'],
+    ['Bleed','Dead Band','<b>-'+(o.UP-o.SP)+'</b>',L('السالب بيعكس القناة: الطلمبة تشتغل تحت '+o.SP+' وتقف عند '+o.UP+'. اكتب "-" الأول.','Minus inverts the channel: ON below '+o.SP+', OFF at '+o.UP+'. Enter "-" first.')],
+    ['Bleed','Time Limit',hm(o.TLh*60),L('النطاق بياخد '+r(o.tBand,1)+' ساعة على '+r(o.usph,1)+' µS/h × '+x.tlf,'Band takes '+r(o.tBand,1)+' h at '+r(o.usph,1)+' µS/h × '+x.tlf)],
+    ['Bleed','Manual Bleed',L('ما تدخلش','do not enter'),L('أي وقت فيه بيشغّل الطلمبة فورًا','Any time there starts the pump at once')],
+    ['Inhibitor','Mode','Feed &amp; Bleed',L('طلمبة المانع على 2-E-N بتتبع قناة Bleed','Inhibitor pump on 2-E-N follows the Bleed channel')]]),
+    L('الطلمبة بتزوّد '+r(o.mgph,1)+' mg/L نيتريت في الساعة. تانك '+x.Ti+' L = '+r(o.kgTank,1)+' kg = '+r(o.kgTank*1000/x.V,0)+' mg/L في الدايرة.','Pump adds '+r(o.mgph,1)+' mg/L NaNO2 per hour. One '+x.Ti+' L tank = '+r(o.kgTank,1)+' kg = '+r(o.kgTank*1000/x.V,0)+' mg/L in the loop.'));
+  h+=sec('gB',tbl(['thStep','thAct','thVal','thNote'],[['1',L('قيس C0 والدايرة مليانة وبتلف','Measure C0 with the loop full and circulating'),x.C0+' µS',L('اكتب القيمة الحقيقية فوق','Enter the real value above')],
+    ['2',L('نيتريت للوصول للحد الأعلى','NaNO2 to reach HIGH'),r(o.kgInit,1)+' kg',x.V+' m³ × '+x.nHi+' mg/L'],['3',L('عدد التعبئات','Pot fills'),o.fills+' × '+x.kgFill+' kg',L('ادوّب في مية دافية، واستنى لفة كاملة بين كل تعبئة','Dissolve in warm water; one turnover between fills')],
+    ['4',L('وقّف لما الكنترولر يقرا','Stop when the controller reads'),o.UP+' µS',L('واختبر نيتريت وصحّح المعامل '+x.k,'Then lab-test nitrite and correct the factor '+x.k)],['5',L('املا تانك المحلول','Fill the solution tank'),r(o.kgTank,1)+' kg / '+x.Ti+' L',x.Si+' %']]));
+  h+=sec('gC',tbl(M,[['Biocide 2','PBLD Time','00h00',L('دايرة مقفولة: مفيش تصريف','Closed loop: no bleed before the dose')],['Biocide 2','PBIO','00h00',''],['Biocide 2','LCK','00h00',''],
+    ['Biocide 2','Week 1 · '+TL.esc(dayName(x.day)),hhmm(o.bMin)+' @ '+x.bt,r(o.bL,1)+' L / '+x.Qb+' mL/min'],['Biocide 2',L('باقي الأيام والأسابيع','Other days / weeks'),'Off',''],['Options','NUMBER WEEK',String(x.wk),''],['Biocide 1',L('كل الأيام','All days'),'Off','']]),
+    L('الجرعة '+x.bDose+' mg/L منتج = '+r(o.bActv,0)+' mg/L مادة فعالة. حوالي '+r(o.bYear,0)+' L في السنة. عاير الطلمبة الأول بالـ mL/min.','Dose '+x.bDose+' mg/L product = '+r(o.bActv,0)+' mg/L active. About '+r(o.bYear,0)+' L per year. Calibrate the pump in mL/min first.'));
+  var flow=x.hwFlow?['FLOW = NORMAL, NFW = STOP',L('الحقن يقف لما طلمبات التشيلد ووتر تقف','Dosing stops when CHW pumps stop')]:['FLOW = DISABLED, NFW = NO',L('مفيش flow switch: المدخل المفتوح هيمنع الحقن. طلمبات الدايرة لازم 24/7','No flow contact: an open input would block dosing. CHW pumps must run 24/7')];
+  h+=sec('gD',tbl(M,[['Alarm','HIC','ABS '+o.HIC,L('جرعة زيادة: ABS بيوقف كل المخارج','Overdose: ABS stops all outputs')],['Alarm','HPH','ABS '+r(x.pHi,1),''],
+    ['Alarm','LOC','OFF',L('ABS هيوقف طلمبة المانع نفسها. الإنذار في الـ BMS','ABS would stop the inhibitor pump too. Monitor in the BMS')],['Alarm','LPH','OFF',L('نفس السبب','Same reason')],['Alarm','OUT AL','EN',L('كونتاكت إنذار 10-11-12 للـ BMS','Common alarm 10-11-12 to the BMS')],
+    ['Alarm','CLS',x.hwLvl?'STOP':'NO',x.hwLvl?L('التانك الفاضي يوقف طلمبته','Empty tank stops its pump'):L('مفيش حساسات مستوى','No level probes')],['Options','FLOW',flow[0],flow[1]],
+    ['Options','OUT CURRENT','4/20',L('الـ BMS يعرف لو الكابل اتقطع','BMS detects a broken cable')],['Options','Cd mA Low / High','0 / '+o.cdHigh,''],['Options','pH mA Low / High','0 / 14',''],
+    ['Options','Temp mA LO / HI',x.hwT?'0 / 50':L('مش مستخدم','not used'),''],['Options','IF ALARM','ENABLE','']]));
+  h+=sec('gE',tbl(['thAlarm','thLogic','thDelay','thAct'],[[L('إنذار عام','Common alarm'),'DI','10 s','Status Alarm'],
+    [L('موصلية واطية','Low conductivity'),'AI &lt; '+o.bmsLo+' µS'+(x.hwChg?L(' (بعد الشحنة)',' (after the charge)'):''),'60 min',L('تانك، طلمبة، تعبئة','Tank, pump, pot fill')],
+    [L('موصلية عالية','High conductivity'),'AI &gt; '+o.bmsHi+' µS','30 min',L('اختبر نيتريت','Test nitrite')],['pH '+L('واطي','low'),'AI &lt; '+r(x.pLo,1),'60 min',''],['pH '+L('عالي','high'),'AI &gt; '+r(x.pHi,1),'30 min',''],
+    [L('عطل إشارة','Signal fault'),'AI &lt; 3.6 / &gt; 21 mA','60 s',L('كابل أو الكنترولر مقفول','Cable or controller off')],[L('حقن المانع طويل','Inhibitor dosing too long'),'DI ON &gt; '+(o.TLh+2)+' h','-',L('تانك فاضي / طلمبة','Tank empty / pump')],
+    [L('البايوسايد ما اتحقنش','Biocide missed'),'DI ≥ '+Math.round(o.bMin*0.7)+' min / '+(x.wk*7+1)+' d','-',L('الساعة والتانك','Clock and tank')]]));
+  h+=sec('gF',tbl(['thStep','thItem','thExp',''],[['1',L('معايرة الطلمبتين بمخبار دقيقة','Calibrate both pumps, 1 min, cylinder'),L('المانع ','Inhibitor ')+r(x.Qi*1000/60,0)+' mL/min · '+L('البايوسايد ','biocide ')+x.Qb+' mL/min','☐'],
+    ['2','Manual ON / OFF',L('الطلمبة تشتغل والـ BMS يشوف','Pump runs, BMS sees it'),'☐'],['3',L('علّي SP فوق القراية','Raise SP above the reading'),L('طلمبة المانع تشتغل','Inhibitor pump starts'),'☐'],
+    ['4','Time Limit 00h01','Bleed Timeout '+L('بعد دقيقة، ورجّع ','after 1 min; put back ')+hm(o.TLh*60),'☐'],['5',L('البايوسايد بعد دقيقتين','Biocide 2 min ahead'),L('تشتغل المدة وتقف','Runs and stops'),'☐'],
+    ['6',L('نيتريت معمل بعد 24 ساعة','Lab nitrite after 24 h'),x.nLo+'–'+x.nHi+' mg/L','☐']]),t('srcNote'));
+  return {h:h,w:w,sum:['Bleed SP '+o.SP+' / DB -'+(o.UP-o.SP)+' / TL '+hm(o.TLh*60),'Initial charge '+r(o.kgInit,1)+' kg ('+o.fills+' fills)','Biocide '+r(o.bL,1)+' L = '+hhmm(o.bMin)+' @ '+x.bt+' every '+x.wk+' wk','HIC ABS '+o.HIC+' | BMS low '+o.bmsLo+' high '+o.bmsHi]};
+}
+function closedNone(x){
+  var w=[],kg=x.V*x.nHi/1000,fills=Math.ceil(kg/x.kgFill),bL=x.V*x.bDose/1000/x.bRho,bMin=bL*1000/x.Qb;
+  if(x.nLo>=x.nHi)w.push(['bad',t('w5')]);if(bMin>360)w.push(['warn',t('w6')]);
+  kpi([[r(kg,1)+' kg',t('k3')+' ('+fills+')'],[r(bL,1)+' L · '+hhmm(bMin),t('k4')]]);
+  var ex=[x.nLo-100,x.nLo,Math.round((x.nLo+x.nHi)/2)].map(function(m){var add=Math.max(0,x.V*(x.nHi-m)/1000);return [m+' mg/L',add?r(add,1)+' kg':'0',add?Math.ceil(add/x.kgFill)+' × '+x.kgFill+' kg':'-',m<x.nLo?L('زوّد دلوقتي','Top up now'):L('لا، اختبر الأسبوع الجاي','No, test next week')];});
+  var h=sec('gN1',tbl(['thStep','thAct','thVal','thNote'],[['1',L('قيس النيتريت في مية التعبئة (لو موجود)','Test nitrite in the fill water (if any)'),'mg/L',''],['2',L('نيتريت للحد الأعلى','NaNO2 to HIGH'),r(kg,1)+' kg',x.V+' m³ × '+x.nHi],['3',L('على pot feeder','Through the pot feeder'),fills+' × '+x.kgFill+' kg',L('لفة كاملة بين كل تعبئة','One turnover between fills')],['4',L('اختبار بعد 24 ساعة','Test after 24 h'),x.nLo+'–'+x.nHi+' mg/L','']]));
+  h+=sec('gN2',tbl(['thItem','thVal','thStep','thNote'],ex),L('الكمية = الحجم × (الحد الأعلى − القراية) ÷ 1000.','kg = volume × (HIGH − reading) ÷ 1000.'));
+  h+=sec('gN3',tbl(['thStep','thAct','thVal','thNote'],[['1',L('تايمر أسبوعي على طلمبة البايوسايد','Weekly timer on the biocide pump'),hhmm(bMin)+' @ '+x.bt,TL.esc(dayName(x.day))+L(' كل '+x.wk+' أسبوع',' every '+x.wk+' wk')],['2',L('أو يدوي على pot feeder','Or by hand through the pot feeder'),r(bL,1)+' L','']]));
+  h+=sec('gN4',tbl(['thStep','thItem','thExp',''],[['1',L('اختبار نيتريت','Nitrite test'),x.nLo+'–'+x.nHi+' mg/L','☐'],['2','pH',r(x.pLo,1)+'–'+r(x.pHi,1),'☐'],['3',L('مستوى تانك البايوسايد','Biocide tank level'),L('يكفي الجرعة الجاية','Enough for the next shot'),'☐'],['4',L('سجّل في اللوج','Log it'),'','☐']]));
+  return {h:h,w:w,sum:['Initial charge '+r(kg,1)+' kg','Top-up kg = V × (HIGH − test)/1000','Biocide '+r(bL,1)+' L every '+x.wk+' wk']};
+}
+function towerBalance(x){var E=x.Q*x.dT*0.00153,D=x.Q*x.drift/100,Bt=x.coc>1?E/(x.coc-1):0,Bb=Math.max(0,Bt-D),M=E+Bt;return {E:E,D:D,Bt:Bt,Bb:Bb,M:M};}
+function towerSens(x){
+  var w=[],b=towerBalance(x);if(x.coc<=1)w.push(['bad',t('w9')]);if(x.coc>6&&x.Cm>800)w.push(['warn',t('w12')]);
+  var SP=Math.round(x.Cm*x.coc/10)*10,DB=Math.max(20,Math.round(SP*0.05/10)*10),open=b.Bb/x.valve,
+      tDrop=x.valve>0&&SP>x.Cm?-Math.log(1-DB/(SP-x.Cm))*x.Vt/x.valve:0,tlH=Math.max(1,Math.ceil(tDrop*1.5)),
+      kgDay=b.Bt*24*x.ppm/1000,LDay=kgDay/x.iRho,needQ=open>0?LDay/(open*24):0,mlPerM3=x.ppm/x.coc/x.iRho;
+  if(open>0.5)w.push(['warn',t('w10',{p:Math.round(open*100)})]);if(needQ>x.Qi)w.push(['bad',t('w11',{q:r(needQ,2),Qi:x.Qi})]);
+  var bL=x.Vt*x.bDose/1000/x.bRho,bMin=bL*1000/x.Qb,HIC=rup(SP*1.25,100),cd=[2000,5000,10000,20000].filter(function(s){return s>=1.5*HIC;})[0]||20000;
+  if(bMin>360)w.push(['warn',t('w6')]);if(x.wk>1)w.push(['warn',t('w7',{n:x.wk})]);
+  kpi([[r(b.E,2)+' m³/h',t('k5')],[r(b.Bt,2)+' m³/h',t('k6')],[r(b.M,2)+' m³/h',t('k7')],[SP+' µS',t('k9')],[r(LDay,1)+' L',t('k8')]]);
+  var M=['thMenuF','thField','thVal','thWhy'],h='';
+  h+=sec('gT1',tbl(['thItem','thVal','thNote',''],[[L('تبخر E','Evaporation E'),r(b.E,2)+' m³/h','Q × ΔT × 0.00153',''],[L('رذاذ','Drift'),r(b.D,3)+' m³/h','Q × '+x.drift+'%',''],[L('تصريف كلي','Total blowdown'),r(b.Bt,2)+' m³/h','E ÷ (COC − 1)',''],[L('من المحبس','Through the valve'),r(b.Bb,2)+' m³/h',L('التصريف − الرذاذ','blowdown − drift'),''],[L('مية تعويض','Makeup'),r(b.M,2)+' m³/h = '+r(b.M*24,0)+' m³/'+L('يوم','day'),'E + B','']]));
+  h+=sec('gT2',tbl(M,[['Bleed','Setpoint',SP+' µS',x.Cm+' × COC '+x.coc],['Bleed','Dead Band','+'+DB,L('التصريف يفتح فوق '+SP+' ويقفل عند '+(SP-DB),'Valve opens above '+SP+', closes at '+(SP-DB))],['Bleed','Time Limit',hm(tlH*60),L('النزول '+DB+' µS بياخد '+r(tDrop,1)+' ساعة × 1.5','Dropping '+DB+' µS takes '+r(tDrop,1)+' h × 1.5')]]),
+    L('المحبس هيفتح حوالي '+Math.round(open*100)+'% من الوقت ('+r(open*24,1)+' ساعة في اليوم).','The valve will be open about '+Math.round(open*100)+'% of the time ('+r(open*24,1)+' h/day).'));
+  h+=sec('gT3',tbl(M,[['Inhibitor','Mode','Feed &amp; Bleed',L('الطلمبة تشتغل مع التصريف','Pump runs with the blowdown')],[L('الاستهلاك','Use'),L('في اليوم','per day'),r(kgDay,2)+' kg = '+r(LDay,1)+' L','B × 24 × '+x.ppm+' mg/L'],[L('الطلمبة المطلوبة','Pump needed'),'L/h',r(needQ,2),L('اليومي ÷ ساعات فتح المحبس','daily ÷ valve hours')],[L('لو فيه عداد مية تعويض','With a makeup meter'),'mL / m³',r(mlPerM3,0),x.ppm+' ÷ COC ÷ '+x.iRho]]),t('towNote'));
+  h+=sec('gT4',tbl(M,[['Biocide','PBLD',L('30 دقيقة (بداية)','30 min (start)'),L('تصريف قبل الجرعة علشان مفيش تصريف بعدها','Pre-bleed so no bleed is needed after')],['Biocide','LCK',L('ساعتين (بداية)','2 h (start)'),L('قفل التصريف علشان البايوسايد ياخد وقته','Bleed lockout for contact time')],['Biocide','Week 1 · '+TL.esc(dayName(x.day)),hhmm(bMin)+' @ '+x.bt,r(bL,1)+' L / '+x.Qb+' mL/min'],['Options','NUMBER WEEK',String(x.wk),L('بدّل نوعين بايوسايد لو متاح (Biocide 1 / 2)','Alternate two biocides if available (Biocide 1 / 2)')]]),t('towNote'));
+  var flow=x.hwFlow?'FLOW = NORMAL, NFW = STOP':'FLOW = DISABLED, NFW = NO';
+  h+=sec('gT5',tbl(M,[['Alarm','HIC','ABS '+HIC,L('موصلية عالية جدًا: المحبس مش شغال','Very high: valve not working')],['Alarm','LOC','OFF',L('الإنذار في الـ BMS','Monitor in the BMS')],['Alarm','HPH / LPH',r(x.pHi,1)+' / '+r(x.pLo,1),''],['Alarm','CLS',x.hwLvl?'STOP':'NO',''],['Options','FLOW',flow,''],['Options','Cd mA Low / High','0 / '+cd,'']]));
+  h+=sec('gT6',tbl(['thStep','thItem','thExp',''],[['1',L('محبس التصريف من Manual','Blowdown valve in Manual'),L('يفتح ويقفل، وفلو '+x.valve+' m³/h','Opens and closes, '+x.valve+' m³/h'),'☐'],['2',L('علّي SP تحت القراية','Lower SP below the reading'),L('المحبس يفتح والمانع يحقن','Valve opens, inhibitor doses'),'☐'],['3',L('معايرة الطلمبات','Calibrate pumps'),r(x.Qi*1000/60,0)+' / '+x.Qb+' mL/min','☐'],['4',L('بعد أسبوع: موصلية البرج ÷ التعويض','After a week: tower ÷ makeup µS'),'≈ '+x.coc,'☐']]));
+  return {h:h,w:w,sum:['E '+r(b.E,2)+' / B '+r(b.Bt,2)+' / M '+r(b.M,2)+' m³/h','Bleed SP '+SP+' / DB +'+DB+' / TL '+hm(tlH*60),'Inhibitor '+r(LDay,1)+' L/day ('+r(mlPerM3,0)+' mL per m³ makeup)','Biocide '+r(bL,1)+' L = '+hhmm(bMin)+' @ '+x.bt]};
+}
+function towerNone(x){
+  var w=[],b=towerBalance(x);if(x.coc<=1)w.push(['bad',t('w9')]);
+  var open=b.Bb/x.valve,minH=open*60,LDay=b.Bt*24*x.ppm/1000/x.iRho,pMinDay=x.Qi>0?LDay/x.Qi*60:0,bL=x.Vt*x.bDose/1000/x.bRho,bMin=bL*1000/x.Qb;
+  if(open>0.5)w.push(['warn',t('w10',{p:Math.round(open*100)})]);
+  kpi([[r(b.E,2)+' m³/h',t('k5')],[r(b.Bt,2)+' m³/h',t('k6')],[r(minH,1)+' min/h',L('فتح المحبس','valve open')],[r(pMinDay,0)+' min/'+L('يوم','day'),L('طلمبة المانع','inhibitor pump')]]);
+  var h=sec('gNt1',tbl(['thItem','thVal','thNote',''],[[L('تبخر','Evaporation'),r(b.E,2)+' m³/h','Q × ΔT × 0.00153',''],[L('تصريف','Blowdown'),r(b.Bt,2)+' m³/h','E ÷ (COC − 1)',''],[L('تعويض','Makeup'),r(b.M,2)+' m³/h','','']]));
+  h+=sec('gNt2',tbl(['thItem','thVal','thNote',''],[[L('افتح المحبس','Open the valve'),r(minH,1)+' '+L('دقيقة كل ساعة','min each hour'),r(b.Bb,2)+' ÷ '+x.valve+' m³/h',''],[L('أو','or'),r(open*24,1)+' '+L('ساعة في اليوم مقسمة','h/day split'),'','']]));
+  h+=sec('gNt3',tbl(['thItem','thVal','thNote',''],[[L('المانع في اليوم','Inhibitor per day'),r(LDay,1)+' L',x.ppm+' mg/L × B',''],[L('تشغيل الطلمبة','Pump run'),r(pMinDay,0)+' '+L('دقيقة في اليوم','min/day'),L('≈ ','≈ ')+r(pMinDay/24,1)+' '+L('دقيقة كل ساعة','min each hour'),'']]));
+  h+=sec('gNt4',tbl(['thItem','thVal','thNote',''],[[L('الجرعة','Shot'),r(bL,1)+' L = '+hhmm(bMin),TL.esc(dayName(x.day))+' @ '+x.bt,''],[L('قفل التصريف بعدها','Bleed off after it'),L('ساعتين','2 h'),'','']]));
+  h+=sec('gNt5',tbl(['thStep','thItem','thExp',''],[['1',L('موصلية البرج ÷ موصلية التعويض','Tower µS ÷ makeup µS'),'≈ '+x.coc,'☐'],['2',L('لو أعلى: زوّد دقايق المحبس بنفس النسبة','If higher: raise valve minutes by the same ratio'),'','☐'],['3',L('اختبار المانع بكيت المورّد','Inhibitor test with supplier kit'),x.ppm+' mg/L','☐']]),t('towNote'));
+  return {h:h,w:w,sum:['Blowdown valve '+r(minH,1)+' min/h','Inhibitor pump '+r(pMinDay,0)+' min/day','Biocide '+r(bL,1)+' L every '+x.wk+' wk']};
+}
+function dayName(d){var i=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].indexOf(d);return t('d'+(i+1));}
+
+function render(){
+  document.querySelectorAll('[data-sys]').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-sys')===mode.sys);});
+  document.querySelectorAll('[data-ctl]').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-ctl')===mode.ctl);});
+  var closed=mode.sys==='closed',sens=mode.ctl==='sens';
+  $('gClosed').hidden=!closed;$('gTower').hidden=closed;$('SiL').hidden=!closed;$('kgL').hidden=!closed;$('tlfL').hidden=!(closed&&sens);$('rhoL').hidden=closed;$('hw').hidden=!sens;$('chgL').hidden=!closed;
+  if(!closed&&$('pLo').value==='8.5'){$('pLo').value='7.0';$('pHi').value='9.0';}
+  if(closed&&$('pLo').value==='7.0'&&$('pHi').value==='9.0'){$('pLo').value='8.5';$('pHi').value='10.0';}
+  var x={};F.forEach(function(f){var e=$(f);x[f]=e.type==='checkbox'?e.checked:(e.type==='number'?n(f):e.value);});x.wk=+x.wk;
+  var res=closed?(sens?closedSens(x):closedNone(x)):(sens?towerSens(x):towerNone(x));
+  TL.msg($('warn'),res.w.length?res.w:[['ok',t('noWarn')]]);$('outBody').innerHTML=res.h;
+  var om=[['om1',t('omC1')],['om2',sens?t('omC2'):t('omN2')],['om3',t('omC3')],['om4',t('omC4')],['om5',t('omC5')]];
+  $('omRows').innerHTML=om.map(function(o){return '<tr><td><b>'+TL.esc(t(o[0]))+'</b></td><td>'+TL.esc(o[1])+'</td></tr>';}).join('');
+  $('summary').value=['*TrueLoop · '+(closed?'CHW closed loop':'Cooling tower')+' · '+(sens?'sensors':'timers')+'* '+$('site').value].concat(res.sum).concat(['',URL_APP]).join('\n');
+  $('repLine').textContent=t('repLine',{s:$('site').value||'—',d:new Date().toLocaleDateString(TL.lang==='ar'?'ar-EG':'en-GB')});
+  st.save(mode);
+}
+TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'chw',onLang:render});
+var m=st.load();if(m&&m.sys)mode=m;
+F.forEach(function(f){var e=$(f);e.addEventListener(e.type==='checkbox'||e.tagName==='SELECT'?'change':'input',render);});
+document.querySelectorAll('[data-sys]').forEach(function(b){b.onclick=function(){mode.sys=b.getAttribute('data-sys');render();};});
+document.querySelectorAll('[data-ctl]').forEach(function(b){b.onclick=function(){mode.ctl=b.getAttribute('data-ctl');render();};});
+$('copyBtn').onclick=function(){TL.copy($('summary').value,null,$('summary'));};
+$('linkBtn').onclick=function(){TL.copy(URL_APP,TL.t('linkCopied'));};
+$('printBtn').onclick=function(){window.print();};
+$('resetBtn').onclick=function(){var b=this;if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent=TL.t('resetConfirm');setTimeout(function(){b.dataset.armed='';b.textContent=TL.t('reset');},3000);return;}st.clear();location.reload();};
+$('appLink').textContent=URL_APP;$('verTxt').textContent='v'+VER;
+TL.applyLang();
+})();
+</script>
+</body>
+</html>

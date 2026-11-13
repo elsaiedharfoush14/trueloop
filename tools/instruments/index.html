@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TrueLoop · Instrumentation Commissioning</title>
+<meta name="description" content="Field instrument commissioning: pressure, temperature, magnetic flow, turbidity, free chlorine, dissolved oxygen and pH. Steps, loop check with pass/fail, PLC scaling, faults and O&M, Arabic and English.">
+<meta name="theme-color" content="#071b2b">
+<link rel="manifest" href="../../app/manifest.webmanifest">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../app/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../assets/tl.css">
+<style>
+.types{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.type{display:grid;gap:4px;justify-items:center;text-align:center;border:2px solid var(--line);border-radius:12px;padding:10px 6px;background:var(--soft);cursor:pointer;color:var(--ink);font:inherit;font-size:.84rem}
+.type svg{width:30px;height:30px;color:var(--water)}.type b{font-family:var(--f-display);font-size:.9rem}.type span{color:var(--muted);font-size:.74rem;font-family:var(--f-mono)}
+.type[aria-pressed=true]{border-color:var(--water);background:color-mix(in srgb,var(--aqua) 12%,var(--card))}
+ol.steps{counter-reset:s;list-style:none;padding:0;display:grid;gap:8px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+ol.steps li::before{content:counter(s);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--f-mono);font-size:.8rem}
+ol.steps li b{font-family:var(--f-display)}
+ol.steps li.ph{counter-increment:none;background:transparent;border:0;padding:4px 0 0;grid-template-columns:1fr;font-family:var(--f-display);font-weight:600;color:var(--water)}
+ol.steps li.ph::before{display:none}
+.lc input{max-width:96px;padding:5px 8px}
+.pass{color:var(--good);font-weight:700}.fail{color:var(--crit);font-weight:700}
+pre.code{direction:ltr;text-align:left;background:var(--navy);color:#d9ecf4;border-radius:10px;padding:12px;overflow-x:auto;font-family:var(--f-mono);font-size:.8rem;margin:0}
+.newi{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.newi img{max-width:140px;border-radius:10px;border:1px solid var(--line)}
+@media (max-width:620px){.newi{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <a class="home" id="homeLink" href="../../app/"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop · <span data-t="short"></span></span></a>
+  <span class="offline" id="offBadge" hidden></span>
+  <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
+  <button class="tb pri" id="copyBtn" type="button" data-t="copy"></button>
+  <button class="tb" id="printBtn" type="button" data-t="print"></button>
+  <button class="tb" id="resetBtn" type="button" data-t="reset"></button>
+  <span id="toast" class="toast" role="status"></span>
+</div></div>
+<main class="wrap">
+  <a class="back" id="backLink" href="../../"></a>
+  <header class="top">
+    <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div class="t"><div class="brand"><b><span class="lt">True</span>Loop</b> · <span data-t="brandSub"></span></div>
+      <h1 data-t="title"></h1><p class="muted" data-t="intro"></p></div>
+  </header>
+  <p class="rep" id="repLine"></p>
+
+  <section class="card" id="s1">
+    <h2><span class="num">1</span><span data-t="s1"></span></h2>
+    <div class="types" id="types"></div>
+  </section>
+
+  <section class="card" id="about">
+    <h2><span class="num">؟</span><span id="abT"></span></h2>
+    <p id="abLead"></p>
+    <div class="ab"><div><h3 data-t="abHowT"></h3><p id="abHow"></p></div><div class="con"><h3 data-t="abWatchT"></h3><ul id="abWatch"></ul></div></div>
+  </section>
+
+  <section class="card" id="s2">
+    <h2><span class="num">2</span><span data-t="s2"></span></h2>
+    <div class="grid">
+      <label><span data-t="tag"></span><input id="tag" type="text" autocomplete="off"></label>
+      <label><span data-t="svc"></span><input id="svc" type="text" autocomplete="off"></label>
+      <label><span data-t="model"></span><input id="model" type="text" autocomplete="off"></label>
+      <label><span data-t="lrv"></span><input id="lrv" type="number" step="any" inputmode="decimal"></label>
+      <label><span data-t="urv"></span><input id="urv" type="number" step="any" inputmode="decimal"></label>
+      <label><span data-t="unit"></span><input id="unit" type="text" autocomplete="off"></label>
+      <label><span data-t="wire"></span><select id="wire"><option value="2" data-t="w2"></option><option value="4" data-t="w4"></option></select></label>
+      <label><span data-t="plc"></span><select id="plc"><option value="s7">Siemens S7 (0–27648)</option><option value="eng" data-t="plcEng"></option></select></label>
+      <label><span data-t="tol"></span><input id="tol" type="number" step="0.05" value="0.5" inputmode="decimal"></label>
+      <label><span data-t="alLo"></span><input id="alLo" type="number" step="any" inputmode="decimal"></label>
+      <label><span data-t="alHi"></span><input id="alHi" type="number" step="any" inputmode="decimal"></label>
+    </div>
+    <div id="s2Msg" class="msgs"></div>
+  </section>
+
+  <section class="card" id="s3">
+    <h2><span class="num">3</span><span data-t="s3"></span></h2>
+    <p class="muted" data-t="s3note"></p>
+    <ol class="steps" id="steps"></ol>
+  </section>
+
+  <section class="card" id="s4">
+    <h2><span class="num">4</span><span data-t="s4"></span></h2>
+    <p class="muted" data-t="s4note"></p>
+    <div class="tbl lc"><table><thead><tr><th>%</th><th data-t="thEng"></th><th>mA</th><th id="thRaw">PLC</th><th id="thRef"></th><th data-t="thFound"></th><th data-t="thErr"></th><th></th></tr></thead><tbody id="lcRows"></tbody></table></div>
+    <div id="lcMsg" class="msgs"></div>
+    <details class="how"><summary data-t="scT"></summary><pre class="code" id="scale"></pre><p class="muted" data-t="scNote"></p></details>
+  </section>
+
+  <section class="card" id="s5">
+    <h2><span class="num">5</span><span data-t="s5"></span></h2>
+    <div class="tbl"><table><thead><tr><th data-t="thSign"></th><th data-t="thCause"></th><th data-t="thDo"></th></tr></thead><tbody id="flRows"></tbody></table></div>
+    <h3 data-t="omT"></h3>
+    <div class="tbl"><table><thead><tr><th data-t="thWhen"></th><th data-t="thWhat"></th></tr></thead><tbody id="omRows"></tbody></table></div>
+  </section>
+
+  <section class="card no-print" id="new">
+    <h2><span class="num">+</span><span data-t="nT"></span></h2>
+    <div class="newi">
+      <div style="display:grid;gap:10px">
+        <p class="muted" data-t="nP"></p>
+        <div class="grid"><label><span data-t="nPn"></span><input id="npn" type="text" autocomplete="off"></label><label><span data-t="nPh"></span><input id="nph" type="file" accept="image/*" capture="environment"></label></div>
+        <div><button class="pri" id="nSend" type="button" data-t="nSend"></button></div>
+        <p class="muted" data-t="nAi"></p>
+      </div>
+      <img id="nImg" alt="" hidden>
+    </div>
+  </section>
+
+  <section class="card" id="s6"><h2><span class="num">6</span><span data-t="s6"></span></h2><textarea class="sum" id="summary" readonly aria-label="summary"></textarea></section>
+
+  <section class="card share-card no-print">
+    <div class="share"><div class="qrb"><img src="qr.png" alt="QR"><span class="ql"><svg aria-hidden="true"><use href="#mark"/></svg></span></div>
+      <div style="display:grid;gap:8px;min-width:0"><h2 data-t="shareT"></h2><p class="muted" data-t="shareP"></p><div class="linkline" id="appLink"></div><div><button class="pri" id="linkBtn" type="button" data-t="copyLink"></button></div></div></div>
+  </section>
+  <section class="cta no-print"><svg class="mk" role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div style="display:grid;gap:4px"><b style="font-family:var(--f-display);font-size:1.08rem" data-t="ctaT"></b><p data-t="ctaP"></p><p>WhatsApp <a href="https://wa.me/966560861304" target="_blank" rel="noopener">+966 56 086 1304</a> · <span data-t="city"></span></p></div></section>
+  <p class="foot">TrueLoop · Instrumentation Commissioning · <span id="verTxt"></span></p>
+</main>
+<script src="../../assets/tl-core.js"></script>
+<script>
+(function(){
+var VER='2026.11.14.4',URL_APP='https://elsaiedharfoush14.github.io/trueloop/tools/instruments/';
+var D={ar:{short:'أجهزة القياس',title:'تشغيل أجهزة القياس',intro:'اختار نوع الجهاز، ودخّل الـ tag والمدى، وخد خطوات التشغيل بالترتيب، وجدول الـ loop check بالنجاح والرسوب، وتحويل الإشارة في الـ PLC، والأعطال والصيانة.',
+ s1:'نوع الجهاز',abHowT:'بيقيس إزاي',abWatchT:'خلي بالك من',s2:'بيانات الجهاز',tag:'Tag',svc:'الخدمة / المكان',model:'الماركة والموديل',lrv:'بداية المدى (LRV)',urv:'نهاية المدى (URV)',unit:'الوحدة',wire:'التوصيل',w2:'2-wire (من الـ loop)',w4:'4-wire (تغذية منفصلة)',plc:'الـ PLC',plcEng:'قيمة هندسية',tol:'السماحية (% من المدى)',alLo:'إنذار واطي',alHi:'إنذار عالي',
+ rangeBad:'نهاية المدى لازم تكون أكبر من البداية.',alOut:'حد الإنذار بره المدى.',
+ s3:'خطوات التشغيل',s3note:'أسماء الإعدادات هنا هي الأسماء الشائعة (HART أو الكنترولر). المسار على الشاشة بيختلف حسب الموديل، فطابقه مع المانوال.',
+ ph1:'قبل التركيب',ph2:'التركيب والتوصيل',ph3:'الإعدادات',ph4:'المعايرة',ph5:'الإشارة والتسليم',
+ s4:'Loop check',s4note:'اكتب التيار اللي قسته (mA) عند كل نقطة. الخطأ محسوب من المدى (16 mA).',thEng:'القيمة',thFound:'المقاس (mA)',thErr:'الخطأ %',refPt:'Pt100 (Ω)',refNone:'مرجع',
+ lcAll:'كل النقط جوه السماحية: الـ loop سليم.',lcFail:'فيه نقط بره السماحية: راجع الجهاز والكابل وإعداد الـ PLC.',
+ scT:'تحويل الإشارة في الـ PLC',scNote:'S7-1200/1500: 4–20 mA = 0–27648. لو التشخيص شغال، 32767 معناها كسر سلك أو تيار بره المدى.',
+ s5:'الأعطال والصيانة',omT:'الصيانة الدورية',s6:'الملخص',
+ nT:'جهاز جديد مش في القايمة؟',nP:'اكتب الـ part number أو صوّر الـ nameplate، وابعته لـ TrueLoop. بنجهّز خطوات التشغيل بتاعته من الداتا شيت ونضيفه للأداة.',nPn:'Part number / الموديل',nPh:'صورة الـ nameplate',nSend:'ابعت على واتساب',nAi:'قريب: المساعد الذكي يقرا الصورة أو الرقم، ويجيب الداتا شيت، ويطلّع الخطوات بالعربي والإنجليزي على طول.',nNeed:'اكتب الرقم أو اختار صورة الأول.',nAttach:'اتفتح الواتساب. ارفق الصورة في المحادثة.'},
+en:{short:'Instruments',title:'Instrumentation Commissioning',intro:'Pick the instrument type, enter the tag and range, and get the commissioning steps in order, a loop check with pass/fail, PLC scaling, faults and maintenance.',
+ s1:'Instrument type',abHowT:'How it measures',abWatchT:'Watch out for',s2:'Instrument data',tag:'Tag',svc:'Service / location',model:'Make and model',lrv:'Lower range value (LRV)',urv:'Upper range value (URV)',unit:'Unit',wire:'Wiring',w2:'2-wire (loop powered)',w4:'4-wire (separate supply)',plc:'PLC',plcEng:'Engineering value',tol:'Tolerance (% of span)',alLo:'Low alarm',alHi:'High alarm',
+ rangeBad:'URV must be above LRV.',alOut:'An alarm limit is outside the range.',
+ s3:'Commissioning steps',s3note:'Setting names here are the common ones (HART or the analyser controller). The menu path differs by model; match it with the manual.',
+ ph1:'Before installing',ph2:'Install and wire',ph3:'Configure',ph4:'Calibrate',ph5:'Output and handover',
+ s4:'Loop check',s4note:'Enter the current you measured (mA) at each point. Error is in % of span (16 mA).',thEng:'Value',thFound:'As found (mA)',thErr:'Error %',refPt:'Pt100 (Ω)',refNone:'Reference',
+ lcAll:'Every point is within tolerance: the loop is good.',lcFail:'Some points are out of tolerance: check the instrument, cable and PLC scaling.',
+ scT:'PLC scaling',scNote:'S7-1200/1500: 4–20 mA = 0–27648. With diagnostics on, 32767 means a broken wire or out-of-range current.',
+ s5:'Faults and maintenance',omT:'Routine maintenance',s6:'Summary',
+ nT:'New instrument not listed?',nP:'Enter the part number or photograph the nameplate and send it to TrueLoop. We prepare its commissioning steps from the datasheet and add it to the tool.',nPn:'Part number / model',nPh:'Nameplate photo',nSend:'Send on WhatsApp',nAi:'Coming: the AI assistant reads the photo or number, fetches the datasheet and gives the steps in Arabic and English at once.',nNeed:'Enter the number or pick a photo first.',nAttach:'WhatsApp opened. Attach the photo in the chat.'}};
+
+/* Each type: icon, default range/unit/wiring, about, how, watch, steps by phase, faults, O&M. Text pairs [ar,en]. */
+var IC={p:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="16" cy="14" r="10"/><path d="M16 14l5-5"/><path d="M12 28h8M16 24v4"/></svg>',
+ t:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M13 5a3 3 0 0 1 6 0v14a6 6 0 1 1-6 0z"/><path d="M16 12v10"/></svg>',
+ f:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 11h26M3 21h26"/><rect x="11" y="6" width="10" height="20" rx="2"/><path d="M14 16h4"/></svg>',
+ a:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 4c0 0-8 9-8 15a8 8 0 0 0 16 0c0-6-8-15-8-15z"/><path d="M12 20h8"/></svg>'};
+function S(ar,en){return {ar:ar,en:en};}
+var TYPES={
+ pt:{ic:'p',code:'PIT',n:S('ضغط','Pressure'),lrv:0,urv:10,unit:'bar',wire:'2',
+  ab:S('ترانسميتر الضغط','Pressure transmitter'),lead:S('بيقيس ضغط المية أو الهوا في الخط ويحوّله لإشارة 4–20 mA. شائع في البوستر وخطوط الطرد والفلاتر (فرق ضغط).','Measures water or air pressure in the line and turns it into 4–20 mA. Common on boosters, discharge lines and filters (differential).'),
+  how:S('غشاء (diaphragm) بيتحرك مع الضغط، وحساس جواه بيحوّل الحركة لإشارة. أمثلة: Siemens SITRANS P (DS III، P320/P420)، أي ترانسميتر HART.','A diaphragm moves with pressure and a sensor behind it converts that to a signal. Examples: Siemens SITRANS P (DS III, P320/P420), any HART transmitter.'),
+  watch:[S('المدى على الـ nameplate لازم يغطي ضغط التشغيل + الصدمات.','The nameplate range must cover operating pressure plus surges.'),S('Gauge ولا Absolute: الصفر مختلف.','Gauge or absolute: the zero differs.'),S('الهوا في خط النبض بيدّي قراية غلط في المية.','Air in the impulse line gives wrong readings on water.')],
+  steps:[[1,S('<b>طابق الـ nameplate:</b> المدى والوحدة والنوع (gauge / absolute / DP) مع الـ data sheet بتاع الـ tag.','<b>Match the nameplate:</b> range, unit and type (gauge / absolute / DP) with the tag data sheet.')],
+   [2,S('<b>ركّب على محبس عزل أو manifold:</b> في المية الترانسميتر تحت نقطة السحب علشان الهوا يطلع، وفي الغاز فوقها.','<b>Mount on an isolation valve or manifold:</b> on water, below the tapping so air vents; on gas, above it.')],
+   [2,S('<b>وصّل 2-wire:</b> + و − من الـ loop، الشيلد يتأرض من ناحية اللوحة بس، وشد الـ gland كويس.','<b>Wire 2-wire:</b> + and − from the loop, shield earthed at the panel end only, gland tight.')],
+   [3,S('<b>الإعدادات:</b> Unit، و LRV، و URV، و Damping (1–2 ث)، و Fault current (واطي أو عالي حسب معيار الموقع).','<b>Configure:</b> Unit, LRV, URV, Damping (1–2 s), Fault current (low or high per site standard).')],
+   [4,S('<b>Zero trim:</b> اعزل الترانسميتر وافتحه على الجو (gauge بس)، واعمل zero / position correction.','<b>Zero trim:</b> isolate, vent to atmosphere (gauge only) and do the zero / position correction.')],
+   [4,S('<b>تأكيد:</b> طبّق ضغط من calibrator أو hand pump على النقط في جدول الـ loop check.','<b>Verify:</b> apply pressure from a calibrator or hand pump at the loop-check points.')],
+   [5,S('<b>افتح المحبس ببطء</b>، وقارن مع مانومتر قريب، واقفل الكيبورد (key lock) لو متاح.','<b>Open the valve slowly</b>, compare with a nearby gauge, lock the keys if available.')]],
+  fl:[[S('القراية بتنط','Reading jumps'),S('هوا في خط النبض أو damping قليل','Air in the impulse line or low damping'),S('صفّي الهوا وزوّد الـ damping','Vent the air; raise damping')],[S('مش راجع صفر','Not returning to zero'),S('zero trim محتاج يتعاد أو المحبس بيسرّب','Zero trim needed or a leaking valve'),S('اعزل وافتح على الجو واعمل zero','Isolate, vent and zero')],[S('3.6 mA أو 21 mA','3.6 or 21 mA'),S('fault current: الحساس أو الإلكترونيات','Fault current: sensor or electronics'),S('اقرا الدياجنوستك على الشاشة أو HART','Read diagnostics on the display or HART')]],
+  om:[[S('كل 6 شهور','Every 6 months'),S('صفّي خط النبض وقارن مع مانومتر.','Vent the impulse line and compare with a gauge.')],[S('كل سنة','Yearly'),S('معايرة 5 نقط بـ calibrator وشهادة.','5-point calibration with a calibrator and certificate.')]]},
+ tt:{ic:'t',code:'TT',n:S('حرارة','Temperature'),lrv:0,urv:100,unit:'°C',wire:'2',pt:1,
+  ab:S('ترانسميتر الحرارة','Temperature transmitter'),lead:S('بيقيس حرارة المية أو الهوا بحساس Pt100 (RTD) وترانسميتر في الرأس بيطلّع 4–20 mA.','Measures water or air temperature with a Pt100 RTD and a head transmitter giving 4–20 mA.'),
+  how:S('مقاومة البلاتين بتزيد مع الحرارة: 100.00 Ω عند 0 °C و 138.51 Ω عند 100 °C (IEC 60751). أمثلة: Siemens SITRANS T (TH100 / TH320 / TH420).','Platinum resistance rises with temperature: 100.00 Ω at 0 °C, 138.51 Ω at 100 °C (IEC 60751). Examples: Siemens SITRANS T (TH100 / TH320 / TH420).'),
+  watch:[S('3-wire ولا 4-wire: لازم الترانسميتر يتظبط على نفس توصيل الحساس.','3- or 4-wire: the transmitter must match the sensor connection.'),S('الحساس لازم يكون في thermowell ومغطّس كفاية في المية.','The sensor needs a thermowell and enough immersion.')],
+  steps:[[1,S('<b>طابق:</b> نوع الحساس (Pt100)، وعدد السلوك، وطول الـ thermowell مع قطر الماسورة.','<b>Match:</b> sensor type (Pt100), wire count, thermowell length vs pipe diameter.')],
+   [2,S('<b>ركّب في thermowell</b> بمعجون حراري لو مسموح، والرأس لتحت شوية علشان المية ما تدخلش.','<b>Fit in a thermowell</b> with thermal paste if allowed; head angled so water does not enter.')],
+   [2,S('<b>وصّل الحساس</b> (3 أو 4 سلوك) و الـ loop 2-wire.','<b>Wire the sensor</b> (3 or 4 wires) and the 2-wire loop.')],
+   [3,S('<b>الإعدادات:</b> Sensor = Pt100 (IEC 60751)، Connection = 3/4-wire، Unit، LRV، URV، Damping، Sensor break = fault current.','<b>Configure:</b> Sensor = Pt100 (IEC 60751), Connection = 3/4-wire, Unit, LRV, URV, Damping, Sensor break = fault current.')],
+   [4,S('<b>تأكيد بالمقاومة:</b> فك الحساس وحط decade box بقيم الجدول (عمود Pt100)، أو قارن مع ترمومتر مرجعي / dry block.','<b>Verify with resistance:</b> replace the sensor with a decade box at the table values (Pt100 column), or compare with a reference thermometer / dry block.')],
+   [5,S('<b>رجّع الحساس</b> وقارن مع ترمومتر قريب بعد ما الحرارة تستقر.','<b>Refit the sensor</b> and compare with a nearby thermometer once stable.')]],
+  fl:[[S('21 mA أو 3.6 mA','21 or 3.6 mA'),S('حساس مقطوع أو short','Sensor open or short'),S('قيس مقاومة الحساس: ~100–140 Ω طبيعي للمية','Measure sensor resistance: ~100–140 Ω is normal for water')],[S('فرق ثابت 1–3 °C','Constant 1–3 °C offset'),S('توصيل 2-wire أو مقاومة سلك','2-wire connection or lead resistance'),S('استخدم 3/4-wire واظبط الإعداد','Use 3/4-wire and set it')],[S('القراية بطيئة','Slow response'),S('thermowell طويل / من غير معجون','Long well / no paste'),S('معجون حراري، أو thermowell أنسب','Thermal paste or a better well')]],
+  om:[[S('كل سنة','Yearly'),S('مقارنة مع ترمومتر مرجعي أو dry block، وفحص الرأس من الرطوبة.','Compare with a reference or dry block; check the head for moisture.')]]},
+ mf:{ic:'f',code:'FIT',n:S('فلو مغناطيسي','Mag flow'),lrv:0,urv:100,unit:'m³/h',wire:'4',
+  ab:S('فلوميتر مغناطيسي','Electromagnetic flowmeter'),lead:S('بيقيس فلو المية جوه الماسورة، ومعاه عداد كلي (totalizer) ونبضات. لازم المية تكون موصّلة كهربيًا (المية العادية تمام).','Measures water flow in the pipe, with a totalizer and pulses. The liquid must be conductive (normal water is fine).'),
+  how:S('ملفات بتعمل مجال مغناطيسي، والمية وهي ماشية بتولّد جهد صغير على قطبين يتناسب مع السرعة. أمثلة: Siemens SITRANS F M (MAG 5000 / 6000 مع حساس MAG 3100 / 5100 W).','Coils create a magnetic field; flowing water generates a small voltage on two electrodes, proportional to velocity. Examples: Siemens SITRANS F M (MAG 5000 / 6000 with MAG 3100 / 5100 W sensors).'),
+  watch:[S('الماسورة لازم تبقى مليانة دايمًا عند الحساس.','The pipe must always be full at the sensor.'),S('الأرضي: في الماسورة البلاستيك لازم حلقات أرضي (grounding rings).','Earthing: plastic pipes need grounding rings.'),S('اتجاه السهم على الحساس = اتجاه الفلو.','The arrow on the sensor = flow direction.')],
+  steps:[[1,S('<b>طابق:</b> قطر الحساس والضغط والـ liner مع الماسورة، ومعامل المعايرة على الـ nameplate.','<b>Match:</b> sensor size, pressure rating and liner with the line; note the calibration factor on the nameplate.')],
+   [2,S('<b>ركّب:</b> في مكان الماسورة فيه مليانة (تحت أو على خط طالع)، ومسافة مستقيمة تقريبًا 5D قبل و3D بعد، والسهم مع الفلو.','<b>Install:</b> where the pipe runs full (low point or rising line), about 5D straight before and 3D after, arrow with flow.')],
+   [2,S('<b>الأرضي:</b> حلقات أو أقطاب أرضي متوصلة بالفلانشات والحساس، خصوصًا للماسورة البلاستيك أو المبطنة.','<b>Earthing:</b> rings or electrodes bonded to flanges and sensor, especially on plastic or lined pipe.')],
+   [2,S('<b>وصّل:</b> التغذية للترانسميتر (4-wire)، وكابل الحساس لو remote بالطول المسموح، والمخارج.','<b>Wire:</b> transmitter supply (4-wire), sensor cable if remote within the allowed length, outputs.')],
+   [3,S('<b>الإعدادات:</b> اتأكد إن معامل الحساس اتحمّل صح (= الـ nameplate)، Qmax (= 20 mA)، Unit، اتجاه الفلو، Low flow cut-off، Empty pipe detection = ON، Time constant.','<b>Configure:</b> confirm the sensor factor loaded correctly (= nameplate), Qmax (= 20 mA), Unit, flow direction, low-flow cut-off, empty pipe detection = ON, time constant.')],
+   [4,S('<b>Zero:</b> لو الموديل محتاجه، والماسورة مليانة والمية واقفة تمامًا.','<b>Zero:</b> only if the model needs it, with the pipe full and water fully stopped.')],
+   [5,S('<b>المخارج:</b> 4–20 mA (0–Qmax)، والنبضات (كمية لكل نبضة وعرضها)، وجرّب loop check بمحاكاة الفلو من الترانسميتر.','<b>Outputs:</b> 4–20 mA (0–Qmax), pulse (volume per pulse and width); loop-check with the transmitter\'s flow simulation.')],
+   [5,S('<b>تأكيد:</b> قارن مع فلوميتر تراسونيك clamp-on أو نزول تانك معروف الحجم.','<b>Verify:</b> compare with a clamp-on ultrasonic meter or a known tank drawdown.')]],
+  fl:[[S('القراية صفر والمية ماشية','Zero reading with flow'),S('Empty pipe أو الماسورة مش مليانة','Empty pipe or pipe not full'),S('راجع مكان التركيب والهوا','Check location and air')],[S('القراية بتنط','Reading jumps'),S('أرضي ضعيف أو فقاعات','Poor earthing or bubbles'),S('راجع حلقات الأرضي والتوصيل','Check earthing rings and bonding')],[S('الفلو بالسالب','Negative flow'),S('السهم عكس الفلو','Arrow against the flow'),S('اعكس الاتجاه من الإعدادات','Reverse direction in settings')]],
+  om:[[S('كل سنة','Yearly'),S('verification من الترانسميتر لو متاح، وفحص الأرضي والكابلات.','Transmitter verification if available; check earthing and cables.')]]},
+ tu:{ic:'a',code:'AIT',n:S('عكارة','Turbidity'),lrv:0,urv:4,unit:'NTU',wire:'4',an:1,
+  ab:S('جهاز العكارة','Turbidity analyser'),lead:S('بيقيس قد إيه المية عكرة (NTU). مهم بعد الفلاتر وفي مية الشرب.','Measures how cloudy the water is (NTU). Key after filters and on drinking water.'),
+  how:S('نور بيعدّي في المية، والجهاز بيقيس النور اللي اتشتت على زاوية 90° من الحبيبات.','Light passes through the water; the analyser measures light scattered at 90° by particles.'),
+  watch:[S('الفقاعات بتظهر كعكارة: لازم bubble trap وفلو ثابت.','Bubbles read as turbidity: needs a bubble trap and steady flow.'),S('العدسة لازم تفضل نضيفة.','The optics must stay clean.')],
+  steps:[[2,S('<b>ركّب الحساس أو الـ flow cell</b> زي المانوال، وخط العينة قصير ومن غير هوا، وbubble trap.','<b>Install the sensor or flow cell</b> per the manual; short sample line, no air, bubble trap.')],
+   [2,S('<b>اظبط فلو العينة</b> على الرقم اللي المصنع بيقوله، وصرّف لمصرف مفتوح.','<b>Set the sample flow</b> to the maker\'s value, draining to an open drain.')],
+   [3,S('<b>الإعدادات على الكنترولر:</b> المدى والوحدة (NTU / FNU)، الـ averaging، والمخرج 4–20 mA، والإنذارات.','<b>Controller setup:</b> range and unit (NTU / FNU), averaging, 4–20 mA output, alarms.')],
+   [4,S('<b>معايرة أو تأكيد</b> بمحلول formazin أو الـ standard الثانوي بتاع المصنع، وبعدين قارن بعينة على جهاز معمل.','<b>Calibrate or verify</b> with formazin or the maker\'s secondary standard, then compare a grab sample on a lab turbidimeter.')],
+   [5,S('<b>Loop check</b> بمحاكاة المخرج من الكنترولر، وسلّم الإنذارات للـ SCADA.','<b>Loop check</b> by simulating the output on the controller; hand the alarms to SCADA.')]],
+  fl:[[S('قراية عالية فجأة','Sudden high reading'),S('فقاعات أو عدسة متسخة','Bubbles or dirty optics'),S('نضّف وراجع الـ bubble trap','Clean; check the bubble trap')],[S('قراية بتزحف لفوق','Reading drifts up'),S('تكوّن طبقة على الحساس','Fouling on the sensor'),S('زوّد التنضيف (wiper) أو الدورية','More cleaning (wiper) or frequency')]],
+  om:[[S('كل أسبوع','Weekly'),S('قارن بعينة معمل.','Compare with a lab sample.')],[S('كل شهر','Monthly'),S('تنضيف العدسة والـ flow cell.','Clean optics and flow cell.')],[S('كل 3 شهور','Every 3 months'),S('تأكيد أو معايرة بالـ standard.','Verify or calibrate with the standard.')]]},
+ cl:{ic:'a',code:'AIT',n:S('كلور حر','Free chlorine'),lrv:0,urv:5,unit:'mg/L',wire:'4',an:1,
+  ab:S('جهاز الكلور الحر','Free chlorine analyser'),lead:S('بيقيس الكلور الحر في المية (mg/L) علشان التعقيم يبقى كفاية ومن غير زيادة.','Measures free chlorine (mg/L) so disinfection is enough without excess.'),
+  how:S('غالبًا حساس amperometric بغشاء: الكلور بيعدّي ويعمل تيار صغير بيتناسب مع التركيز. قرايته بتتأثر بالـ pH والحرارة والفلو.','Usually a membrane amperometric sensor: chlorine diffuses through and makes a small current proportional to concentration. Affected by pH, temperature and flow.'),
+  watch:[S('الحساس محتاج فلو ثابت (flow cell بـ flow switch).','The sensor needs steady flow (flow cell with a flow switch).'),S('لو الـ pH بيتغيّر، لازم تعويض pH بحساس pH.','If pH varies, pH compensation with a pH sensor is needed.'),S('بعد التركيب محتاج وقت استقرار (polarization) قبل المعايرة، حسب المانوال.','After installation it needs a run-in (polarization) time before calibrating, per the manual.')],
+  steps:[[2,S('<b>ركّب الـ flow cell</b> وخط العينة، واظبط الفلو حسب المانوال، وتأكد إن الـ flow switch شغال.','<b>Install the flow cell</b> and sample line; set flow per the manual; confirm the flow switch works.')],
+   [2,S('<b>جهّز الحساس:</b> الإلكتروليت والغشاء حسب المانوال، ووصّله واتركه يستقر.','<b>Prepare the sensor:</b> electrolyte and membrane per the manual; connect and let it run in.')],
+   [3,S('<b>الإعدادات:</b> المدى والوحدة، تعويض الـ pH (لو فيه حساس pH)، الـ averaging، المخرج، والإنذارات.','<b>Configure:</b> range and unit, pH compensation (if a pH sensor is fitted), averaging, output, alarms.')],
+   [4,S('<b>Zero</b> (لو الموديل بيطلبه) بمية من غير كلور، و<b>Slope</b> مقارنة بعينة DPD من نفس النقطة في نفس اللحظة.','<b>Zero</b> (if the model asks) in chlorine-free water, and <b>slope</b> against a DPD grab sample from the same point at the same moment.')],
+   [5,S('<b>Loop check</b> وتسليم إنذار الكلور الواطي والعالي للـ SCADA.','<b>Loop check</b> and hand low/high chlorine alarms to SCADA.')]],
+  fl:[[S('قراية صفر','Zero reading'),S('مفيش فلو، أو الإلكتروليت خلص، أو الغشاء','No flow, empty electrolyte or membrane'),S('الفلو، وغيّر الإلكتروليت أو الغشاء وعاير','Check flow; replace electrolyte or membrane and recalibrate')],[S('بعيد عن الـ DPD','Off from DPD'),S('pH اتغيّر أو الحساس محتاج معايرة','pH changed or calibration due'),S('راجع تعويض الـ pH وعاير slope','Check pH compensation; recalibrate slope')]],
+  om:[[S('كل أسبوع','Weekly'),S('مقارنة بـ DPD، وعاير لو الفرق أكبر من المسموح.','Compare with DPD; recalibrate if off.')],[S('حسب المانوال','Per manual'),S('تغيير الإلكتروليت والغشاء.','Replace electrolyte and membrane.')]]},
+ do:{ic:'a',code:'AIT',n:S('أكسجين مذاب','Dissolved oxygen'),lrv:0,urv:20,unit:'mg/L',wire:'4',an:1,
+  ab:S('جهاز الأكسجين المذاب','Dissolved oxygen analyser'),lead:S('بيقيس الأكسجين المذاب في المية (mg/L أو %)، وأهم استخدام في أحواض التهوية في محطات الصرف لتشغيل البلاورز.','Measures dissolved oxygen (mg/L or %), mainly in aeration tanks to control blowers.'),
+  how:S('غالبًا حساس ضوئي (luminescent): غطا فيه صبغة بتنوّر، والأكسجين بيقلّل النور ده. فيه كمان حساسات بغشاء (polarographic / galvanic).','Usually optical (luminescent): a cap with a dye that glows, and oxygen quenches that light. Membrane sensors (polarographic / galvanic) also exist.'),
+  watch:[S('الحساس لازم يكون في مكان المية فيه متقلّبة، مش قريب من الفقاعات مباشرة.','Place the sensor where water is mixed, not directly in the bubble plume.'),S('تعويض الملوحة والضغط الجوي بيأثر على الـ mg/L.','Salinity and barometric compensation affect mg/L.')],
+  steps:[[2,S('<b>ركّب الحساس</b> على حامل في الحوض بعمق ثابت، وسهل يطلع للتنضيف.','<b>Mount the sensor</b> on a holder at a fixed depth, easy to pull for cleaning.')],
+   [3,S('<b>الإعدادات:</b> الوحدة (mg/L أو %)، الملوحة، الضغط الجوي أو الارتفاع، الـ averaging، المخرج، والإنذارات.','<b>Configure:</b> unit (mg/L or %), salinity, air pressure or altitude, averaging, output, alarms.')],
+   [4,S('<b>Air calibration:</b> الحساس نضيف وناشف في هوا مشبّع رطوبة (100% saturation) حسب المانوال. Zero بس لو المانوال بيطلبه.','<b>Air calibration:</b> clean, dry sensor in water-saturated air (100% saturation) per the manual. Zero only if the manual asks.')],
+   [5,S('<b>Loop check</b>، وقارن مع جهاز محمول، وسلّم الإشارة لتحكم البلاورز.','<b>Loop check</b>, compare with a portable meter, hand the signal to the blower control.')]],
+  fl:[[S('قراية عالية في حوض فيه حمل','High reading in a loaded tank'),S('فقاعات على الحساس','Bubbles on the sensor'),S('غيّر مكانه أو زاويته','Move or angle it')],[S('قراية بتقل مع الوقت','Reading drops over time'),S('تراكم طبقة أو الغطا قديم','Fouling or an old cap'),S('نضّف، وغيّر الغطا حسب المانوال','Clean; replace the cap per manual')]],
+  om:[[S('كل أسبوع','Weekly'),S('تنضيف الحساس.','Clean the sensor.')],[S('كل شهر','Monthly'),S('مقارنة بجهاز محمول، وair calibration لو لازم.','Compare with a portable meter; air-calibrate if needed.')]]},
+ ph:{ic:'a',code:'AIT',n:S('pH','pH'),lrv:0,urv:14,unit:'pH',wire:'4',an:1,
+  ab:S('جهاز الـ pH','pH analyser'),lead:S('بيقيس حمضية أو قاعدية المية. مهم مع الكلور والتجلط والكيماويات.','Measures how acidic or alkaline the water is. Important with chlorine, coagulation and dosing.'),
+  how:S('قطب زجاجي بيطلع جهد بيتغيّر مع الـ pH (حوالي 59 mV لكل وحدة pH على 25 °C)، وقطب مرجعي جنبه.','A glass electrode gives a voltage that changes with pH (about 59 mV per pH unit at 25 °C) against a reference electrode.'),
+  watch:[S('الزجاج ما يتنشفش وما يتخبطش.','Never let the glass dry or knock it.'),S('تعويض الحرارة لازم يكون شغال.','Temperature compensation must be on.')],
+  steps:[[2,S('<b>ركّب القطب</b> بزاوية (مش مقلوب)، والزجاج مغطّس دايمًا.','<b>Fit the electrode</b> at an angle (not upside down), glass always wet.')],
+   [3,S('<b>الإعدادات:</b> تعويض الحرارة، والمخرج، والإنذارات.','<b>Configure:</b> temperature compensation, output, alarms.')],
+   [4,S('<b>معايرة نقطتين</b> بمحلولين (7 و 4، أو 7 و 10 حسب المية). الـ slope والـ offset لازم جوه حدود المانوال (عادة slope قريب من 100% و offset قريب من 0 mV).','<b>Two-point calibration</b> with buffers (7 and 4, or 7 and 10). Slope and offset within the manual\'s limits (typically slope near 100% and offset near 0 mV).')],
+   [5,S('<b>Loop check</b>، وقارن مع جهاز محمول.','<b>Loop check</b>; compare with a portable meter.')]],
+  fl:[[S('بطيء جدًا','Very slow'),S('القطب قديم أو الوصلة المرجعية مسدودة','Old electrode or blocked junction'),S('نضّف، أو غيّر القطب','Clean or replace')],[S('slope واطي','Low slope'),S('القطب كبر','Ageing electrode'),S('غيّر القطب','Replace it')]],
+  om:[[S('كل أسبوعين','Every 2 weeks'),S('تنضيف ومقارنة بجهاز محمول.','Clean and compare with a portable meter.')],[S('كل شهر','Monthly'),S('معايرة نقطتين.','Two-point calibration.')]]}
+};
+var ORDER=['pt','tt','mf','tu','cl','do','ph'];
+var F=['tag','svc','model','lrv','urv','unit','wire','plc','tol','alLo','alHi'];
+var st=TL.store('tl_inst_v1',F),$=TL.$,cur='pt',found={};
+function L(o){return TL.lang==='ar'?o.ar:o.en;}
+function pt100(T){return 100*(1+3.9083e-3*T-5.775e-7*T*T);} // IEC 60751, T >= 0 °C
+function fmt(x){return Math.abs(x)>=100?x.toFixed(1):(Math.abs(x)>=10?x.toFixed(2):x.toFixed(3));}
+function applyType(){var ty=TYPES[cur];$('lrv').value=ty.lrv;$('urv').value=ty.urv;$('unit').value=ty.unit;$('wire').value=ty.wire;found={};}
+function render(){
+  var ty=TYPES[cur];
+  $('types').innerHTML=ORDER.map(function(k){var x=TYPES[k];return '<button type="button" class="type" data-k="'+k+'" aria-pressed="'+(k===cur)+'">'+IC[x.ic]+'<b>'+TL.esc(L(x.n))+'</b><span>'+x.code+'</span></button>';}).join('');
+  $('abT').textContent=L(ty.ab);$('abLead').textContent=L(ty.lead);$('abHow').textContent=L(ty.how);$('abWatch').innerHTML=ty.watch.map(function(w){return '<li>'+TL.esc(L(w))+'</li>';}).join('');
+  var lrv=TL.num('lrv'),urv=TL.num('urv'),unit=$('unit').value||'',tol=TL.num('tol')||0.5,m=[];
+  var ok=lrv!=null&&urv!=null&&urv>lrv;if(!ok)m.push(['bad',TL.t('rangeBad')]);
+  [TL.num('alLo'),TL.num('alHi')].forEach(function(a){if(ok&&a!=null&&(a<lrv||a>urv))m.push(['warn',TL.t('alOut')]);});
+  TL.msg($('s2Msg'),m.filter(function(x,i,arr){return arr.findIndex(function(y){return y[1]===x[1];})===i;}));
+  var ph=0,h='';ty.steps.forEach(function(s){if(s[0]!==ph){ph=s[0];h+='<li class="ph">'+TL.esc(TL.t('ph'+ph))+'</li>';}h+='<li><span>'+L(s[1])+'</span></li>';});
+  $('steps').innerHTML=h;
+  $('thRaw').textContent=$('plc').value==='s7'?'PLC raw':'PLC';$('thRef').textContent=ty.pt?TL.t('refPt'):TL.t('refNone');
+  var rows='',res=[];
+  if(ok)[0,25,50,75,100].forEach(function(p){var v=lrv+(urv-lrv)*p/100,ma=4+16*p/100,raw=$('plc').value==='s7'?Math.round(27648*p/100):fmt(v),ref=ty.pt&&unit.indexOf('C')>-1&&v>=0?pt100(v).toFixed(2):'—',f=found[p],err='',cls='';
+    if(f!=null&&f!==''&&!isNaN(parseFloat(f))){var e=(parseFloat(f)-ma)/16*100;err=e.toFixed(2);cls=Math.abs(e)<=tol?'pass':'fail';res.push(cls);}
+    rows+='<tr><td class="v">'+p+'</td><td class="v">'+fmt(v)+' '+TL.esc(unit)+'</td><td class="v">'+ma.toFixed(2)+'</td><td class="v">'+raw+'</td><td class="v">'+ref+'</td><td><input type="number" step="0.001" inputmode="decimal" data-p="'+p+'" value="'+(f!=null?TL.esc(f):'')+'"></td><td class="v">'+err+'</td><td class="'+cls+'">'+(cls==='pass'?'✓':cls==='fail'?'✕':'')+'</td></tr>';});
+  $('lcRows').innerHTML=rows;
+  TL.msg($('lcMsg'),res.length===5?[res.indexOf('fail')<0?['ok',TL.t('lcAll')]:['bad',TL.t('lcFail')]]:(res.indexOf('fail')>-1?[['bad',TL.t('lcFail')]]:[]));
+  var tag=($('tag').value||'AI_01').replace(/[^A-Za-z0-9_]/g,'_');
+  $('scale').textContent=ok?('// '+tag+'  '+fmt(lrv)+'…'+fmt(urv)+' '+unit+'\n#norm := NORM_X(MIN := 0, VALUE := "'+tag+'_raw", MAX := 27648);\n"'+tag+'" := SCALE_X(MIN := '+lrv+'.0, VALUE := #norm, MAX := '+urv+'.0);\n#fault := "'+tag+'_raw" > 32511 OR "'+tag+'_raw" < -4864;'):'';
+  $('flRows').innerHTML=ty.fl.map(function(f){return '<tr><td>'+TL.esc(L(f[0]))+'</td><td>'+TL.esc(L(f[1]))+'</td><td>'+TL.esc(L(f[2]))+'</td></tr>';}).join('');
+  $('omRows').innerHTML=ty.om.map(function(o){return '<tr><td><b>'+TL.esc(L(o[0]))+'</b></td><td>'+TL.esc(L(o[1]))+'</td></tr>';}).join('');
+  var sum=['*TrueLoop · '+L(ty.ab)+'* '+($('tag').value||''),($('svc').value||'')+($('model').value?' | '+$('model').value:''),'Range '+(ok?fmt(lrv)+'–'+fmt(urv)+' '+unit:'?')+' | '+($('wire').value==='2'?'2-wire':'4-wire')+' | tol ±'+tol+'%'];
+  if(TL.num('alLo')!=null||TL.num('alHi')!=null)sum.push('Alarms L '+(TL.num('alLo')!=null?TL.num('alLo'):'-')+' / H '+(TL.num('alHi')!=null?TL.num('alHi'):'-'));
+  if(res.length)sum.push('Loop check: '+res.filter(function(r){return r==='pass';}).length+'/'+res.length+' pass');
+  $('summary').value=sum.concat(['',URL_APP]).join('\n');
+  $('repLine').textContent=TL.t('repLine',{s:($('tag').value||'—')+' · '+L(ty.ab),d:new Date().toLocaleDateString(TL.lang==='ar'?'ar-EG':'en-GB')});
+  st.save({cur:cur,found:found});
+}
+TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'instruments',onLang:render});
+var x=st.load();if(x&&x.cur&&TYPES[x.cur]){cur=x.cur;found=x.found||{};}else applyType();
+$('types').addEventListener('click',function(e){var b=e.target.closest('[data-k]');if(b&&b.getAttribute('data-k')!==cur){cur=b.getAttribute('data-k');applyType();render();}});
+F.forEach(function(f){$(f).addEventListener($(f).tagName==='SELECT'?'change':'input',render);});
+$('lcRows').addEventListener('change',function(e){var p=e.target.getAttribute('data-p');if(p!=null){found[p]=e.target.value;render();}});
+$('nph').addEventListener('change',function(){var f=this.files&&this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){$('nImg').src=r.result;$('nImg').hidden=false;};r.readAsDataURL(f);});
+$('nSend').onclick=function(){var pn=$('npn').value.trim(),hasImg=!$('nImg').hidden;if(!pn&&!hasImg){TL.toast(TL.t('nNeed'));return;}
+  window.open('https://wa.me/966560861304?text='+encodeURIComponent('TrueLoop · new instrument'+(pn?': '+pn:'')+(hasImg?' (photo attached)':'')),'_blank','noopener');if(hasImg)TL.toast(TL.t('nAttach'));};
+$('copyBtn').onclick=function(){TL.copy($('summary').value,null,$('summary'));};
+$('linkBtn').onclick=function(){TL.copy(URL_APP,TL.t('linkCopied'));};
+$('printBtn').onclick=function(){window.print();};
+$('resetBtn').onclick=function(){var b=this;if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent=TL.t('resetConfirm');setTimeout(function(){b.dataset.armed='';b.textContent=TL.t('reset');},3000);return;}st.clear();location.reload();};
+$('appLink').textContent=URL_APP;$('verTxt').textContent='v'+VER;
+TL.applyLang();
+})();
+</script>
+</body>
+</html>
