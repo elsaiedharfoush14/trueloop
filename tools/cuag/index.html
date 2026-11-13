@@ -704,7 +704,7 @@ if(typeof module!=='undefined')module.exports=CALC;
   $('appLink').textContent=APP;
   load();applyLang();
   // Auto-update: compare with version.json on every open; reload once into the new version (inputs are kept in localStorage).
-  var VER='2026.11.14.1',reg=null;
+  var VER='2026.11.14.2',reg=null;
   function checkUpdate(){
     if(location.protocol!=='https:')return;
     fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
@@ -719,5 +719,6 @@ if(typeof module!=='undefined')module.exports=CALC;
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')checkUpdate();});
 })();
 </script>
+<script>/* TrueLoop Field cloud (beta, phase 1): save runs to projects. Loads only while tl_beta=1 (?beta=1 / ?beta=0). */try{var q=location.search.match(/[?&]beta=([01])/);if(q)localStorage.setItem('tl_beta',q[1]);if(localStorage.getItem('tl_beta')==='1'){var s=document.createElement('script');s.type='module';s.src='../../assets/tl-cloud.js';document.head.appendChild(s);}}catch(e){}</script>
 </body>
 </html>

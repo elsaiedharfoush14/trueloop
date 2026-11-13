@@ -91,7 +91,14 @@
     try{var rec=JSON.parse(localStorage.getItem('tl_recent')||'[]');var id=opts.id||location.pathname;rec=rec.filter(function(x){return x!==id;});rec.unshift(id);localStorage.setItem('tl_recent',JSON.stringify(rec.slice(0,6)));}catch(e2){}
     TL.offline();
     if(opts.ver)TL.update(opts.ver);
+    if(TL.beta())TL.cloud();
   };
+
+  /* TrueLoop Field cloud (phase 1, beta): Google sign-in + projects/sites + sync, in assets/tl-cloud.js.
+     Loaded only while the beta flag is on: ?beta=1 / ?beta=0, or TL.beta(true/false) (5 taps on the version in the app home). */
+  TL.beta=function(on){try{var q=location.search.match(/[?&]beta=([01])/);if(q)localStorage.setItem('tl_beta',q[1]);
+    if(on!==undefined)localStorage.setItem('tl_beta',on?'1':'0');return localStorage.getItem('tl_beta')==='1';}catch(e){return false;}};
+  TL.cloud=function(){if(TL._cl)return;TL._cl=1;var s=document.createElement('script');s.type='module';s.src=TL.root+'assets/tl-cloud.js';document.head.appendChild(s);};
 
   /* ---------- pipe sizing shared by the flowmeter tools ---------- */
   var STEEL=[['1/2"',21.3,2.11,2.77,3.73],['3/4"',26.7,2.11,2.87,3.91],['1"',33.4,2.77,3.38,4.55],['1-1/4"',42.2,2.77,3.56,4.85],

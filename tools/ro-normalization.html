@@ -274,4 +274,5 @@ $("csv").addEventListener("click",function(){var csv=tsv().split("\n").map(funct
 run();
 })();
 </script>
+<script>/* TrueLoop Field cloud (beta, phase 1): save runs to projects. Loads only while tl_beta=1 (?beta=1 / ?beta=0). */try{var q=location.search.match(/[?&]beta=([01])/);if(q)localStorage.setItem('tl_beta',q[1]);if(localStorage.getItem('tl_beta')==='1'){var s=document.createElement('script');s.type='module';s.src='../assets/tl-cloud.js';document.head.appendChild(s);}}catch(e){}</script>
 </html>

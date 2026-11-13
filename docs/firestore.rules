@@ -1,0 +1,57 @@
+rules_version = '2';
+// TrueLoop Field, phase 1: every signed-in engineer reads and writes ONLY his own tree users/{uid}/...
+// Paste into Firebase console -> Firestore Database -> Rules -> Publish.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function me(uid) { return request.auth != null && request.auth.uid == uid; }
+    function d() { return request.resource.data; }
+    function str(f, max) { return d()[f] is string && d()[f].size() <= max; }
+    function optStr(f, max) { return !(f in d()) || str(f, max); }
+    function optTime(f) { return !(f in d()) || d()[f] is timestamp; }
+    function named() { return str('name', 120) && d().name.size() > 0; }
+
+    match /users/{uid} {
+      allow read, delete: if me(uid);
+      allow create, update: if me(uid)
+        && d().keys().hasOnly(['name', 'email', 'photo', 'company', 'lang', 'lastSeen'])
+        && optStr('name', 120) && optStr('email', 200) && optStr('photo', 1000)
+        && optStr('company', 120) && optStr('lang', 5) && optTime('lastSeen');
+
+      match /projects/{pid} {
+        allow read, delete: if me(uid);
+        allow create, update: if me(uid)
+          && d().keys().hasOnly(['name', 'createdAt', 'updatedAt'])
+          && named() && optTime('createdAt') && optTime('updatedAt');
+
+        match /sites/{sid} {
+          allow read, delete: if me(uid);
+          allow create, update: if me(uid)
+            && d().keys().hasOnly(['name', 'createdAt', 'updatedAt', 'lastTool'])
+            && named() && optTime('createdAt') && optTime('updatedAt') && optStr('lastTool', 40);
+
+          // a run is a dated snapshot of one tool: written once, never edited (history stays as delivered)
+          match /runs/{rid} {
+            allow read, delete: if me(uid);
+            allow update: if false;
+            allow create: if me(uid)
+              && d().keys().hasOnly(['tool', 'toolName', 'ver', 'data', 'summary', 'tag', 'note', 'photos', 'by', 'at', 'clientAt', 'device'])
+              && str('tool', 40) && str('data', 600000)
+              && d().by == uid && d().at == request.time && d().clientAt is number
+              && optStr('toolName', 120) && optStr('ver', 40) && optStr('summary', 8000)
+              && optStr('tag', 120) && optStr('note', 2000) && optStr('device', 160)
+              && (!('photos' in d()) || (d().photos is int && d().photos >= 0 && d().photos <= 3));
+
+            match /photos/{ph} {
+              allow read, delete: if me(uid);
+              allow update: if false;
+              allow create: if me(uid) && ph in ['1', '2', '3']
+                && d().keys().hasOnly(['img', 'at'])
+                && str('img', 950000) && d().img.size() > 100 && d().at == request.time;
+            }
+          }
+        }
+      }
+    }
+    // anything else (future team / client-report paths) stays closed until its own phase
+  }
+}

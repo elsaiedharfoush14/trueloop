@@ -1,5 +1,5 @@
 // Offline cache for the IPC calculator. Bump VERSION when any file changes.
-var VERSION = 'ipc-calc-v2';
+var VERSION = 'ipc-calc-v3';
 var SHELL = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png', './icons/favicon.svg'];
 
@@ -16,6 +16,9 @@ self.addEventListener('activate', function (e) {
 self.addEventListener('fetch', function (e) {
   var req = e.request;
   if (req.method !== 'GET') return;
+  // Cross-origin: only Google Fonts and the Firebase SDK files are cached; Firestore / sign-in traffic must go straight to the network.
+  var u = new URL(req.url);
+  if (u.origin !== location.origin && !(u.hostname === 'fonts.googleapis.com' || u.hostname === 'fonts.gstatic.com' || (u.hostname === 'www.gstatic.com' && u.pathname.indexOf('/firebasejs/') === 0))) return;
   // Pages: try the network first so updates show up, fall back to the cached copy offline.
   if (req.mode === 'navigate') {
     e.respondWith(fetch(req).then(function (res) {

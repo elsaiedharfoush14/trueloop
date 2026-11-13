@@ -80,6 +80,8 @@
     <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" data-tp="ph" autocomplete="off" aria-label="search"></label>
   </section>
 
+  <section id="cloud" hidden aria-live="polite"></section>
+
   <div class="chips" id="chips" role="toolbar"></div>
 
   <section id="recentSec" hidden>
@@ -112,7 +114,7 @@
 <script src="../assets/tl-core.js"></script>
 <script>
 (function(){
-var VER='2026.11.14.5',URL_APP='https://elsaiedharfoush14.github.io/trueloop/app/';
+var VER='2026.11.14.6',URL_APP='https://elsaiedharfoush14.github.io/trueloop/app/';
 var IC={
  cuag:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 4c0 0-8 9-8 15a8 8 0 0 0 16 0c0-6-8-15-8-15z"/><circle cx="13" cy="19" r="2" fill="currentColor"/><circle cx="19" cy="21" r="1.6" fill="currentColor"/></svg>',
  booster:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="13" cy="18" r="8"/><path d="M13 18l5-4M21 18h8M13 10V4h12"/><path d="M9 28h8"/></svg>',
@@ -177,6 +179,8 @@ window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();def
 window.addEventListener('appinstalled',function(){showInstall(false);});
 [$('installBtn'),$('installBtn2')].forEach(function(b){b.onclick=function(){if(deferred){deferred.prompt();deferred=null;showInstall(false);}};});
 $('appLink').textContent=URL_APP;$('verTxt').textContent='v'+VER;
+/* 5 taps on the version = TrueLoop Field cloud beta on/off (works inside the installed app too) */
+var taps=0,tapT;$('verTxt').onclick=function(){taps++;clearTimeout(tapT);tapT=setTimeout(function(){taps=0;},1500);if(taps>=5){taps=0;var on=!TL.beta();TL.beta(on);TL.toast(on?'Cloud beta ON':'Cloud beta OFF');setTimeout(function(){location.reload();},800);}};
 TL.applyLang();
 document.title='TrueLoop Field';
 })();

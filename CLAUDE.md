@@ -10,6 +10,7 @@ Live: https://elsaiedharfoush14.github.io/trueloop/ — GitHub Pages from `main`
 - `assets/tl.css`, `assets/tl-core.js` — shared design system + runtime (`TL.init`, i18n `data-t`/`data-html`, `TL.rows`, `TL.msg`, `TL.store`, `TL.pipe` sizing, auto-update from `app/version.json`, `?app=1` back-to-app).
 - `tools/booster/` chooser → `tools/booster/ls-h100/` (LS H100 MMC, parametric drawings) and `tools/ipc-calculator/` (ABB ACH480 IPC, made in another session),
 - `tools/instruments/` (pressure, temperature/Pt100, mag flow, turbidity, chlorine, DO, pH: steps, loop check pass/fail, S7 scaling, new-instrument request), `tools/chw/` (closed loop = rules of `claude-kit/skills/chw-treatment-calc`, plus tower and no-sensor modes), `tools/flowmeter/` (TUF menus), `tools/parts/` (part numbers with manual source), `tools/cuag/` (Cu/Ag, self-contained with its own `sw.js` + `version.json`), older single-file tools `tools/*.html`.
+- `assets/tl-cloud.js` — TrueLoop Field cloud phase 1 (BETA, `?beta=1`): Google sign-in, projects → sites → runs, offline sync on Firebase `trueloop-field`. Spec `docs/specs/2026-11-14-field-cloud-phase1.md`, rules `docs/firestore.rules`.
 - Tool UI language: Egyptian Arabic (field staff) + English toggle; site cards: formal Arabic.
 
 ## Release (all, then push `main`)
