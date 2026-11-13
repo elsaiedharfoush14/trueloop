@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TrueLoop · Booster Sequencing (LS H100)</title>
-<meta name="description" content="Booster set on LS H100 drives without PLC or RS-485: duty, assist, standby and changeover with MMC. Wiring drawings, parameters, checks and O&M.">
+<title>TrueLoop · Booster Programming</title>
+<meta name="description" content="Booster set programming by drive make: LS H100 (hard-wired MMC, no PLC) and ABB ACH480 (IPC multipump over RS-485).">
 <meta name="theme-color" content="#071b2b">
 <link rel="manifest" href="../../app/manifest.webmanifest">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
@@ -12,323 +12,98 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../../assets/tl.css">
-<style>.chk{display:grid;gap:8px}.chk label{display:flex;gap:10px;align-items:flex-start;color:var(--ink);font-size:.92rem;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer}
-.chk input{width:auto;margin-top:5px}.chk label.done{background:var(--good-bg);border-color:transparent}
-.seq{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:8px}
-.pump{border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:4px;justify-items:center;text-align:center;background:var(--soft);font-size:.82rem}
-.pump svg{width:44px;height:44px}.pump b{font-family:var(--f-display)}
-.pump.lead{background:color-mix(in srgb,var(--aqua) 14%,var(--card));border-color:var(--aqua)}
-.pump.sb{opacity:.75;border-style:dashed}
-.sheet{display:grid;gap:8px}.sheet h3{display:flex;gap:8px;align-items:center}
-.sheet h3 small{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);font-weight:400}</style>
+<style>
+.pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.make{display:grid;gap:10px;align-content:start;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;text-decoration:none;color:var(--ink);position:relative;overflow:hidden;transition:border-color .15s,box-shadow .15s,transform .15s;min-width:0}
+.make:hover{border-color:var(--aqua);box-shadow:0 8px 28px -14px rgba(18,104,211,.5)}
+@media (prefers-reduced-motion:no-preference){.make:hover{transform:translateY(-2px)}}
+.make .brandrow{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.make .mfr{font-family:var(--f-display);font-weight:700;font-size:1.5rem;letter-spacing:.01em}
+.make .mfr{color:var(--ink)}
+.make .model{font-family:var(--f-mono);font-size:.85rem;background:var(--soft);border:1px solid var(--line);border-radius:99px;padding:2px 10px}
+.make h2{font-size:1.1rem}
+.make ul{font-size:.9rem;color:var(--muted)}
+.make .go{font-weight:600;color:var(--water)}
+.make::after{content:"";position:absolute;inset:auto -50px -70px auto;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--aqua) 18%,transparent),transparent 70%);pointer-events:none}
+[dir=rtl] .make::after{inset:auto auto -70px -50px}
+@media (max-width:620px){.pick{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <div class="bar"><div class="bar-in">
   <a class="home" id="homeLink" href="../../app/"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop · <span data-t="short"></span></span></a>
   <span class="offline" id="offBadge" hidden></span>
   <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
-  <button class="tb pri" id="copyBtn" type="button" data-t="copy"></button>
-  <button class="tb" id="printBtn" type="button" data-t="print"></button>
-  <button class="tb" id="resetBtn" type="button" data-t="reset"></button>
   <span id="toast" class="toast" role="status"></span>
 </div></div>
-
 <main class="wrap">
   <a class="back" id="backLink" href="../../"></a>
   <header class="top">
     <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
     <div class="t"><div class="brand"><b><span class="lt">True</span>Loop</b> · <span data-t="brandSub"></span></div>
-      <h1 data-t="title"></h1><p class="muted" data-t="intro" data-html></p></div>
+      <h1 data-t="title"></h1><p class="muted" data-t="intro"></p></div>
   </header>
-  <p class="rep" id="repLine"></p>
 
-  <section class="card" id="about">
+  <div class="pick">
+    <a class="make" href="ls-h100/" id="toLs">
+      <div class="brandrow"><span class="mfr ls">LS ELECTRIC</span><span class="model">H100</span></div>
+      <h2 data-t="lsT"></h2>
+      <ul data-t="lsL" data-html></ul>
+      <span class="go" data-t="open"></span>
+    </a>
+    <a class="make" href="../ipc-calculator/" id="toAbb">
+      <div class="brandrow"><span class="mfr abb">ABB</span><span class="model">ACH480</span></div>
+      <h2 data-t="abbT"></h2>
+      <ul data-t="abbL" data-html></ul>
+      <span class="go" data-t="open"></span>
+    </a>
+  </div>
+
+  <section class="card">
     <h2><span class="num">؟</span><span data-t="abT"></span></h2>
     <p data-t="abLead"></p>
     <div class="ab">
-      <div><h3 data-t="abHowT"></h3><p data-t="abHow"></p></div>
+      <div><h3 data-t="abPartsT"></h3><ul data-t="abParts" data-html></ul></div>
       <div><h3 data-t="abRolesT"></h3><ul data-t="abRoles" data-html></ul></div>
-      <div class="pro"><h3 data-t="abGoodT"></h3><ul data-t="abGood" data-html></ul></div>
-      <div class="con"><h3 data-t="abLimT"></h3><ul data-t="abLim" data-html></ul></div>
     </div>
-  </section>
-
-  <nav class="prog" aria-label="progress">
-    <a href="#s1" id="pg1"><i>1</i><span data-t="p1"></span></a><a href="#s2" id="pg2"><i>2</i><span data-t="p2"></span></a>
-    <a href="#s3" id="pg3"><i>3</i><span data-t="p3"></span></a><a href="#s4" id="pg4"><i>4</i><span data-t="p4"></span></a>
-    <a href="#s5" id="pg5"><i>5</i><span data-t="p5"></span></a><a href="#s6" id="pg6"><i>6</i><span data-t="p6"></span></a>
-  </nav>
-
-  <section class="card" id="s1">
-    <h2><span class="num">1</span><span data-t="s1"></span></h2>
-    <div class="grid">
-      <label><span data-t="site"></span><input id="site" type="text" autocomplete="off"></label>
-      <label><span data-t="nP"></span><select id="np"><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option></select></label>
-      <label><span data-t="sb"></span><select id="sbn"><option value="0" data-t="sb0"></option><option value="1" selected data-t="sb1"></option></select></label>
-      <label><span data-t="kw"></span><select id="kw"><option value="">—</option><option>0.75</option><option>1.5</option><option>2.2</option><option>3.7</option><option>5.5</option><option>7.5</option><option>11</option><option>15</option><option>18.5</option><option>22</option></select></label>
-      <label><span data-t="sp"></span><input id="sp" type="number" step="0.1" value="5.5" inputmode="decimal"></label>
-      <label><span data-t="rng"></span><select id="rng"><option>10</option><option selected>16</option><option>25</option></select></label>
-      <label><span data-t="es"></span><select id="es"><option value="1" selected data-t="yes"></option><option value="0" data-t="no"></option></select></label>
-    </div>
-    <div class="seq" id="seqView"></div>
-    <div id="s1Msg" class="msgs"></div>
-  </section>
-
-  <section class="card" id="s2">
-    <h2><span class="num">2</span><span data-t="s2"></span></h2>
-    <div class="grid">
-      <label><span data-t="aDT"></span><input id="adt" type="number" step="1" value="120" inputmode="decimal"></label>
-      <label><span data-t="sDT"></span><input id="sdt" type="number" step="1" value="60" inputmode="decimal"></label>
-      <label><span data-t="aDiff"></span><input id="adf" type="number" step="0.1" value="0.3" inputmode="decimal"></label>
-      <label><span data-t="sDiff"></span><input id="sdf" type="number" step="0.1" value="0.3" inputmode="decimal"></label>
-      <label><span data-t="fOn"></span><input id="fon" type="number" step="1" value="48" inputmode="decimal"></label>
-      <label><span data-t="fOff"></span><input id="foff" type="number" step="1" value="30" inputmode="decimal"></label>
-      <label><span data-t="co"></span><select id="co"><option value="06:00">6 h</option><option value="12:00" selected>12 h</option><option value="24:00">24 h</option><option value="72:00">72 h</option></select></label>
-      <label><span data-t="aux"></span><input id="auxf" type="number" step="1" value="50" inputmode="decimal"></label>
-      <label><span data-t="hand"></span><input id="hand" type="number" step="1" value="45" inputmode="decimal"></label>
-    </div>
-    <div id="s2Msg" class="msgs"></div>
-  </section>
-
-  <section class="card" id="s3">
-    <h2><span class="num">3</span><span data-t="s3"></span></h2>
-    <p class="muted" data-t="s3note"></p>
-    <div class="sheet"><h3><span data-t="sh1"></span><small>S1</small></h3><div class="draw" id="dPow"></div></div>
-    <div class="sheet"><h3><span data-t="sh2"></span><small>S2</small></h3><div class="draw" id="dSig"></div>
-      <div class="legend"><span style="--c:#e06a1b" data-t="lgRun"></span><span style="--c:var(--leaf)" data-t="lgFb"></span><span style="--c:#8b5cf6" data-t="lgSig"></span></div></div>
-    <div class="sheet"><h3><span data-t="sh3"></span><small>S3</small></h3><div class="draw" id="dLamp"></div></div>
-    <div class="sheet" id="bxSheet"><h3><span data-t="sh4"></span><small>S4</small></h3><div class="draw" id="dBx"></div></div>
-    <details class="how"><summary data-t="bomT"></summary><div class="tbl"><table><thead><tr><th>Tag</th><th data-t="thName"></th><th data-t="thVal"></th></tr></thead><tbody id="bomRows"></tbody></table></div><p class="muted" data-t="bomNote"></p></details>
-  </section>
-
-  <section class="card" id="s4">
-    <h2><span class="num">4</span><span data-t="s4"></span></h2>
-    <p class="muted" data-t="s4note"></p>
-    <h3 data-t="mT"></h3>
-    <div class="tbl stack"><table><thead><tr><th data-t="thCode"></th><th data-t="thVal"></th><th data-t="thWhy"></th></tr></thead><tbody id="mRows"></tbody></table></div>
-    <h3 data-t="aT"></h3>
-    <div class="tbl stack"><table><thead><tr><th data-t="thCode"></th><th data-t="thVal"></th><th data-t="thWhy"></th></tr></thead><tbody id="aRows"></tbody></table></div>
-  </section>
-
-  <section class="card" id="s5">
-    <h2><span class="num">5</span><span data-t="s5"></span></h2>
-    <div class="chk" id="chk"></div>
-  </section>
-
-  <section class="card" id="s6">
-    <h2><span class="num">6</span><span data-t="s6"></span></h2>
-    <div class="msg warn" data-t="omSafe"></div>
-    <div class="tbl"><table><thead><tr><th data-t="thWhen"></th><th data-t="thWhat"></th></tr></thead><tbody data-t="omRows" data-html></tbody></table></div>
-    <details class="how"><summary data-t="flT"></summary><div class="tbl"><table><thead><tr><th data-t="thSign"></th><th data-t="thCause"></th><th data-t="thDo"></th></tr></thead><tbody data-t="flRows" data-html></tbody></table></div></details>
-  </section>
-
-  <section class="card" id="s7">
-    <h2><span class="num">7</span><span data-t="s7"></span></h2>
-    <textarea class="sum" id="summary" readonly aria-label="summary"></textarea>
+    <div class="tbl"><table><thead><tr><th></th><th>LS H100</th><th>ABB ACH480</th></tr></thead><tbody data-t="cmp" data-html></tbody></table></div>
+    <p class="muted" data-t="cmpNote"></p>
   </section>
 
   <section class="card share-card no-print">
     <div class="share">
       <div class="qrb"><img src="qr.png" alt="QR"><span class="ql"><svg aria-hidden="true"><use href="#mark"/></svg></span></div>
       <div style="display:grid;gap:8px;min-width:0"><h2 data-t="shareT"></h2><p class="muted" data-t="shareP"></p><div class="linkline" id="appLink"></div>
-        <div><button class="pri" id="linkBtn" type="button" data-t="copyLink"></button></div><p class="muted" data-t="installHow" data-html></p></div>
+        <div><button class="pri" id="linkBtn" type="button" data-t="copyLink"></button></div></div>
     </div>
   </section>
-
-  <section class="cta no-print">
-    <svg class="mk" role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
-    <div style="display:grid;gap:4px"><b style="font-family:var(--f-display);font-size:1.08rem" data-t="ctaT"></b><p data-t="ctaP"></p>
-      <p>WhatsApp <a href="https://wa.me/966560861304" target="_blank" rel="noopener">+966 56 086 1304</a> · <span data-t="city"></span></p></div>
-  </section>
-  <p class="foot">TrueLoop · Booster Sequencing · <span id="verTxt"></span></p>
+  <p class="foot">TrueLoop · Booster Programming · <span id="verTxt"></span></p>
 </main>
-
 <script src="../../assets/tl-core.js"></script>
 <script>
 (function(){
-var VER='2026.11.14.2',URL_APP='https://elsaiedharfoush14.github.io/trueloop/tools/booster/';
-var D={ar:{
-short:'البوستر',title:'تشغيل البوستر على درايفات LS H100',
-intro:'طلمبات بوستر كل واحدة على درايف <code>LS H100</code>، من غير <code>PLC</code> ومن غير اتصال <code>RS-485</code>. اختار عدد الطلمبات والضغط والتوقيتات، والأداة ترسم اللوحة وتطلّع باراميترات كل درايف وخطوات الاختبار والصيانة.',
-abT:'السيستم ده بيعمل إيه؟',abLead:'بيحافظ على ضغط المية في المبنى ثابت مهما الاستهلاك اتغيّر. طلمبة واحدة شغالة على درايف بسرعة متغيرة، ولما الاستهلاك يزيد تدخل طلمبات تساعدها، ولما يقل تطلع.',
-abHowT:'بيشتغل إزاي',abHow:'حساس ضغط واحد داخل على الدرايف الأول (الماستر). الماستر بيشغّل طلمبته بالـ PID علشان يثبّت الضغط على الـ setpoint. لو وصل لسرعة عالية والضغط لسه واطي لمدة معينة، بيقفل ريليه يشغّل درايف طلمبة مساعدة على سرعة ثابتة (خاصية MMC). ولو الاستهلاك قل، بيطلّعها. وكل كام ساعة بيبدّل ترتيب الطلمبات المساعدة علشان تشتغل بالتساوي، ولو درايف فيه عطل بيتخطاه ويشغّل اللي بعده.',
-abRolesT:'دور كل طلمبة',abRoles:'<li><b>طلمبة 1 (Lead):</b> دايمًا هي اللي بتبدأ، على PID.</li><li><b>المساعدة (Assist):</b> تدخل بعد التأخير لو الضغط لسه واطي.</li><li><b>الاحتياطي (Standby):</b> مش بتدخل غير لو طلمبة عطلت، أو مع التبديل.</li><li><b>التبديل (Changeover):</b> ترتيب الطلمبات المساعدة بيتغيّر كل فترة.</li>',
-abGoodT:'فايدته',abGood:'<li>ضغط ثابت وتوفير كهربا لأن الطلمبة بتلف على قد الحاجة.</li><li>من غير PLC ولا برمجة اتصال، كله أسلاك وباراميترات.</li><li>الطلمبات بتشتغل بالتساوي، وفيه احتياطي أوتوماتيك.</li>',
-abLimT:'حدوده',abLim:'<li>طلمبة 1 دايمًا Lead ومش بتدخل في التبديل.</li><li>لو درايف 1 عطل السيستم كله بيقف، فالباقي يتشغّل يدوي (HAND).</li><li>لتبديل الـ Lead كمان محتاج كابل RS-485 بين الدرايفات (Multi Master).</li>',
-p1:'السيستم',p2:'التوقيتات',p3:'الرسومات',p4:'الباراميترات',p5:'الاختبار',p6:'الصيانة',
-s1:'السيستم',site:'اسم الموقع',nP:'عدد الطلمبات',sb:'طلمبة احتياطي',sb0:'لا',sb1:'واحدة',kw:'قدرة الطلمبة (kW)',sp:'الضغط المطلوب (bar)',rng:'مدى حساس الضغط (bar)',es:'طوارئ وعوامة ناشف',yes:'نعم',no:'لا',
-lead:'Lead',assist:'Assist',standby:'Standby',pumpN:'طلمبة {n}',
-noSb:'من غير احتياطي: لو طلمبة مساعدة عطلت، مفيش بديل.',spHigh:'الضغط المطلوب أعلى من 80% من مدى الحساس. اختار حساس مداه أكبر.',
-s2:'التوقيتات والسرعات',aDT:'تأخير دخول المساعدة (ثانية)',sDT:'تأخير خروجها (ثانية)',aDiff:'نزول الضغط للدخول (bar)',sDiff:'زيادة الضغط للخروج (bar)',fOn:'سرعة طلمبة 1 قبل الدخول (Hz)',fOff:'سرعة طلمبة 1 للخروج (Hz)',co:'التبديل كل',aux:'سرعة المساعدة (Hz)',hand:'سرعة الطوارئ HAND (Hz)',
-fBad:'سرعة الخروج لازم تكون أقل من سرعة الدخول بفرق كويس، وإلا الطلمبة هتدخل وتطلع على طول.',dtShort:'تأخير أقل من 30 ثانية ممكن يخلّي الطلمبات تدخل وتطلع كتير.',
-s3:'رسومات اللوحة',s3note:'الرسومات بتتغير مع عدد الطلمبات. أرقام الأطراف من مانوال H100؛ راجعها على الدرايف قبل التنفيذ.',sh1:'الباور',sh2:'إشارات الدرايفات',sh3:'كنترول 230 VAC (لمبات وريليه الطوارئ)',sh4:'الطوارئ والتشغيل على الناشف',
-lgRun:'أمر تشغيل (ريليه الماستر)',lgFb:'سليم (ريليه Ready)',lgSig:'حساس الضغط',
-bomT:'قايمة المعدات',bomNote:'سعة البريكر من جدول مانوال H100 (قسم 11.4). البريكر الرئيسي تقدير: راجعه مع حسابات الكابلات.',
-s4:'الباراميترات',s4note:'الأرقام دي من مانوال LS H100 (قسم 5.44 MMC وجداول الباراميترات). لو الدرايف عليه firmware مختلف، راجع الكود على الشاشة.',mT:'درايف 1 · الماستر',aT:'الدرايفات المساعدة',
-s5:'اختبار التشغيل',s6:'التشغيل والصيانة (O&M)',
-omSafe:'قبل أي شغل جوه اللوحة: افصل الكهربا واستنى لحد ما لمبة الشحن في الدرايف تطفي (10 دقايق تقريبًا).',
-omRows:'<tr><td><b>كل يوم</b></td><td>الضغط قريب من الـ setpoint، ومفيش لمبة عطل، وكل الكيبوردات على AUTO.</td></tr><tr><td><b>كل أسبوع</b></td><td>قارن ساعات تشغيل الطلمبات المساعدة (AP1-95 لـ AP1-97). لو واحدة شغالة أكتر بكتير، راجع التبديل.</td></tr><tr><td><b>كل شهر</b></td><td>جرّب زرار الطوارئ والعوامة. نضّف فلاتر مراوح اللوحة. اسمع صوت الطلمبات والكراسي.</td></tr><tr><td><b>كل 6 شهور</b></td><td>اربط أطراف الباور والكنترول. راجع قراية حساس الضغط بمانومتر. نضّف مراوح الدرايفات.</td></tr><tr><td><b>كل سنة</b></td><td>اختبار عزل الموتورات، ومراجعة إعدادات الحماية، ونسخة من الباراميترات.</td></tr>',
-flT:'الأعطال وحلولها',
-flRows:'<tr><td>المساعدة مش بتدخل</td><td>سرعة الدخول عالية، أو التأخير طويل، أو الريليه مش 21 MMC، أو كيبورد المساعد مش AUTO</td><td>راجع AP1-61 و AP1-53 و OUT-31، وخلّي الكيبورد AUTO.</td></tr><tr><td>المساعدة بتدخل وتطلع على طول</td><td>سرعة الدخول والخروج قريبين، أو التأخيرات قصيرة</td><td>وسّع الفرق بين AP1-61 و AP1-70، وطوّل AP1-53 و AP1-54.</td></tr><tr><td>الماستر بيشغّل طلمبة واقفة عطلانة</td><td>اتجاه الـ Interlock معكوس</td><td>بدّل ريليه الفيدباك من Ready لـ Trip (OUT-32 = 23).</td></tr><tr><td>كل الطلمبات وقفت وBX ظاهر</td><td>زرار الطوارئ أو العوامة (ناشف)</td><td>شوف المية في التانك، ورجّع زرار الطوارئ.</td></tr><tr><td>الضغط بيتأرجح</td><td>إعدادات PID أو الحساس</td><td>قلّل الـ P gain، وراجع إشارة الحساس.</td></tr><tr><td>لمبات بتنور خفيف وهي مطفية</td><td>تسريب في أسلاك LED الطويلة</td><td>حمّل الخط بمقاومة 47–68 kΩ 3W أو ملف ريليه.</td></tr><tr><td>درايف 1 عطل</td><td>الماستر واقف، والمساعدين بيقفوا معاه</td><td>شغّل المساعدين HAND على سرعة الطوارئ، وراقب الضغط.</td></tr>',
-s7:'الملخص',
-c1:'اتجاه الـ Interlock: اقفل درايف 3 (OFF أو فصل كهربا)، الماستر لازم يتخطاه ويشغّل اللي بعده.',c2:'الطوارئ والعوامة: اضغط الطوارئ، وبعدين ارفع العوامة: كل الدرايفات تظهر BX وتقف.',c3:'دخول المساعدة: افتح الاستهلاك لحد ما طلمبة 1 توصل {f} Hz والضغط أقل بـ {d} bar، المساعدة تدخل بعد {t} ثانية.',c4:'خروج المساعدة: اقفل الاستهلاك، لما طلمبة 1 تنزل تحت {f} Hz لمدة {t} ثانية، المساعدة تطلع.',c5:'التبديل: خلّي AP1-56 = 00:10 للتجربة. بعد 10 دقايق والمساعدين واقفين، المساعدة التالية تبقى اللي بعدها. رجّع المدة الحقيقية.',c6:'السليب: لما الاستهلاك صفر، المساعدين يقفوا الأول وبعدين طلمبة 1 تنام وتصحى لما الضغط ينزل.',c7:'اللمبات: كل لمبة تشغيل وعطل بتتبع الدرايف بتاعها.',
-mGrpPid:'الضغط (PID)',mGrpMmc:'التحكم في الطلمبات (MMC)',mGrpIo:'المداخل والمخارج',
-w_pid1:'تشغيل PID.',w_pid11:'الضغط المطلوب.',w_pid20:'الحساس داخل على I2 (SW4 على I2).',w_pid50:'وحدة العرض.',w_pid67:'الضغط عند 4 mA.',w_pid68:'الضغط عند 20 mA = مدى الحساس.',
-w40:'MMC بالأسلاك.',w42:'{m} ريليه MMC − {o} شغالين = {s} احتياطي.',w43:'أول مساعدة بعد التشغيل.',w48:'المساعدين يقفوا واحدة واحدة.',w49:'اللي دخلت الأول تطلع الأول.',w50:'نزول الضغط اللي يعتبر واطي.',w53:'تأخير دخول المساعدة.',w54:'تأخير خروجها.',w55:'تبديل ترتيب المساعدين.',w56:'مدة التبديل (ساعات:دقايق).',w59:'زيادة الضغط قبل الخروج.',w61:'سرعة طلمبة 1 قبل الدخول.',w70:'سرعة طلمبة 1 للخروج.',w90:'تخطي درايف عطلان أو مفصول.',w91:'تأخير قبل ما البديل يدخل.',
-wRelay:'تشغيل طلمبة {p} (مساعدة {a}).',wTrip:'لمبة عطل طلمبة 1 + إنذار BMS.',wRun:'لمبة تشغيل طلمبة 1.',wBX:'طوارئ / ناشف من KA1.',wIL:'طلمبة {p} سليمة.',
-a06:'التشغيل من P1.',a07:'سرعة ثابتة.',a01:'سرعة المساعدة.',a25:'سرعة الطوارئ لو الماستر واقف.',a65:'أمر التشغيل من الماستر.',a67:'طوارئ / ناشف.',a31:'لمبة العطل.',a32:'فيدباك "سليم" للماستر.',a33:'لمبة التشغيل.',a01p:'المساعد مش بيعمل PID.',aKey:'كيبورد كل درايف مساعد لازم على AUTO؛ على OFF أو HAND أوامر الأطراف بتتجاهل.'
-},en:{
-short:'Booster',title:'Booster Sequencing on LS H100 Drives',
-intro:'Booster pumps, each on its own <code>LS H100</code> drive, with no <code>PLC</code> and no <code>RS-485</code> link. Choose the pumps, pressure and timings; the tool draws the panel and gives every drive\'s parameters, tests and maintenance.',
-abT:'What does this system do?',abLead:'It keeps the building water pressure steady whatever the demand. One pump runs on a variable-speed drive; when demand rises, assist pumps join, and when it drops they leave.',
-abHowT:'How it works',abHow:'One pressure transmitter feeds drive 1 (the master), which runs its pump on PID to hold the setpoint. If it reaches high speed and pressure is still low for a set time, it closes a relay that starts an assist pump\'s drive at fixed speed (the MMC function). When demand falls it stops it. Every few hours it rotates the assist order so pumps share the hours, and it skips a drive that has tripped.',
-abRolesT:'Pump roles',abRoles:'<li><b>Pump 1 (Lead):</b> always starts first, on PID.</li><li><b>Assist:</b> joins after the delay if pressure stays low.</li><li><b>Standby:</b> only runs if a pump fails, or after a changeover.</li><li><b>Changeover:</b> the assist order rotates on a timer.</li>',
-abGoodT:'Benefits',abGood:'<li>Steady pressure and lower energy, since the pump runs only as fast as needed.</li><li>No PLC and no comms programming: wires and parameters only.</li><li>Even running hours and automatic standby.</li>',
-abLimT:'Limits',abLim:'<li>Pump 1 is always the lead and is not rotated.</li><li>If drive 1 fails the system stops; run the others in HAND.</li><li>Rotating the lead too needs RS-485 between drives (Multi Master).</li>',
-p1:'System',p2:'Timing',p3:'Drawings',p4:'Parameters',p5:'Tests',p6:'O&M',
-s1:'System',site:'Site name',nP:'Number of pumps',sb:'Standby pump',sb0:'No',sb1:'One',kw:'Pump rating (kW)',sp:'Pressure setpoint (bar)',rng:'Transmitter range (bar)',es:'E-stop and dry-run float',yes:'Yes',no:'No',
-lead:'Lead',assist:'Assist',standby:'Standby',pumpN:'Pump {n}',
-noSb:'No standby: if an assist pump fails there is no replacement.',spHigh:'Setpoint is above 80% of the transmitter range. Choose a wider range.',
-s2:'Timing and speeds',aDT:'Assist start delay (s)',sDT:'Assist stop delay (s)',aDiff:'Pressure drop to start (bar)',sDiff:'Pressure rise to stop (bar)',fOn:'Pump 1 speed before assist (Hz)',fOff:'Pump 1 speed to drop assist (Hz)',co:'Changeover every',aux:'Assist speed (Hz)',hand:'Emergency HAND speed (Hz)',
-fBad:'The stop speed must be well below the start speed, or the pumps will cycle on and off.',dtShort:'Delays under 30 s can make the pumps cycle too often.',
-s3:'Panel drawings',s3note:'Drawings follow the number of pumps. Terminal names are from the H100 manual; check them on the drive before building.',sh1:'Power',sh2:'Drive signals',sh3:'230 VAC control (lamps and safety relay)',sh4:'E-stop and dry run',
-lgRun:'Run command (master relay)',lgFb:'Healthy (Ready relay)',lgSig:'Pressure transmitter',
-bomT:'Equipment list',bomNote:'Drive breakers from the H100 manual table (section 11.4). The main breaker is an estimate; confirm with the cable calculation.',
-s4:'Parameters',s4note:'Codes from the LS H100 manual (section 5.44 MMC and the parameter tables). If the drive firmware differs, check the code on the display.',mT:'Drive 1 · master',aT:'Assist drives',
-s5:'Commissioning tests',s6:'Operation and maintenance (O&M)',
-omSafe:'Before working inside the panel: isolate and wait until the drive charge lamp is off (about 10 minutes).',
-omRows:'<tr><td><b>Daily</b></td><td>Pressure near setpoint, no fault lamp, every keypad in AUTO.</td></tr><tr><td><b>Weekly</b></td><td>Compare assist run hours (AP1-95 to AP1-97). If one runs far more, check the changeover.</td></tr><tr><td><b>Monthly</b></td><td>Test the E-stop and the float. Clean panel fan filters. Listen to pumps and bearings.</td></tr><tr><td><b>Every 6 months</b></td><td>Tighten power and control terminals. Check the transmitter against a gauge. Clean drive fans.</td></tr><tr><td><b>Yearly</b></td><td>Motor insulation test, protection settings review, parameter backup.</td></tr>',
-flT:'Faults and fixes',
-flRows:'<tr><td>Assist never starts</td><td>Start speed too high, delay too long, relay not 21 MMC, or assist keypad not AUTO</td><td>Check AP1-61, AP1-53, OUT-31; set the keypad to AUTO.</td></tr><tr><td>Assist cycles on and off</td><td>Start and stop speeds too close, or short delays</td><td>Widen AP1-61 vs AP1-70; lengthen AP1-53 and AP1-54.</td></tr><tr><td>Master starts a tripped pump</td><td>Interlock polarity reversed</td><td>Feed back from Trip instead of Ready (OUT-32 = 23).</td></tr><tr><td>All pumps stop, BX shown</td><td>E-stop or float (dry)</td><td>Check the tank level; release the E-stop.</td></tr><tr><td>Pressure hunts</td><td>PID gains or transmitter</td><td>Reduce P gain; check the transmitter signal.</td></tr><tr><td>Lamps glow faintly when off</td><td>Leakage on long LED wiring</td><td>Load the line with 47–68 kΩ 3 W or a relay coil.</td></tr><tr><td>Drive 1 failed</td><td>Master down, assists stop with it</td><td>Run assists in HAND at the emergency speed; watch the pressure.</td></tr>',
-s7:'Summary',
-c1:'Interlock polarity: switch drive 3 OFF or isolate it; the master must skip it and use the next pump.',c2:'E-stop and float: press the E-stop, then lift the float: every drive shows BX and stops.',c3:'Assist start: open demand until pump 1 reaches {f} Hz with pressure {d} bar under setpoint; the assist starts after {t} s.',c4:'Assist stop: close demand; when pump 1 runs under {f} Hz for {t} s the assist stops.',c5:'Changeover: set AP1-56 to 00:10 for the test. After 10 minutes with assists stopped, the next assist is the following pump. Set the real interval back.',c6:'Sleep: at zero demand the assists stop first, then pump 1 sleeps and wakes when pressure drops.',c7:'Lamps: each run and trip lamp follows its own drive.',
-mGrpPid:'Pressure (PID)',mGrpMmc:'Pump control (MMC)',mGrpIo:'Inputs and outputs',
-w_pid1:'Enable PID.',w_pid11:'Pressure setpoint.',w_pid20:'Transmitter on I2 (SW4 set to I2).',w_pid50:'Display unit.',w_pid67:'Pressure at 4 mA.',w_pid68:'Pressure at 20 mA = transmitter range.',
-w40:'MMC by hard wiring.',w42:'{m} MMC relays − {o} operable = {s} standby.',w43:'First assist after power-up.',w48:'Assists stop one by one.',w49:'First started stops first.',w50:'Pressure drop that counts as low.',w53:'Assist start delay.',w54:'Assist stop delay.',w55:'Rotate the assist order.',w56:'Changeover interval (hh:mm).',w59:'Pressure rise before an assist stops.',w61:'Pump 1 speed before an assist starts.',w70:'Pump 1 speed below which an assist stops.',w90:'Skip a tripped or isolated drive.',w91:'Delay before the replacement starts.',
-wRelay:'Run pump {p} (assist {a}).',wTrip:'Pump 1 trip lamp + BMS alarm.',wRun:'Pump 1 run lamp.',wBX:'E-stop / dry run from KA1.',wIL:'Pump {p} healthy.',
-a06:'Run from P1.',a07:'Fixed speed.',a01:'Assist speed.',a25:'Emergency speed if the master is down.',a65:'Run command from the master.',a67:'E-stop / dry run.',a31:'Trip lamp.',a32:'"Healthy" feedback to the master.',a33:'Run lamp.',a01p:'Assist drives do not run PID.',aKey:'Every assist keypad must stay in AUTO; in OFF or HAND, terminal commands are ignored.'
-}};
-
-var F=['site','np','sbn','kw','sp','rng','es','adt','sdt','adf','sdf','fon','foff','co','auxf','hand'];
-var st=TL.store('tl_boost_v1',F),$=TL.$,num=TL.num,t=function(k,v){return TL.t(k,v);},checks={};
-var MCCB={0.75:['10 A','ABS33c'],1.5:['10 A','ABS33c'],2.2:['15 A','ABS33c'],3.7:['15 A','ABS33c'],5.5:['30 A','ABS33c'],7.5:['30 A','ABS33c'],11:['50 A','ABS53c'],15:['60 A','ABS63c'],18.5:['100 A','ABS103c'],22:['100 A','ABS103c']};
-var STD=[16,20,25,32,40,50,63,80,100,125,160,200,250,320,400];
-function pumpIcon(){return '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="20" cy="26" r="14" fill="none" stroke="currentColor" stroke-width="3"/><path d="M20 26 L30 18 M20 26 L12 18 M20 26 V38" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M34 26 H46 M26 12 V4 H40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>';}
-
-function cfg(){var n=+$('np').value,sb=Math.min(+$('sbn').value,n-1),aux=n-1;return {n:n,aux:aux,sb:sb,op:Math.max(aux-sb,aux>0?1:0)};}
-
-/* ---------- drawings (SVG strings, theme-aware via CSS classes) ---------- */
-function T(x,y,s,c,a){return '<text x="'+x+'" y="'+y+'"'+(c?' class="'+c+'"':'')+(a?' text-anchor="'+a+'"':'')+'>'+TL.esc(s)+'</text>';}
-function P(d,c){return '<path class="'+c+'" d="'+d+'"/>';}
-function R(x,y,w,h,c){return '<rect class="'+(c||'box')+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3"/>';}
-function svg(w,h,body){return '<svg viewBox="0 0 '+w+' '+h+'" role="img">'+body+'</svg>';}
-function drawPower(c,kw){
-  var n=c.n,W=Math.max(820,160+n*200),x0=120,step=(W-260)/Math.max(n-1,1),b='';
-  b+=T(40,30,'400 V 3Ph+N+PE 60 Hz')+P('M80 38 V60','w')+R(50,60,60,40)+T(62,85,'Q0')+P('M80 100 V130','w')+P('M40 130 H'+(W-40),'bus')+T(W-200,120,'L1 L2 L3 N','t-sub');
-  for(var i=0;i<n;i++){var x=Math.round(x0+80+i*step);
-    b+=P('M'+x+' 130 V160','w')+R(x-30,160,60,40)+T(x-20,185,'Q'+(i+1))+P('M'+x+' 200 V230','w')+R(x-50,230,100,70)+T(x-40,252,'VFD'+(i+1),'t-title')+T(x-40,270,i?'AUX '+i:'MASTER','t-sub')+T(x-40,288,'R S T / U V W','t-sub')+
-      P('M'+x+' 300 V345','w')+'<circle class="box" cx="'+x+'" cy="370" r="24"/>'+T(x,375,'M'+(i+1),'','middle')+T(x,412,(kw?kw+' kW':'Pump '+(i+1)),'t-sub','middle')+P('M'+x+' 394 V440','pe')+P('M'+(x+50)+' 290 H'+(x+62)+' V440','pe');}
-  var fx=W-60;b+=P('M'+fx+' 130 V160','w')+R(fx-22,160,44,40)+T(fx-14,185,'F1')+T(fx-60,218,'MCB 2P 6A','t-sub')+T(fx-60,234,'230 VAC → S3','t-sub');
-  b+=P('M40 440 H'+(W-40),'pe')+T(40,460,'PE: drives, motors, shields, panel','l-fb');
-  return svg(W,470,b);
-}
-function drawSignals(c,es){
-  var n=c.n,aux=c.aux,H=Math.max(300,60+aux*200),b='',mx=230,mW=250,ax=720;
-  b+=R(20,40,150,80)+T(32,66,'B1 Pressure TX','t-title')+T(32,84,'4–20 mA 2-wire','t-sub')+P('M170 70 H230','w-sig')+P('M170 100 H230','w-sig')+T(176,62,'+24','l-sig')+T(176,118,'I2','l-sig');
-  b+=R(mx,30,mW,H-50)+T(300,H/2-10,'VFD1','t-title')+T(300,H/2+8,'MASTER · PID + MMC','t-sub')+T(300,H/2+24,'SW4 = I2','t-sub');
-  b+=R(mx,62,34,16,'term')+T(mx+6,74,'24')+R(mx,92,34,16,'term')+T(mx+6,104,'I2');
-  var pin=['P5','P6','P7'];
-  for(var i=0;i<aux;i++){var y=40+i*200,yr=y+40,yf=y+100;
-    b+=R(mx+mW-34,yr-8,34,16,'term')+T(mx+mW-28,yr+4,'A'+(i+1))+R(mx+mW-34,yr+12,34,16,'term')+T(mx+mW-28,yr+24,'C'+(i+1));
-    b+=R(mx+mW-34,yf-8,34,16,'term')+T(mx+mW-28,yf+4,pin[i]);
-    b+=R(ax,y,250,160)+T(ax+80,y+70,'VFD'+(i+2),'t-title')+T(ax+80,y+88,'AUX '+(i+1)+' · Pump '+(i+2),'t-sub')+T(ax+80,y+106,'keypad AUTO','t-sub');
-    b+=R(ax,yr-8,34,16,'term')+T(ax+6,yr+4,'P1')+R(ax,yr+12,34,16,'term')+T(ax+6,yr+24,'CM')+R(ax,yf-8,34,16,'term')+T(ax+6,yf+4,'A2')+R(ax,yf+12,34,16,'term')+T(ax+6,yf+24,'C2');
-    b+=P('M480 '+yr+' H720','w-run')+P('M480 '+(yr+20)+' H720','w-run')+T(500,yr-8,'Relay '+(i+1)+' = MMC → Pump '+(i+2),'l-run');
-    b+=P('M480 '+yf+' H720','w-fb')+T(500,yf+40,'Ready → Interlock '+(i+1),'l-fb');
-    b+=P('M620 '+(yf+20)+' H720','w-fb')+'<circle cx="620" cy="'+(yf+20)+'" r="3.5" fill="var(--leaf)"/>';}
-  b+=R(mx+mW-34,172,34,16,'term')+T(mx+mW-28,184,'CM');
-  var lastF=40+(aux-1)*200+120;b+=P('M480 180 H620','w-fb')+(aux>1?P('M620 160 V'+lastF,'w-fb'):P('M620 160 V180','w-fb'))+T(628,214,'CM bus','l-fb');
-  return svg(1000,H,b);
-}
-function drawLamps(c,es){
-  var n=c.n,rows=[],b='';
-  rows.push(['VFD1 Relay '+(c.aux+2)+' (Run)','H1 Pump 1 run','lamp-g'],['VFD1 Relay '+(c.aux+1)+' (Trip)','H'+(n+1)+' Pump 1 trip','lamp-r']);
-  for(var i=1;i<n;i++)rows.push(['VFD'+(i+1)+' Relay 3 (Run)','H'+(i+1)+' Pump '+(i+1)+' run','lamp-g'],['VFD'+(i+1)+' Relay 1 (Trip)','H'+(n+i+1)+' Pump '+(i+1)+' trip','lamp-r']);
-  var H=150+rows.length*34+20;
-  b+=T(32,30,'L (F1)')+T(930,30,'N')+P('M50 40 V'+(H-10),'w')+P('M950 40 V'+(H-10),'w');
-  b+=P('M50 70 H852','w')+'<circle cx="866" cy="70" r="12" fill="none" stroke="currentColor" stroke-width="2"/>'+P('M878 70 H950','w')+T(80,62,'H0 Power on');
-  if(es){b+=P('M50 115 H190','w')+P('M190 103 V127 M190 115 L214 103 M214 103 V127','w')+P('M214 115 H330','w')+T(150,97,'S0 E-stop NC')+
-    P('M330 103 V127 M330 115 L354 103 M354 103 V127','w')+P('M354 115 H846','w')+T(300,97,'LS1 float (closed = water OK)')+R(846,103,40,24)+T(852,120,'KA1')+P('M886 115 H950','w');}
-  rows.forEach(function(r,i){var y=160+i*34,col=r[2]==='lamp-g'?'#1a8f5c':'#d23b2d';
-    b+=P('M50 '+y+' H300','w')+P('M300 '+(y-12)+' V'+(y+12)+' M324 '+(y-12)+' V'+(y+12),'w')+P('M324 '+y+' H854','w')+
-      '<circle cx="866" cy="'+y+'" r="12" fill="none" stroke="'+col+'" stroke-width="2"/>'+P('M878 '+y+' H950','w')+T(80,y-6,r[0])+T(600,y-6,r[1]);});
-  return svg(1000,H,b);
-}
-function drawBx(c){var b='';for(var i=0;i<c.n;i++){var y=50+i*46;
-  b+=T(40,y+4,'VFD'+(i+1)+' P3')+P('M120 '+y+' H420','w')+P('M420 '+(y-12)+' V'+(y+12)+' M420 '+y+' L444 '+(y-12)+' M444 '+(y-12)+' V'+(y+12),'w')+P('M444 '+y+' H760','w')+T(770,y+4,'VFD'+(i+1)+' CM')+T(400,y-16,'KA1 '+(i+1)+'1–'+(i+1)+'2 (NC)','t-sub');}
-  return svg(1000,70+c.n*46,b);}
-
-/* ---------- parameters ---------- */
-function master(c){
-  var sp=num('sp'),rng=$('rng').value,rows=[['§',t('mGrpPid')],['PID-01','1. Yes',t('w_pid1')],['PID-11',sp+' bar',t('w_pid11'),1],['PID-20','I2',t('w_pid20')],['PID-50','Bar',t('w_pid50')],['PID-67','0',t('w_pid67')],['PID-68',rng,t('w_pid68')],
-    ['§',t('mGrpMmc')],['AP1-40','1. Single Ctrl',t('w40'),1],['AP1-42',c.op,t('w42',{m:c.aux,o:c.op,s:c.aux-c.op}),1],['AP1-43','1',t('w43')],['AP1-48','1. Yes',t('w48')],['AP1-49','1. FIFO',t('w49')],
-    ['AP1-50',num('adf'),t('w50')],['AP1-53',num('adt')+'.0 s',t('w53'),1],['AP1-54',num('sdt')+'.0 s',t('w54')],['AP1-55','1. Aux Exchange',t('w55'),1],['AP1-56',$('co').value,t('w56'),1],['AP1-59',num('sdf'),t('w59')]];
-  var fr=[],fs=[];for(var i=0;i<c.aux;i++){fr.push(61+i);fs.push(70+i);}
-  rows.push(['AP1-'+fr[0]+(fr.length>1?'–'+fr[fr.length-1]:''),num('fon')+' Hz',t('w61')],['AP1-'+fs[0]+(fs.length>1?'–'+fs[fs.length-1]:''),num('foff')+' Hz',t('w70')],['AP1-90','1. Yes',t('w90'),1],['AP1-91','5.0 s',t('w91')]);
-  rows.push(['§',t('mGrpIo')]);
-  for(i=0;i<c.aux;i++)rows.push(['OUT-'+(31+i),'21. MMC',t('wRelay',{p:i+2,a:i+1}),1]);
-  rows.push(['OUT-'+(31+c.aux),'23. Trip',t('wTrip')]);
-  if(c.aux+1<5)rows.push(['OUT-'+(32+c.aux),'14. Run',t('wRun')]);
-  if($('es').value==='1')rows.push(['IN-67','5. BX',t('wBX')]);
-  for(i=0;i<c.aux;i++)rows.push(['IN-'+(69+i),(29+i)+'. Interlock '+(i+1),t('wIL',{p:i+2}),1]);
-  return rows;
-}
-function auxRows(){var rows=[['DRV-06','Fx/Rx-1',t('a06'),1],['DRV-07','KeyPad',t('a07')],['DRV-01',num('auxf')+'.00 Hz',t('a01'),1],['DRV-25',num('hand')+'.00 Hz',t('a25')],['IN-65','1. Fx',t('a65'),1]];
-  if($('es').value==='1')rows.push(['IN-67','5. BX',t('a67')]);
-  rows.push(['OUT-31','23. Trip',t('a31')],['OUT-32','20. Ready',t('a32'),1],['OUT-33','14. Run',t('a33')],['PID-01','0. No',t('a01p')]);return rows;}
-
-function bom(c,kw){var m=MCCB[kw],rows=[],es=$('es').value==='1';
-  var iDrv=kw?kw*1.7:null,q0=iDrv?STD.filter(function(s){return s>=iDrv*c.n*1.25;})[0]:null;
-  rows.push(['Q0','Main MCCB 4P',q0?'≥ '+q0+' A (≈ '+Math.round(iDrv*c.n)+' A load)':'—']);
-  rows.push(['Q1–Q'+c.n,'Drive MCCB 3P',m?m[0]+' · LS '+m[1]:'—'],['F1','MCB 2P, C','6 A'],['VFD1–'+c.n,'LS H100',kw?kw+' kW':'—'],['B1','Pressure transmitter','0–'+$('rng').value+' bar, 4–20 mA, 2-wire']);
-  if(es)rows.push(['KA1','Relay 230 VAC',c.n<=4?'4 C/O':'2 × 4 C/O'],['S0','E-stop mushroom','1 NC'],['LS1','Float switch','closed = water OK']);
-  rows.push(['H0','Lamp white 230 V','1'],['H1–H'+(2*c.n),'Lamps green / red 230 V',c.n+' + '+c.n]);
-  return rows;}
-
-function render(){
-  var c=cfg(),kw=$('kw').value?parseFloat($('kw').value):null,es=$('es').value==='1';
-  if(+$('sbn').value>c.aux)$('sbn').value='0';
-  var v='';for(var i=0;i<c.n;i++){var role=i===0?'lead':(i<=c.op?'assist':'standby');v+='<div class="pump '+(i===0?'lead':(role==='standby'?'sb':''))+'">'+pumpIcon()+'<b>'+TL.esc(t('pumpN',{n:i+1}))+'</b><span>'+TL.esc(t(role))+'</span></div>';}
-  $('seqView').style.setProperty('--n',c.n);$('seqView').innerHTML=v;
-  var m1=[];if(c.sb===0&&c.n>2)m1.push(['warn',t('noSb')]);if(num('sp')>0.8*parseFloat($('rng').value))m1.push(['bad',t('spHigh')]);
-  TL.msg($('s1Msg'),m1);TL.prog(1,TL.worst(m1)||'ok');
-  var m2=[];if(num('foff')>=num('fon')-8)m2.push(['bad',t('fBad')]);if(num('adt')<30||num('sdt')<30)m2.push(['warn',t('dtShort')]);
-  TL.msg($('s2Msg'),m2);TL.prog(2,TL.worst(m2)||'ok');
-  $('dPow').innerHTML=drawPower(c,kw);$('dSig').innerHTML=drawSignals(c,es);$('dLamp').innerHTML=drawLamps(c,es);$('bxSheet').hidden=!es;if(es)$('dBx').innerHTML=drawBx(c);
-  $('bomRows').innerHTML=TL.rows(bom(c,kw));TL.prog(3,kw?'ok':'warn');
-  var mr=master(c),ar=auxRows();$('mRows').innerHTML=TL.rows(mr);$('aRows').innerHTML=TL.rows(ar)+'<tr><td colspan="3" class="muted">'+TL.esc(t('aKey'))+'</td></tr>';TL.prog(4,'ok');
-  var items=['c1',es?'c2':null,'c3','c4','c5','c6','c7'].filter(Boolean),vars={c3:{f:num('fon'),d:num('adf'),t:num('adt')},c4:{f:num('foff'),t:num('sdt')}};
-  $('chk').innerHTML=items.map(function(k){var on=!!checks[k];return '<label class="'+(on?'done':'')+'"><input type="checkbox" data-k="'+k+'"'+(on?' checked':'')+'><span>'+TL.esc(t(k,vars[k]))+'</span></label>';}).join('');
-  var done=items.filter(function(k){return checks[k];}).length;TL.prog(5,done===items.length?'ok':(done?'warn':''));TL.prog(6,'');
-  $('summary').value=summary(c,kw,mr,ar,items,done);
-  $('repLine').textContent=t('repLine',{s:$('site').value||'—',d:new Date().toLocaleDateString(TL.lang==='ar'?'ar-EG':'en-GB')});
-  st.save(checks);
-}
-function summary(c,kw,mr,ar,items,done){
-  var L=['*TrueLoop · Booster (LS H100)* '+$('site').value,'Pumps: '+c.n+' (lead 1, assist '+c.op+', standby '+(c.aux-c.op)+')'+(kw?' | '+kw+' kW':''),'Setpoint '+num('sp')+' bar | TX 0–'+$('rng').value+' bar | changeover '+$('co').value,'','*VFD1 master*'];
-  mr.forEach(function(r){if(r[0]!=='§')L.push(r[0]+' = '+r[1]);});
-  L.push('','*VFD2–'+c.n+' assist*');ar.forEach(function(r){L.push(r[0]+' = '+r[1]);});
-  L.push('','Tests: '+done+'/'+items.length,'',URL_APP);return L.join('\n');
-}
-TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'booster',onLang:render});
-var x=st.load();if(x)checks=x;
-F.forEach(function(f){$(f).addEventListener(f==='np'||f==='sbn'||f==='kw'||f==='rng'||f==='es'||f==='co'?'change':'input',render);});
-$('chk').addEventListener('change',function(e){var k=e.target.getAttribute('data-k');if(k){checks[k]=e.target.checked;render();}});
-$('copyBtn').onclick=function(){TL.copy($('summary').value,null,$('summary'));};
-$('linkBtn').onclick=function(){TL.copy(URL_APP,TL.t('linkCopied'));};
-$('printBtn').onclick=function(){window.print();};
-$('resetBtn').onclick=function(){var b=this;if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent=TL.t('resetConfirm');setTimeout(function(){b.dataset.armed='';b.textContent=TL.t('reset');},3000);return;}st.clear();location.reload();};
-$('appLink').textContent=URL_APP;$('verTxt').textContent='v'+VER;
+var VER='2026.11.14.3',URL_APP='https://elsaiedharfoush14.github.io/trueloop/tools/booster/';
+var D={ar:{short:'برمجة البوستر',title:'برمجة البوستر',intro:'اختار ماركة الدرايفات اللي في اللوحة. كل أداة بتطلّعلك الباراميترات والتوصيل واختبار التشغيل والصيانة للماركة دي.',
+ open:'افتح الأداة ←',
+ lsT:'MMC بالأسلاك، من غير PLC ولا اتصال',lsL:'<li>من 2 لـ 4 طلمبات، كل واحدة على درايف.</li><li>الماستر بيشغّل المساعدين بريليهات، والفيدباك بأسلاك.</li><li>رسومات اللوحة كاملة وباراميترات كل درايف.</li><li>طلمبة 1 دايمًا Lead.</li>',
+ abbT:'IPC Multipump على كابل RS-485',abbL:'<li>من 2 لـ 8 طلمبات، كل واحدة على درايف.</li><li>الدرايفات متوصلة ببعض بكابل RS-485 (EFB).</li><li>ترتيب التشغيل، والسليب، وشحن التانك، ومخارج الريليه.</li><li>التبديل بيشمل كل الطلمبات (Autochange).</li>',
+ abT:'البوستر بيعمل إيه؟',abLead:'مجموعة طلمبات بتحافظ على ضغط المية في المبنى ثابت مهما الاستهلاك اتغيّر. طلمبة شغالة على درايف بسرعة متغيرة على حساس ضغط، ولما الاستهلاك يزيد تدخل طلمبات تانية تساعدها، ولما يقل تطلع.',
+ abPartsT:'مكوّناته',abParts:'<li>طلمبات على مجمّع سحب وطرد واحد.</li><li>درايف لكل طلمبة.</li><li>حساس ضغط 4–20 mA على خط الطرد.</li><li>تانك ضغط صغير يقلّل التشغيل والوقوف.</li><li>عوامة أو حساس ضغط سحب للحماية من التشغيل على الناشف.</li>',
+ abRolesT:'كلمات هتقابلها',abRoles:'<li><b>Duty / Lead:</b> الطلمبة اللي بتبدأ وبتظبط الضغط.</li><li><b>Assist:</b> بتدخل لما الاستهلاك يزيد.</li><li><b>Standby:</b> احتياطي لو طلمبة عطلت.</li><li><b>Changeover / Autochange:</b> تبديل الأدوار علشان الساعات تتوزع.</li><li><b>Sleep:</b> الطلمبات تقف لما مفيش سحب، وتصحى لما الضغط ينزل.</li>',
+ cmp:'<tr><td class="tx">الربط بين الدرايفات</td><td>أسلاك وريليهات</td><td>كابل RS-485</td></tr><tr><td class="tx">عدد الطلمبات</td><td>2–4</td><td>2–8</td></tr><tr><td class="tx">تبديل الـ Lead</td><td>لا، طلمبة 1 ثابتة</td><td>أيوه</td></tr><tr><td class="tx">لو الماستر عطل</td><td>تشغيل يدوي HAND</td><td>درايف تاني ياخد الدور</td></tr><tr><td class="tx">في الأداة</td><td>رسومات لوحة + باراميترات</td><td>باراميترات + توصيل الحساس والكابل</td></tr>',
+ cmpNote:'لو هتصمم لوحة جديدة والدرايفات لسه ما اتشترتش، الربط بكابل بيدّي تبديل لكل الطلمبات واحتياطي للماستر.'},
+en:{short:'Booster programming',title:'Booster Programming',intro:'Pick the drive make in the panel. Each tool gives that make\'s parameters, wiring, commissioning tests and maintenance.',
+ open:'Open tool →',
+ lsT:'Hard-wired MMC, no PLC, no comms',lsL:'<li>2 to 4 pumps, one drive each.</li><li>The master starts the assists through relays; feedback by wire.</li><li>Full panel drawings and every drive\'s parameters.</li><li>Pump 1 is always the lead.</li>',
+ abbT:'IPC multipump over RS-485',abbL:'<li>2 to 8 pumps, one drive each.</li><li>Drives linked by an RS-485 cable (EFB).</li><li>Operating sequence, sleep, tank pre-charge and relay outputs.</li><li>Rotation covers every pump (Autochange).</li>',
+ abT:'What does a booster set do?',abLead:'A group of pumps that keeps building water pressure steady whatever the demand. One pump runs on a variable-speed drive against a pressure transmitter; when demand rises, others join to assist, and leave when it falls.',
+ abPartsT:'Parts',abParts:'<li>Pumps on common suction and discharge headers.</li><li>One drive per pump.</li><li>4–20 mA pressure transmitter on the discharge.</li><li>A small pressure tank to reduce start/stop cycles.</li><li>Float or suction pressure switch against dry running.</li>',
+ abRolesT:'Terms you will meet',abRoles:'<li><b>Duty / Lead:</b> the pump that starts and holds pressure.</li><li><b>Assist:</b> joins when demand rises.</li><li><b>Standby:</b> spare if a pump fails.</li><li><b>Changeover / Autochange:</b> roles rotate so hours even out.</li><li><b>Sleep:</b> pumps stop at zero demand and wake when pressure drops.</li>',
+ cmp:'<tr><td class="tx">Link between drives</td><td>Wires and relays</td><td>RS-485 cable</td></tr><tr><td class="tx">Pumps</td><td>2–4</td><td>2–8</td></tr><tr><td class="tx">Lead rotation</td><td>No, pump 1 fixed</td><td>Yes</td></tr><tr><td class="tx">If the master fails</td><td>Manual HAND run</td><td>Another drive takes over</td></tr><tr><td class="tx">In the tool</td><td>Panel drawings + parameters</td><td>Parameters + sensor and cable wiring</td></tr>',
+ cmpNote:'For a new panel where drives are not bought yet, a cable link gives rotation of every pump and a backup master.'}};
+TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'booster',onLang:function(){var q=TL.inApp()?'?app=1':'';TL.$('toLs').href='ls-h100/'+q;TL.$('toAbb').href='../ipc-calculator/'+q;}});
+TL.$('linkBtn').onclick=function(){TL.copy(URL_APP,TL.t('linkCopied'));};
+TL.$('appLink').textContent=URL_APP;TL.$('verTxt').textContent='v'+VER;
 TL.applyLang();
 })();
 </script>

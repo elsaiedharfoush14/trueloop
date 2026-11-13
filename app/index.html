@@ -112,7 +112,7 @@
 <script src="../assets/tl-core.js"></script>
 <script>
 (function(){
-var VER='2026.11.14.2',URL_APP='https://elsaiedharfoush14.github.io/trueloop/app/';
+var VER='2026.11.14.3',URL_APP='https://elsaiedharfoush14.github.io/trueloop/app/';
 var IC={
  cuag:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 4c0 0-8 9-8 15a8 8 0 0 0 16 0c0-6-8-15-8-15z"/><circle cx="13" cy="19" r="2" fill="currentColor"/><circle cx="19" cy="21" r="1.6" fill="currentColor"/></svg>',
  booster:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="13" cy="18" r="8"/><path d="M13 18l5-4M21 18h8M13 10V4h12"/><path d="M9 28h8"/></svg>',
@@ -124,8 +124,9 @@ var IC={
  req:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 8v16M8 16h16"/></svg>'};
 var TOOLS=[
  {id:'cuag',url:'../tools/cuag/',ic:'cuag',c:'c1',cats:['water','comm'],nw:1,off:1,ar:['تشغيل النحاس والفضة','لف المتر على الماسورة، وخد إعدادات الفلوميتر وجهاز Cu/Ag، واحسب الجرعة من اختبار النحاس. وفيها الصيانة.'],en:['Cu/Ag Commissioning','Tape the pipe, get flowmeter and Cu/Ag controller settings, set the dose from the copper test. O&M included.']},
- {id:'booster',url:'../tools/booster/',ic:'booster',c:'c2',cats:['elec','comm','pump'],nw:1,off:1,ar:['البوستر على LS H100','Duty وAssist وStandby وتبديل من غير PLC: رسومات اللوحة، وباراميترات كل درايف، واختبار وصيانة.'],en:['Booster on LS H100','Duty, assist, standby and changeover without a PLC: panel drawings, every drive\'s parameters, tests and O&M.']},
- {id:'ipc',url:'../tools/ipc-calculator/',ic:'booster',c:'c3',cats:['elec','comm','pump'],nw:1,off:1,ar:['IPC Multipump على ABB ACH480','إعدادات IPC لـ 2 لحد 8 طلمبات: ترتيب التشغيل، والسليب، وشحن التانك، ومخارج الريليه.'],en:['IPC Multipump · ABB ACH480','IPC settings for 2 to 8 pumps: operating sequence, sleep, tank pre-charge and relay outputs.']},
+ {id:'booster',url:'../tools/booster/',ic:'booster',c:'c2',cats:['elec','comm','pump'],nw:1,off:1,ar:['برمجة البوستر','اختار ماركة الدرايفات: LS H100 (من غير PLC) أو ABB ACH480 (IPC على RS-485)، وخد الباراميترات والتوصيل والاختبار والصيانة.'],en:['Booster Programming','Pick the drive make: LS H100 (no PLC) or ABB ACH480 (IPC over RS-485), and get parameters, wiring, tests and O&M.']},
+ {id:'booster-ls',sub:1,url:'../tools/booster/ls-h100/',ic:'booster',c:'c2',cats:['elec','pump'],ar:['البوستر · LS H100','MMC بالأسلاك لـ 2–4 طلمبات: رسومات اللوحة وباراميترات كل درايف.'],en:['Booster · LS H100','Hard-wired MMC for 2–4 pumps: panel drawings and drive parameters.']},
+  {id:'ipc',sub:1,url:'../tools/ipc-calculator/',ic:'booster',c:'c3',cats:['elec','comm','pump'],nw:1,off:1,ar:['IPC Multipump على ABB ACH480','إعدادات IPC لـ 2 لحد 8 طلمبات: ترتيب التشغيل، والسليب، وشحن التانك، ومخارج الريليه.'],en:['IPC Multipump · ABB ACH480','IPC settings for 2 to 8 pumps: operating sequence, sleep, tank pre-charge and relay outputs.']},
  {id:'flowmeter',url:'../tools/flowmeter/',ic:'flow',c:'c1',cats:['inst','comm'],nw:1,off:1,ar:['برمجة فلوميتر التراسونيك','من المحيط للمنيوهات بالترتيب: 4–20 mA ونبضات وتردد وريليه، ومراجعة M90 وM91، والأعطال.'],en:['Ultrasonic Flowmeter Setup','From tape to menus in order: 4–20 mA, pulse, frequency and relay, M90/M91 checks and faults.']},
  {id:'parts',url:'../tools/parts/',ic:'parts',c:'c4',cats:['parts'],nw:1,off:1,ar:['دليل قطع الغيار','أرقام القطع للبريكرات والحساسات ووحدات Cu/Ag وكيت الاختبار، ومصدر كل رقم.'],en:['Parts Finder','Part numbers for breakers, transducers, Cu/Ag units and test kits, each with its source.']},
  {id:'loop',url:'../tools/loop-check.html',ic:'loop',c:'c3',cats:['comm','inst'],off:1,ar:['Loop Check و FAT','الصق قائمة الإشارات، واطلع بنماذج فحص الـ loops وقايمة FAT.'],en:['Loop Check & FAT','Paste the I/O list and get loop check sheets and a FAT checklist.']},
@@ -150,10 +151,10 @@ function L(x){return TL.lang==='ar'?x.ar:x.en;}
 function card(x){var l=L(x);return '<a class="tool" href="'+x.url+'?app=1"><span class="ic '+x.c+'">'+IC[x.ic]+'</span><div style="min-width:0"><h3>'+TL.esc(l[0])+'</h3><p>'+TL.esc(l[1])+'</p><div class="meta">'+(x.nw?'<span class="new">'+TL.t('nw')+'</span>':'')+(x.off?'<span class="off">'+TL.t('off')+'</span>':'')+x.cats.map(function(c){return '<span>'+TL.esc(TL.t(c))+'</span>';}).join('')+'</div></div></a>';}
 function render(){
   var h=new Date().getHours();$('greet').textContent=TL.t(h>=5&&h<12?'g1':(h>=12&&h<22?'g2':'g3'));
-  $('stTools').textContent=TL.t('stTools',{n:TOOLS.length});
+  $('stTools').textContent=TL.t('stTools',{n:TOOLS.filter(function(x){return !x.sub;}).length});
   $('chips').innerHTML=CATS.map(function(c){return '<button type="button" data-c="'+c+'" aria-pressed="'+(c===cat)+'">'+TL.esc(TL.t(c))+'</button>';}).join('');
   var q=($('q').value||'').trim().toLowerCase();
-  var list=TOOLS.filter(function(x){if(cat!=='all'&&x.cats.indexOf(cat)<0)return false;if(!q)return true;return (x.ar.join(' ')+' '+x.en.join(' ')+' '+x.id).toLowerCase().indexOf(q)>-1;});
+  var list=TOOLS.filter(function(x){if(x.sub&&!q)return false;if(cat!=='all'&&x.cats.indexOf(cat)<0)return false;if(!q)return true;return (x.ar.join(' ')+' '+x.en.join(' ')+' '+x.id).toLowerCase().indexOf(q)>-1;});
   $('tools').innerHTML=(list.length?list.map(card).join(''):'<div class="empty">'+TL.esc(TL.t('none'))+'</div>')+
     '<a class="tool req" href="https://wa.me/966560861304?text=TrueLoop%20tool%20request" target="_blank" rel="noopener"><span class="ic c4">'+IC.req+'</span><div><h3>'+TL.esc(TL.t('reqT'))+'</h3><p>'+TL.esc(TL.t('reqP'))+'</p></div></a>';
   $('count').textContent=TL.t('count',{n:list.length});

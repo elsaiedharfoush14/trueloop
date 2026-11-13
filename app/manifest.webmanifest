@@ -19,7 +19,7 @@
   ],
   "shortcuts": [
     {"name": "Cu/Ag Commissioning", "url": "../tools/cuag/?app=1", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
-    {"name": "Booster on LS H100", "url": "../tools/booster/?app=1", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
+    {"name": "Booster Programming", "url": "../tools/booster/?app=1", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
     {"name": "Flowmeter Setup", "url": "../tools/flowmeter/?app=1", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]}
   ]
 }
