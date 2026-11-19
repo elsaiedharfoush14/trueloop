@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TrueLoop · Cable Drums & Cut Plan</title>
+<meta name="description" content="Upload a cable schedule and get the cheapest drum order and a cut plan per run, with no splices. Exact optimisation, solved in your browser.">
+<meta name="theme-color" content="#071b2b">
+<link rel="manifest" href="../../app/manifest.webmanifest">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../app/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../assets/tl.css">
+<style>
+.n{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps button{border-radius:99px;padding:5px 12px;font-size:.82rem;border-color:var(--line);color:var(--muted);background:var(--card)}
+.steps button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.steps button.done{color:var(--good);border-color:var(--good-bg)}
+.steps button:disabled{opacity:.5;cursor:not-allowed}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;background:var(--card);display:grid;gap:8px;justify-items:center;cursor:pointer}
+.drop.over{border-color:var(--water);background:var(--soft)}
+textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:var(--f-mono);font-size:.82rem;background:var(--soft);color:var(--ink);direction:ltr}
+.maps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.dt{display:grid;grid-template-columns:1fr 1fr 1fr 30px;gap:8px;align-items:center}
+.dt.h{font-size:.78rem;color:var(--muted)}
+.x{border:0;padding:2px;font-size:1.1rem;color:var(--muted)}
+.lnk{border:0;padding:0;justify-self:start}
+.save{background:var(--navy);color:#fff;border-radius:14px;padding:20px 22px;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:18px;align-items:center}
+.save small{display:block;font-size:.75rem;color:#9fb4c8;margin-bottom:4px}
+.save .v{font-size:1.5rem;font-weight:700;font-family:var(--f-display)}
+.save .v.m{color:#9fb4c8;text-decoration:line-through;text-decoration-thickness:2px}
+.save .big{font-size:2.2rem;font-weight:700;color:var(--aqua);line-height:1.05;font-family:var(--f-display)}
+.save .pv{display:inline-block;margin-top:8px;font-size:.75rem;background:rgba(29,181,122,.2);color:#6fe3b0;padding:3px 9px;border-radius:6px}
+.save .pv.w{background:rgba(255,178,30,.2);color:#ffcb66}
+.split{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+.drums{display:grid;gap:8px}
+.drum{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;font-size:.75rem;white-space:nowrap}
+.track{height:24px;border-radius:6px;display:flex;overflow:hidden;border:1px solid var(--line);
+ background:repeating-linear-gradient(45deg,var(--crit-bg),var(--crit-bg) 5px,var(--soft) 5px,var(--soft) 10px)}
+.track span{background:var(--water);color:#fff;font-size:.65rem;display:flex;align-items:center;justify-content:center;border-inline-end:2px solid var(--card);overflow:hidden}
+.track span:nth-child(3n+2){background:#2c82e6}.track span:nth-child(3n+3){background:var(--aqua);color:#071b2b}
+.track.stock{outline:2px solid var(--leaf);outline-offset:1px}
+.key{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--muted)}
+.key i{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-inline-end:5px}
+.order{display:flex;flex-wrap:wrap;gap:8px}
+.order>span{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:.82rem}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pbar{height:6px;background:var(--soft);border-radius:3px;overflow:hidden}.pbar b{display:block;height:100%;background:var(--water);transition:width .3s}
+td.r,th.r{text-align:end;white-space:nowrap}
+@media (max-width:720px){.two,.split{grid-template-columns:1fr}.maps{grid-template-columns:1fr 1fr}
+ .save{grid-template-columns:1fr 1fr;padding:16px;gap:12px}.save .hl{grid-column:1/-1;order:-1}.save .big{font-size:1.9rem}.save .v{font-size:1.15rem}
+ .hm{display:none}.drum{grid-template-columns:78px 1fr}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <a class="home" id="homeLink" href="../../app/"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop · <span data-t="short"></span></span></a>
+  <span class="offline" id="offBadge" hidden></span>
+  <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
+  <span id="toast" class="toast" role="status"></span>
+</div></div>
+<main class="wrap">
+  <a class="back" id="backLink" href="../../"></a>
+  <header class="top">
+    <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div class="t"><div class="brand"><b><span class="lt">True</span>Loop</b> · Optimise</div>
+      <h1 data-t="title"></h1><p class="muted" data-t="intro"></p></div>
+  </header>
+  <div id="app" style="display:grid;gap:16px"></div>
+  <p class="foot">TrueLoop · Cable Drums · <span id="verTxt"></span> · <span data-t="foot"></span></p>
+</main>
+<script src="../../assets/tl-core.js"></script>
+<script src="engine.js"></script>
+<script src="xlsx-lite.js"></script>
+<script src="sample.js"></script>
+<script>
+(function(){
+'use strict';
+var VER='2026.11.19.1', WA='https://wa.me/966560861304?text=';
+var D={
+ ar:{short:'بكر الكابلات',title:'بكر الكابلات وخطة التقطيع',
+  intro:'ارفع جدول الكابلات، وخد أرخص طلب بكر وخطة تقطيع لكل كابل من غير وصلات، قبل ما تشتري. الحساب بالـ Optimization في الموبايل عندك، ومفيش حاجة بتترفع.',
+  st:['١ الكابلات','٢ البكر والأسعار','٣ النتيجة'],
+  up:'اسحب جدول الكابلات هنا (.xlsx أو .csv)', choose:'اختار ملف', orpaste:'أو الصق من Excel (التاج، المقاس، الطول):', sample:'حمّل بيانات مثال',
+  map:'الأعمدة', ctag:'التاج', csize:'المقاس', clen:'طول المسار (م)', allow:'زيادة لكل طرف (م)', spare:'احتياطي (%)', none:'—',
+  found:function(n,s,k){return n+' كابل، '+s+' مقاسات'+(k?' · '+k+' صف اتشال (ناقص تاج أو مقاس أو طول)':'');},
+  next:'التالي: البكر والأسعار ←', nodata:'لسه مفيش كابلات. ارفع ملف أو الصق صفوف أو حمّل المثال.', runs:'كابلات',
+  dhelp:'أطوال البكر اللي تقدر تشتريها لكل مقاس وسعر المورد. أطوال أكتر = فرصة توفير أكبر.', cur:'العملة',
+  dlen:'طول البكرة (م)', dprice:'السعر / م', dfee:'تمن البكرة', addlen:'+ طول', stock:'بواقي المخزن (اختياري)',
+  stockp:'بكر فاضل منها في المخزن من مشاريع قبل كده. مش بتتحسب بفلوس وبتتستخدم الأول.', sid:'رقم البقية', slen:'الطول (م)', addst:'+ بقية',
+  budget:'أسعار المثال تقديرية (BUDGET) — حط بدلها عرض سعر المورد.', solve:'احسب ←', back2:'→ رجوع',
+  needp:'اكتب طول وسعر لكل مقاس.', toolong:function(s,n,m){return s+': فيه كابل محتاج '+n+' م وأطول بكرة '+m+' م.';},
+  solving:function(k,n,s){return 'بيحسب '+(k+1)+'/'+n+': '+s+'…';},
+  job:function(r,s){return r+' كابل · '+s+' مقاسات';}, man:'يدوي (أمين مخزن شاطر)', opt:'بعد التحسين', sav:'التوفير', waste:'هالك البكر الجديدة',
+  proven:'✓ OPTIMAL — مثبت إنه الأحسن للبكر دي', partial:'أحسن حل في الوقت المحدد (مش مثبت)',
+  size:'المقاس', need:'المطلوب م', mc:'يدوي', oc:'محسّن', gain:'توفير',
+  cut:'خطة التقطيع', cutp:'كل كابل بيتقطع كامل من بكرة واحدة — من غير وصلات. الإطار الأخضر = بقية من المخزن.', used:'كابلات', left:'باقي على البكرة',
+  order:'الطلب', dlo:'نزّل الطلب (CSV)', dlc:'نزّل خطة التقطيع (CSV)', talk:'عايزها على مشروعي (واتساب)', again:'عدّل المدخلات',
+  note:'المطلوب لكل كابل = طول المسار × (١ + الاحتياطي) + ٢ × الزيادة، مقرّب لفوق. الأسعار مدخلات — راجعها على عرض السعر.',
+  foot:'الحساب في المتصفح (HiGHS برخصة MIT)', waTxt:'TrueLoop - Cable drums study for my project'},
+ en:{short:'Cable Drums',title:'Cable Drums & Cut Plan',
+  intro:'Upload your cable schedule. Get the cheapest drum order and a cut plan per run, with no splices, before you buy. Exact optimisation on your device — nothing is uploaded.',
+  st:['1 Cables','2 Drums & prices','3 Result'],
+  up:'Drop your cable schedule here (.xlsx or .csv)', choose:'Choose file', orpaste:'or paste from Excel (tag, size, length):', sample:'Load sample data',
+  map:'Columns', ctag:'Tag', csize:'Cable size', clen:'Route length (m)', allow:'Allowance per end (m)', spare:'Spare (%)', none:'—',
+  found:function(n,s,k){return n+' runs, '+s+' sizes'+(k?' · '+k+' rows skipped (no tag / size / length)':'');},
+  next:'Next: drums & prices →', nodata:'No runs found yet. Upload a file, paste rows or load the sample.', runs:'Runs',
+  dhelp:'Standard drum lengths you can buy for each size, with the supplier price. Several lengths = more room to save.', cur:'Currency',
+  dlen:'Drum length (m)', dprice:'Price / m', dfee:'Drum fee', addlen:'+ length', stock:'Store remnants (optional)',
+  stockp:'Drums left in your store from earlier jobs. They cost nothing new and are used first.', sid:'Remnant ID', slen:'Length (m)', addst:'+ remnant',
+  budget:'Sample prices are BUDGET figures — replace them with your supplier quote.', solve:'Solve →', back2:'← Back',
+  needp:'Fill a length and a price for every size.', toolong:function(s,n,m){return s+': a run needs '+n+' m but the longest drum is '+m+' m.';},
+  solving:function(k,n,s){return 'Solving '+(k+1)+'/'+n+': '+s+'…';},
+  job:function(r,s){return r+' runs · '+s+' sizes';}, man:'Manual (careful storekeeper)', opt:'Optimised', sav:'Saving', waste:'New-drum waste',
+  proven:'✓ OPTIMAL — proven best for these drums', partial:'Best found in the time limit (not proven)',
+  size:'Cable size', need:'Need m', mc:'Manual', oc:'Optimised', gain:'Saving',
+  cut:'Cut plan', cutp:'Each run is cut whole from one drum — no splices. Green frame = store remnant.', used:'Cut runs', left:'Left on drum',
+  order:'Order', dlo:'Download order (CSV)', dlc:'Download cut plan (CSV)', talk:'Use it on my project (WhatsApp)', again:'Edit inputs',
+  note:'Need per run = route length × (1 + spare) + 2 × allowance, rounded up. Prices are inputs — check them against the quote.',
+  foot:'solved in your browser (HiGHS, MIT licence)', waTxt:'TrueLoop - Cable drums study for my project'}};
+
+var S={step:1,rows:[],map:{tag:-1,size:-1,len:-1},header:0,settings:{allowance_m:2,spare_pct:5},currency:'',drums:{},stock:[],result:null,error:'',busy:null,plan:null,sample:false};
+var x=function(){return D[TL.lang]||D.ar;}, esc=function(s){return TL.esc(String(s==null?'':s));};
+var N=function(s){return '<span class="n">'+esc(s)+'</span>';}, f0=function(n){return Math.round(n).toLocaleString('en-US');};
+var num=function(v){var y=typeof v==='number'?v:parseFloat(String(v).replace(/,/g,'').replace(/[^\d.\-]/g,''));return isFinite(y)?y:NaN;};
+var uniq=function(a){return a.filter(function(v,i){return a.indexOf(v)===i;});};
+
+/* ---------- input ---------- */
+function parseText(txt){
+  var lines=txt.replace(/\r/g,'').split('\n').filter(function(l){return l.trim();});
+  if(!lines.length)return [];
+  var d=['\t',';',','].filter(function(c){return lines[0].indexOf(c)>-1;})[0]||',';
+  return lines.map(function(l){var out=[],cur='',q=false;
+    for(var i=0;i<l.length;i++){var ch=l[i];
+      if(q){if(ch==='"'&&l[i+1]==='"'){cur+='"';i++;}else if(ch==='"')q=false;else cur+=ch;}
+      else if(ch==='"')q=true;else if(ch===d){out.push(cur.trim());cur='';}else cur+=ch;}
+    out.push(cur.trim());return out;});
+}
+function detect(rows){
+  var re={len:/length|len\b|route|طول/i,size:/size|type|core|section|cable spec|مقاس|نوع/i,tag:/tag|cable ?(no|id|ref|number)|circuit|رقم|تاج/i};
+  for(var h=0;h<Math.min(rows.length,15);h++){
+    var r=rows[h].map(String),len=r.findIndex(function(v){return re.len.test(v);});
+    if(len<0)continue;
+    var size=r.findIndex(function(v,i){return i!==len&&re.size.test(v);});
+    var tag=r.findIndex(function(v,i){return i!==len&&i!==size&&re.tag.test(v);});
+    return {header:h+1,map:{tag:tag,size:size,len:len}};
+  }
+  return {header:0,map:{tag:0,size:1,len:2}};
+}
+function setRows(rows){var d=detect(rows);S.rows=rows;S.header=d.header;S.map=d.map;S.result=null;S.sample=false;S.error='';syncDrums();render();}
+function runs(){
+  var out=[],skipped=0;
+  S.rows.slice(S.header).forEach(function(r){
+    var tag=String(r[S.map.tag]==null?'':r[S.map.tag]).trim(),size=String(r[S.map.size]==null?'':r[S.map.size]).trim(),raw=r[S.map.len],len=num(raw);
+    if(!tag&&!size&&!String(raw==null?'':raw).trim())return;
+    if(!tag||!size||!(len>0)){skipped++;return;}
+    out.push({tag:tag,size:size,length_m:len});
+  });
+  return {list:out,skipped:skipped};
+}
+function syncDrums(){uniq(runs().list.map(function(r){return r.size;})).forEach(function(s){
+  if(!S.drums[s])S.drums[s]=[{length_m:500,price_per_m:'',drum_fee:''},{length_m:1000,price_per_m:'',drum_fee:''}];});}
+function loadSample(){
+  var c=SAMPLE;S.rows=[['Tag','Cable size','Route length (m)']].concat(c.runs.map(function(r){return [r.tag,r.size,r.length_m];}));
+  S.header=1;S.map={tag:0,size:1,len:2};S.settings={allowance_m:c.allowance_m,spare_pct:c.spare_pct};S.currency=c.currency||'';
+  S.drums=JSON.parse(JSON.stringify(c.drums));S.stock=JSON.parse(JSON.stringify(c.stock||[]));S.result=null;S.sample=true;S.error='';render();
+}
+function onFile(file){
+  (/\.xlsx$/i.test(file.name)?file.arrayBuffer().then(readXlsx):file.text().then(parseText))
+    .then(setRows).catch(function(e){S.error='File: '+e.message;render();});
+}
+
+/* ---------- solver (Web Worker) ---------- */
+var worker=null,jobId=0,pending={};
+function solveLP(lp){
+  if(!worker){worker=new Worker('worker.js');worker.onmessage=function(e){var p=pending[e.data.id];delete pending[e.data.id];if(e.data.error)p.reject(new Error(e.data.error));else p.resolve(e.data);};}
+  var id=++jobId;
+  return new Promise(function(res,rej){pending[id]={resolve:res,reject:rej};worker.postMessage({id:id,lp:lp,timeLimit:20});});
+}
+function model(){
+  var rs=runs().list,drums={};
+  uniq(rs.map(function(r){return r.size;})).forEach(function(s){
+    drums[s]=(S.drums[s]||[]).filter(function(d){return num(d.length_m)>0&&num(d.price_per_m)>0;})
+      .map(function(d){return {length_m:num(d.length_m),price_per_m:num(d.price_per_m),drum_fee:num(d.drum_fee)||0};});});
+  var stock=S.stock.filter(function(s){return s.size&&num(s.length_m)>0;}).map(function(s,i){return {id:s.id||('R'+(i+1)),size:s.size,length_m:num(s.length_m)};});
+  return {runs:rs,drums:drums,stock:stock,allowance_m:num(S.settings.allowance_m)||0,spare_pct:num(S.settings.spare_pct)||0};
+}
+function check(m){
+  for(var s in m.drums){
+    if(!m.drums[s].length)return x().needp;
+    var longest=Math.max.apply(null,m.drums[s].map(function(d){return d.length_m;}));
+    var worst=Math.max.apply(null,m.runs.filter(function(r){return r.size===s;}).map(function(r){return Engine.need(r,m);}));
+    if(worst>longest)return x().toolong(s,worst,longest);
+  }
+  return '';
+}
+function solve(){
+  var m=model();S.error=check(m);if(S.error)return render();
+  S.busy={k:0,n:Object.keys(m.drums).length,s:''};render();
+  Engine.solve(m,solveLP,function(k,n,s){S.busy={k:k,n:n,s:s};render();}).then(function(r){
+    S.result=r;S.plan=r.sizes.slice().sort(function(a,b){return (b.manual.cost-b.opt.cost)-(a.manual.cost-a.opt.cost);})[0].size;S.step=3;
+  }).catch(function(e){S.error=e.message;}).then(function(){S.busy=null;render();});
+}
+
+/* ---------- downloads ---------- */
+function download(name,rows){
+  var csv='﻿'+rows.map(function(r){return r.map(function(v){v=String(v);return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',');}).join('\r\n');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=name;a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+}
+function dlOrder(){download('drum_order.csv',[['size','drum','qty']].concat(Object.keys(S.result.order).map(function(k){return k.split('|').concat(S.result.order[k]);})));}
+function dlCuts(){var rows=[['size','drum','source','drum_id','drum_m','run_tag','route_m','cut_m','left_on_drum_m']];
+  S.result.sizes.forEach(function(s){s.plan.forEach(function(b){b.cuts.forEach(function(c){rows.push([s.size,'#'+b.n,b.kind,b.id,b.cap,c.tag,c.route,c.cut,c.left]);});});});
+  download('cut_plan.csv',rows);}
+
+/* ---------- views ---------- */
+function steps(){
+  var ok1=runs().list.length>0,ok3=!!S.result;
+  return '<div class="steps">'+x().st.map(function(s,i){var n=i+1,can=n===1||(n===2&&ok1)||(n===3&&ok3);
+    return '<button type="button" data-step="'+n+'" class="'+(S.step===n?'on':(n<S.step||(n===3&&ok3))?'done':'')+'"'+(can?'':' disabled')+'>'+s+(n<S.step?' ✓':'')+'</button>';}).join('')+'</div>';
+}
+function step1(){
+  var t=x(),r=runs(),hdr=S.rows[S.header-1]||S.rows[0]||[];
+  var cols=hdr.map(function(h,i){return S.header?(String(h)||'#'+(i+1)):'#'+(i+1);});
+  var sel=function(k){return '<select data-map="'+k+'"><option value="-1">'+t.none+'</option>'+cols.map(function(c,i){return '<option value="'+i+'"'+(S.map[k]===i?' selected':'')+'>'+esc(c)+'</option>';}).join('')+'</select>';};
+  var sizes={};r.list.forEach(function(z){sizes[z.size]=(sizes[z.size]||0)+1;});
+  var table=Object.keys(sizes).map(function(s){var m=r.list.filter(function(z){return z.size===s;}).reduce(function(a,z){return a+z.length_m;},0);
+    return '<tr><td>'+esc(s)+'</td><td class="r">'+N(sizes[s])+'</td><td class="r">'+N(f0(m))+'</td></tr>';}).join('');
+  return '<div class="two"><div style="display:grid;gap:10px">'+
+    '<label class="drop" id="drop"><b>'+t.up+'</b><span class="tag">'+t.choose+'</span><input id="file" type="file" accept=".xlsx,.csv,.txt,.tsv" hidden></label>'+
+    '<span class="muted">'+t.orpaste+'</span><textarea id="paste" placeholder="PC-M-01&#9;4Cx4 Cu XLPE/SWA&#9;85"></textarea>'+
+    '<div class="row"><button type="button" data-act="sample">'+t.sample+'</button></div></div>'+
+    '<section class="card">'+(S.rows.length?'<h2>'+t.map+'</h2><div class="maps">'+
+      '<label>'+t.ctag+sel('tag')+'</label><label>'+t.csize+sel('size')+'</label><label>'+t.clen+sel('len')+'</label>'+
+      '<label>'+t.allow+'<input type="number" min="0" step="0.5" data-set="allowance_m" value="'+esc(S.settings.allowance_m)+'"></label>'+
+      '<label>'+t.spare+'<input type="number" min="0" step="1" data-set="spare_pct" value="'+esc(S.settings.spare_pct)+'"></label></div>'+
+      '<b>'+t.found(N(r.list.length),N(Object.keys(sizes).length),r.skipped)+'</b>'+
+      '<div class="tbl"><table><tr><th>'+t.csize+'</th><th class="r">'+t.runs+'</th><th class="r">m</th></tr>'+table+'</table></div>'
+      :'<p class="muted">'+t.nodata+'</p>')+'</section></div>'+
+    '<div class="row"><button type="button" class="pri" data-step="2"'+(r.list.length?'':' disabled')+'>'+t.next+'</button></div>';
+}
+function step2(){
+  var t=x(),sizes=uniq(runs().list.map(function(r){return r.size;})),b=S.busy;
+  var cards=sizes.map(function(s){return '<section class="card"><h3>'+esc(s)+'</h3><div class="dt h"><span>'+t.dlen+'</span><span>'+t.dprice+'</span><span>'+t.dfee+'</span><span></span></div>'+
+    (S.drums[s]||[]).map(function(d,i){var k=esc(s)+'|'+i;return '<div class="dt"><input type="number" min="1" aria-label="'+t.dlen+'" data-drum="'+k+'|length_m" value="'+esc(d.length_m)+'">'+
+      '<input type="number" min="0" step="0.01" aria-label="'+t.dprice+'" data-drum="'+k+'|price_per_m" value="'+esc(d.price_per_m)+'">'+
+      '<input type="number" min="0" step="1" aria-label="'+t.dfee+'" data-drum="'+k+'|drum_fee" value="'+esc(d.drum_fee)+'">'+
+      '<button type="button" class="x" aria-label="remove" data-rmdrum="'+k+'">×</button></div>';}).join('')+
+    '<button type="button" class="lnk" data-adddrum="'+esc(s)+'">'+t.addlen+'</button></section>';}).join('');
+  var st='<section class="card"><h3>'+t.stock+'</h3><p class="muted">'+t.stockp+'</p>'+
+    S.stock.map(function(r,i){return '<div class="dt"><select data-stock="'+i+'|size">'+sizes.map(function(s){return '<option'+(r.size===s?' selected':'')+'>'+esc(s)+'</option>';}).join('')+'</select>'+
+      '<input type="text" placeholder="'+t.sid+'" data-stock="'+i+'|id" value="'+esc(r.id)+'"><input type="number" min="1" placeholder="'+t.slen+'" data-stock="'+i+'|length_m" value="'+esc(r.length_m)+'">'+
+      '<button type="button" class="x" aria-label="remove" data-rmstock="'+i+'">×</button></div>';}).join('')+
+    '<button type="button" class="lnk" data-act="addstock">'+t.addst+'</button></section>';
+  return '<p class="muted">'+t.dhelp+'</p><label style="max-width:180px">'+t.cur+'<input type="text" maxlength="6" placeholder="SAR / EGP" data-cur="1" value="'+esc(S.currency)+'"></label>'+
+    (S.sample?'<div class="msg warn">'+t.budget+'</div>':'')+
+    '<div class="two"><div style="display:grid;gap:12px">'+cards+'</div><div>'+st+'</div></div>'+
+    '<div class="row"><button type="button" data-step="1">'+t.back2+'</button><button type="button" class="pri" data-act="solve"'+(b?' disabled':'')+'>'+t.solve+'</button>'+
+    (b?'<span class="muted">'+t.solving(b.k,b.n,esc(b.s))+'</span>':'')+'</div>'+(b?'<div class="pbar"><b style="width:'+(b.k/b.n*100)+'%"></b></div>':'');
+}
+function step3(){
+  var t=x(),R=S.result,tot=R.total,save=tot.manual-tot.opt,cur=S.currency?' '+S.currency:'';
+  var proven=R.sizes.every(function(s){return s.status==='OPTIMAL';});
+  var rows=R.sizes.map(function(s){var g=s.manual.cost?(s.manual.cost-s.opt.cost)/s.manual.cost*100:0;
+    return '<tr><td class="tx">'+esc(s.size)+'</td><td class="r">'+N(s.runs)+'</td><td class="r hm">'+N(f0(s.need))+'</td><td class="r hm">'+N(f0(s.manual.cost))+'</td>'+
+      '<td class="r">'+N(f0(s.opt.cost))+'</td><td class="r"'+(g>0?' style="color:var(--good);font-weight:600"':'')+'>'+N(g.toFixed(1)+' %')+'</td></tr>';}).join('');
+  var P=R.sizes.filter(function(s){return s.size===S.plan;})[0]||R.sizes[0],maxCap=Math.max.apply(null,P.plan.map(function(b){return b.cap;}));
+  var tracks=P.plan.map(function(b){return '<div class="drum"><span class="n">#'+b.n+' · '+(b.kind==='stock'?esc(b.id):b.cap+' m')+'</span>'+
+    '<div class="track'+(b.kind==='stock'?' stock':'')+'" style="width:'+(b.cap/maxCap*100)+'%">'+b.cuts.map(function(c){
+      return '<span style="width:'+(c.cut/b.cap*100)+'%" title="'+esc(c.tag)+' · '+c.cut+' m">'+esc(c.tag)+' · '+c.cut+'</span>';}).join('')+'</div></div>';}).join('');
+  var order=Object.keys(R.order).map(function(k){var p=k.split('|');return '<span>'+esc(p[0])+': '+N(R.order[k]+' × '+p[1])+'</span>';}).join('');
+  var pct=tot.manual?(save/tot.manual*100).toFixed(1):'0';
+  return '<p class="muted">'+t.job(N(runs().list.length),N(R.sizes.length))+'</p>'+
+    '<div class="save"><div><small>'+t.man+'</small><div class="v m">'+N(f0(tot.manual)+cur)+'</div><small style="margin-top:8px">'+t.waste+': '+N(f0(tot.wasteManual)+' m')+'</small></div>'+
+    '<div><small>'+t.opt+'</small><div class="v">'+N(f0(tot.opt)+cur)+'</div><small style="margin-top:8px">'+t.waste+': '+N(f0(tot.wasteOpt)+' m')+'</small></div>'+
+    '<div class="hl"><small>'+t.sav+'</small><div class="big">'+N(f0(save)+cur+' ('+pct+' %)')+'</div><span class="pv'+(proven?'':' w')+'">'+(proven?t.proven:t.partial)+'</span></div></div>'+
+    '<div class="split"><section class="card"><div class="tbl"><table><tr><th>'+t.size+'</th><th class="r">'+t.runs+'</th><th class="r hm">'+t.need+'</th><th class="r hm">'+t.mc+'</th><th class="r">'+t.oc+'</th><th class="r">'+t.gain+'</th></tr>'+rows+'</table></div></section>'+
+    '<section class="card"><div class="row"><h3>'+t.cut+'</h3><select data-act="plan" style="width:auto;max-width:100%">'+R.sizes.map(function(s){return '<option'+(s.size===P.size?' selected':'')+'>'+esc(s.size)+'</option>';}).join('')+'</select></div>'+
+      '<p class="muted">'+t.cutp+'</p><div class="drums">'+tracks+'</div>'+
+      '<div class="key"><span><i style="background:var(--water)"></i>'+t.used+'</span><span><i style="background:var(--crit-bg)"></i>'+t.left+'</span></div></section></div>'+
+    '<section class="card"><h3>'+t.order+'</h3><div class="order">'+order+'</div><p class="muted">'+t.note+'</p></section>'+
+    '<div class="row"><button type="button" class="pri" data-act="dlo">'+t.dlo+'</button><button type="button" data-act="dlc">'+t.dlc+'</button>'+
+    '<a class="back" href="'+WA+encodeURIComponent(t.waTxt+' - '+f0(save)+cur)+'" target="_blank" rel="noopener">'+t.talk+'</a>'+
+    '<button type="button" class="lnk" data-step="2">'+t.again+'</button></div>';
+}
+function render(){
+  var app=TL.$('app'),ae=document.activeElement,fk=ae&&ae.dataset&&Object.keys(ae.dataset)[0],fv=fk&&ae.dataset[fk];
+  app.innerHTML=steps()+(S.step===1?step1():S.step===2?step2():step3())+(S.error?'<div class="msg bad">'+esc(S.error)+'</div>':'');
+  if(fk){var el=app.querySelector('[data-'+fk+'="'+CSS.escape(fv)+'"]');if(el&&el.focus)el.focus();}
+}
+
+/* ---------- events ---------- */
+var app=TL.$('app');
+app.addEventListener('click',function(e){
+  var el=e.target.closest('[data-step],[data-act],[data-adddrum],[data-rmdrum],[data-rmstock]');
+  if(!el||el.disabled||el.tagName==='SELECT')return;var d=el.dataset;
+  if(d.step){S.step=+d.step;S.error='';render();}
+  else if(d.act==='sample')loadSample();
+  else if(d.act==='solve')solve();
+  else if(d.act==='addstock'){S.stock.push({size:uniq(runs().list.map(function(r){return r.size;}))[0]||'',id:'',length_m:''});render();}
+  else if(d.act==='dlo')dlOrder();
+  else if(d.act==='dlc')dlCuts();
+  else if(d.adddrum){S.drums[d.adddrum].push({length_m:'',price_per_m:'',drum_fee:''});render();}
+  else if(d.rmdrum){var p=d.rmdrum.split('|');S.drums[p[0]].splice(+p[1],1);render();}
+  else if(d.rmstock){S.stock.splice(+d.rmstock,1);render();}
+});
+app.addEventListener('change',function(e){var d=e.target.dataset;
+  if(e.target.id==='file'&&e.target.files[0])onFile(e.target.files[0]);
+  else if(d.map){S.map[d.map]=+e.target.value;syncDrums();render();}
+  else if(d.act==='plan'){S.plan=e.target.value;render();}
+  else if(d.stock){var q=d.stock.split('|');S.stock[+q[0]][q[1]]=e.target.value;S.result=null;}
+});
+app.addEventListener('input',function(e){var d=e.target.dataset;
+  if(e.target.id==='paste'){var v=e.target.value;if(v.trim()){setRows(parseText(v));var p=TL.$('paste');if(p){p.value=v;p.focus();}}}
+  else if(d.cur)S.currency=e.target.value.trim();
+  else if(d.set){S.settings[d.set]=e.target.value;S.result=null;}
+  else if(d.drum){var q=d.drum.split('|');S.drums[q[0]][+q[1]][q[2]]=e.target.value;S.result=null;if(q[2]==='price_per_m')S.sample=false;}
+  else if(d.stock&&e.target.tagName!=='SELECT'){var q2=d.stock.split('|');S.stock[+q2[0]][q2[1]]=e.target.value;S.result=null;}
+});
+app.addEventListener('dragover',function(e){var z=e.target.closest('#drop');if(z){e.preventDefault();z.classList.add('over');}});
+app.addEventListener('dragleave',function(e){var z=e.target.closest('#drop');if(z)z.classList.remove('over');});
+app.addEventListener('drop',function(e){var z=e.target.closest('#drop');if(z){e.preventDefault();if(e.dataTransfer.files[0])onFile(e.dataTransfer.files[0]);}});
+
+TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'cable-drums',onLang:render});
+TL.$('verTxt').textContent='v'+VER;
+TL.applyLang();
+render();
+})();
+</script>
+</body>
+</html>

@@ -10,6 +10,10 @@ Live: https://elsaiedharfoush14.github.io/trueloop/ — GitHub Pages from `main`
 - `assets/tl.css`, `assets/tl-core.js` — shared design system + runtime (`TL.init`, i18n `data-t`/`data-html`, `TL.rows`, `TL.msg`, `TL.store`, `TL.pipe` sizing, auto-update from `app/version.json`, `?app=1` back-to-app).
 - `tools/booster/` chooser → `tools/booster/ls-h100/` (LS H100 MMC, parametric drawings) and `tools/ipc-calculator/` (ABB ACH480 IPC, made in another session),
 - `tools/instruments/` (pressure, temperature/Pt100, mag flow, turbidity, chlorine, DO, pH: steps, loop check pass/fail, S7 scaling, new-instrument request), `tools/chw/` (closed loop = rules of `claude-kit/skills/chw-treatment-calc`, plus tower and no-sensor modes), `tools/flowmeter/` (TUF menus), `tools/parts/` (part numbers with manual source), `tools/cuag/` (Cu/Ag, self-contained with its own `sw.js` + `version.json`), older single-file tools `tools/*.html`.
+- `tools/cable-drums/` (Optimise): cable schedule -> drum order + cut plan, exact solver in the browser (`engine.js` = claude-kit
+  `design-optimizer/tools/cable_drums.py`, HiGHS WebAssembly in `vendor/`, own `.xlsx` reader). Tests before release:
+  `node tools/cable-drums/test/engine.test.js` and `node tools/cable-drums/test/e2e.js` (both ALL OK). Spec `docs/specs/2026-11-19-cable-drums.md`.
+- Every tool he builds is listed in claude-kit `skills/hub/REGISTRY.md` (one registry); new engineer tools go here as `tools/<id>/`.
 - `assets/tl-cloud.js` — TrueLoop Field cloud phase 1 (BETA, `?beta=1`): Google sign-in, projects → sites → runs, offline sync on Firebase `trueloop-field`. Spec `docs/specs/2026-11-14-field-cloud-phase1.md`, rules `docs/firestore.rules`.
 - Tool UI language: Egyptian Arabic (field staff) + English toggle; site cards: formal Arabic.
 

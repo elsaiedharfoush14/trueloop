@@ -114,7 +114,7 @@
 <script src="../assets/tl-core.js"></script>
 <script>
 (function(){
-var VER='2026.11.14.6',URL_APP='https://elsaiedharfoush14.github.io/trueloop/app/';
+var VER='2026.11.19.1',URL_APP='https://elsaiedharfoush14.github.io/trueloop/app/';
 var IC={
  cuag:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 4c0 0-8 9-8 15a8 8 0 0 0 16 0c0-6-8-15-8-15z"/><circle cx="13" cy="19" r="2" fill="currentColor"/><circle cx="19" cy="21" r="1.6" fill="currentColor"/></svg>',
  booster:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="13" cy="18" r="8"/><path d="M13 18l5-4M21 18h8M13 10V4h12"/><path d="M9 28h8"/></svg>',
@@ -125,6 +125,7 @@ var IC={
  cal:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="16" cy="17" r="11"/><path d="M16 17l6-6M9 21h0M23 21h0M16 8v2"/><circle cx="16" cy="17" r="1.5" fill="currentColor"/></svg>',
  inst:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="16" cy="14" r="10"/><path d="M16 14l5-5M10 14h1M21 14h1M16 8v1"/><path d="M12 28h8M16 24v4"/></svg>',
  chw:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h16l-2 8H10z"/><path d="M10 14c0 6 2 12 6 12s6-6 6-12"/><path d="M13 19h6"/></svg>',
+ drum:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="4"/><path d="M16 4v8M16 20v8M4 16h8M20 16h8"/></svg>',
  req:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 8v16M8 16h16"/></svg>'};
 var TOOLS=[
  {id:'cuag',url:'../tools/cuag/',ic:'cuag',c:'c1',cats:['water','comm'],nw:1,off:1,ar:['تشغيل النحاس والفضة','لف المتر على الماسورة، وخد إعدادات الفلوميتر وجهاز Cu/Ag، واحسب الجرعة من اختبار النحاس. وفيها الصيانة.'],en:['Cu/Ag Commissioning','Tape the pipe, get flowmeter and Cu/Ag controller settings, set the dose from the copper test. O&M included.']},
@@ -134,21 +135,22 @@ var TOOLS=[
  {id:'instruments',url:'../tools/instruments/',ic:'inst',c:'c4',cats:['inst','comm'],nw:1,off:1,ar:['تشغيل أجهزة القياس','ضغط وحرارة وفلو مغناطيسي وعكارة وكلور وأكسجين و pH: الخطوات، وloop check بالنجاح والرسوب، وتحويل الـ PLC، وأجهزة EMEC MAX5.'],en:['Instrumentation Commissioning','Pressure, temperature, mag flow, turbidity, chlorine, DO and pH: steps, loop check with pass/fail, PLC scaling, EMEC MAX5 analysers.']},
  {id:'chw',url:'../tools/chw/',ic:'chw',c:'c1',cats:['water','comm'],nw:1,off:1,ar:['معالجة مياه التشيلر والكولينج تاور','دايرة مقفولة أو برج، بسنسورات أو تايمرات: الإعدادات والشحنة والجرعات والتصريف والإنذارات.'],en:['CHW & Cooling Tower Treatment','Closed loop or tower, sensors or timers: settings, charge, dosing, blowdown and alarms.']},
  {id:'flowmeter',url:'../tools/flowmeter/',ic:'flow',c:'c1',cats:['inst','comm'],nw:1,off:1,ar:['برمجة فلوميتر التراسونيك','من المحيط للمنيوهات بالترتيب: 4–20 mA ونبضات وتردد وريليه، ومراجعة M90 وM91، والأعطال.'],en:['Ultrasonic Flowmeter Setup','From tape to menus in order: 4–20 mA, pulse, frequency and relay, M90/M91 checks and faults.']},
+ {id:'cable-drums',url:'../tools/cable-drums/',ic:'drum',c:'c3',cats:['elec','design'],nw:1,off:1,ar:['بكر الكابلات وخطة التقطيع','ارفع جدول الكابلات، وخد أرخص طلب بكر وخطة تقطيع لكل كابل من غير وصلات، والبواقي اللي في المخزن الأول.'],en:['Cable Drums & Cut Plan','Upload the cable schedule and get the cheapest drum order and a cut plan per run, no splices, store remnants first.']},
  {id:'parts',url:'../tools/parts/',ic:'parts',c:'c4',cats:['parts'],nw:1,off:1,ar:['دليل قطع الغيار','أرقام القطع للبريكرات والحساسات ووحدات Cu/Ag وكيت الاختبار، ومصدر كل رقم.'],en:['Parts Finder','Part numbers for breakers, transducers, Cu/Ag units and test kits, each with its source.']},
  {id:'loop',url:'../tools/loop-check.html',ic:'loop',c:'c3',cats:['comm','inst'],off:1,ar:['Loop Check و FAT','الصق قائمة الإشارات، واطلع بنماذج فحص الـ loops وقايمة FAT.'],en:['Loop Check & FAT','Paste the I/O list and get loop check sheets and a FAT checklist.']},
  {id:'ro',url:'../tools/ro-normalization.html',ic:'ro',c:'c2',cats:['water'],off:1,ar:['RO Normalization','حالة الأغشية الحقيقية بعد تصحيح الحرارة والضغط والملوحة، وإمتى الغسيل الكيميائي.'],en:['RO Normalization','True membrane condition after temperature, pressure and salinity correction; when CIP is due.']},
  {id:'cal',url:'../tools/calibration-certificate.html',ic:'cal',c:'c3',cats:['inst'],off:1,ar:['شهادة معايرة','دخّل القراءات، وخد شهادة جاهزة بحساب الخطأ والنتيجة.'],en:['Calibration Certificate','Enter readings and get a ready certificate with error and pass/fail.']}
 ];
-var CATS=['all','comm','water','pump','elec','inst','parts'];
+var CATS=['all','comm','water','pump','elec','inst','design','parts'];
 var D={ar:{field:'Field',lead:'أدوات التشغيل والتظبيط في الموقع، في تطبيق واحد. بتشتغل من غير نت، وبالعربي والإنجليزي.',ph:'ابحث عن أداة: فلوميتر، بوستر، نحاس…',
   stTools:'{n} أدوات',stOff:'بتشتغل من غير نت',stLang:'عربي · English',recent:'آخر حاجة فتحتها',toolsH:'الأدوات',count:'{n} أداة',none:'مفيش أداة بالاسم ده.',
-  all:'الكل',comm:'تشغيل',water:'معالجة مياه',pump:'طلمبات',elec:'كهرباء',inst:'أجهزة قياس',parts:'قطع غيار',
+  all:'الكل',comm:'تشغيل',water:'معالجة مياه',pump:'طلمبات',elec:'كهرباء',inst:'أجهزة قياس',design:'تصميم ومشتريات',parts:'قطع غيار',
   nw:'جديد',off:'أوفلاين',open:'افتح',reqT:'محتاج أداة تانية؟',reqP:'قولنا الجهاز أو الحسبة اللي بتعملها في الموقع، ونعملهالك.',
   install:'تسطيب التطبيق',shareT2:'سطّب TrueLoop على موبايلك',shareP2:'امسح الباركود أو ابعت اللينك لزمايلك. التطبيق بيتسطّب زي أي أبلكيشن ويشتغل من غير نت.',site:'موقع الشركة',
   g1:'صباح الخير يا باشمهندس',g2:'مساء الخير يا باشمهندس',g3:'شغل الليل يا باشمهندس؟'},
  en:{field:'Field',lead:'Site commissioning and set-up tools in one app. Works offline, in Arabic and English.',ph:'Search tools: flowmeter, booster, copper…',
   stTools:'{n} tools',stOff:'Works offline',stLang:'English · عربي',recent:'Recently opened',toolsH:'Tools',count:'{n} tools',none:'No tool by that name.',
-  all:'All',comm:'Commissioning',water:'Water treatment',pump:'Pumps',elec:'Electrical',inst:'Instruments',parts:'Parts',
+  all:'All',comm:'Commissioning',water:'Water treatment',pump:'Pumps',elec:'Electrical',inst:'Instruments',design:'Design & buying',parts:'Parts',
   nw:'New',off:'Offline',open:'Open',reqT:'Need another tool?',reqP:'Tell us the device or the calculation you do on site, and we will build it.',
   install:'Install app',shareT2:'Install TrueLoop on your phone',shareP2:'Scan the code or send the link to your team. It installs like any app and works offline.',site:'Company site',
   g1:'Good morning, engineer',g2:'Good evening, engineer',g3:'Night shift, engineer?'}};

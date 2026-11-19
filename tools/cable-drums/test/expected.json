@@ -1,0 +1,43 @@
+{
+ "source": "claude-kit skills/design-optimizer/tools/cable_drums.py on examples/cable_drums_case.json (2026-11-19)",
+ "sizes": {
+  "12Cx1.5 Cu PVC/SWA": {
+   "runs": 18,
+   "need": 1566,
+   "manual": 34900,
+   "opt": 34900
+  },
+  "2Px1.0 Instr. OS": {
+   "runs": 26,
+   "need": 3133,
+   "manual": 32050,
+   "opt": 32050
+  },
+  "4Cx16 Cu XLPE/SWA": {
+   "runs": 8,
+   "need": 834,
+   "manual": 58250,
+   "opt": 58250
+  },
+  "4Cx35 Cu XLPE/SWA": {
+   "runs": 4,
+   "need": 753,
+   "manual": 121250,
+   "opt": 121250
+  },
+  "4Cx4 Cu XLPE/SWA": {
+   "runs": 22,
+   "need": 1569,
+   "manual": 30400,
+   "opt": 30400
+  },
+  "4Cx95 Al XLPE/SWA (field feeders)": {
+   "runs": 14,
+   "need": 4787,
+   "manual": 410700,
+   "opt": 393650
+  }
+ },
+ "total_opt": 670500,
+ "total_manual": 687550
+}
