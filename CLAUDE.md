@@ -11,7 +11,7 @@ Live: https://elsaiedharfoush14.github.io/trueloop/ — GitHub Pages from `main`
 - `tools/booster/` chooser → `tools/booster/ls-h100/` (LS H100 MMC, parametric drawings) and `tools/ipc-calculator/` (ABB ACH480 IPC, made in another session),
 - `tools/instruments/` (pressure, temperature/Pt100, mag flow, turbidity, chlorine, DO, pH: steps, loop check pass/fail, S7 scaling, new-instrument request), `tools/chw/` (closed loop = rules of `claude-kit/skills/chw-treatment-calc`, plus tower and no-sensor modes), `tools/flowmeter/` (TUF menus), `tools/parts/` (part numbers with manual source), `tools/cuag/` (Cu/Ag, self-contained with its own `sw.js` + `version.json`), older single-file tools `tools/*.html`.
 - `tools/cable-drums/` (Optimise): cable schedule -> drum order + cut plan, exact solver in the browser (`engine.js` = claude-kit
-  `design-optimizer/tools/cable_drums.py`, HiGHS WebAssembly in `vendor/`, own `.xlsx` reader). Tests before release:
+  `design-optimizer/tools/cable_drums.py`, shared HiGHS + `.xlsx` reader in `assets/`). Tests before release:
   `node tools/cable-drums/test/engine.test.js` and `node tools/cable-drums/test/e2e.js` (both ALL OK). Spec `docs/specs/2026-11-19-cable-drums.md`.
 - `tools/io-cards/` (Optimise): I/O list -> cheapest PLC card mix (spare per type, duty/standby on different cards, max modules)
   + channel list; `tools/blend/` (Optimise): product water blend + lime/CO2 remineralisation at lowest cost with a safety margin
