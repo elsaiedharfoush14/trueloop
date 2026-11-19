@@ -53,12 +53,14 @@ td.r,th.r{text-align:end;white-space:nowrap}
 @media (max-width:720px){.two,.split{grid-template-columns:1fr}.maps{grid-template-columns:1fr 1fr}
  .save{grid-template-columns:1fr 1fr;padding:16px;gap:12px}.save .hl{grid-column:1/-1;order:-1}.save .big{font-size:1.9rem}.save .v{font-size:1.15rem}
  .hm{display:none}.drum{grid-template-columns:78px 1fr}}
+@media print{.card{break-inside:auto}.save,.kpi,.mod,.drum,tr{break-inside:avoid}.x,.lnk,.drop,textarea,.tag{display:none!important}.rep{margin-bottom:8px}}
 </style>
 </head>
 <body>
 <div class="bar"><div class="bar-in">
   <a class="home" id="homeLink" href="../../app/"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop · <span data-t="short"></span></span></a>
   <span class="offline" id="offBadge" hidden></span>
+  <button class="tb" id="printBtn" type="button" data-t="print"></button>
   <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
   <span id="toast" class="toast" role="status"></span>
 </div></div>
@@ -79,7 +81,7 @@ td.r,th.r{text-align:end;white-space:nowrap}
 <script>
 (function(){
 'use strict';
-var VER='2026.11.19.1', WA='https://wa.me/966560861304?text=';
+var VER='2026.11.19.2', WA='https://wa.me/966560861304?text=';
 var D={
  ar:{short:'بكر الكابلات',title:'بكر الكابلات وخطة التقطيع',
   intro:'ارفع جدول الكابلات، وخد أرخص طلب بكر وخطة تقطيع لكل كابل من غير وصلات، قبل ما تشتري. الحساب بالـ Optimization في الموبايل عندك، ومفيش حاجة بتترفع.',
@@ -100,7 +102,9 @@ var D={
   cut:'خطة التقطيع', cutp:'كل كابل بيتقطع كامل من بكرة واحدة — من غير وصلات. الإطار الأخضر = بقية من المخزن.', used:'كابلات', left:'باقي على البكرة',
   order:'الطلب', dlo:'نزّل الطلب (CSV)', dlc:'نزّل خطة التقطيع (CSV)', talk:'عايزها على مشروعي (واتساب)', again:'عدّل المدخلات',
   note:'المطلوب لكل كابل = طول المسار × (١ + الاحتياطي) + ٢ × الزيادة، مقرّب لفوق. الأسعار مدخلات — راجعها على عرض السعر.',
-  foot:'الحساب في المتصفح (HiGHS برخصة MIT)', waTxt:'TrueLoop - Cable drums study for my project'},
+  foot:'الحساب في المتصفح (HiGHS برخصة MIT)', waTxt:'TrueLoop - Cable drums study for my project',
+  backH:'يرجع المخزن (بواقي تتستخدم تاني)', reuse:'أقل طول يتستخدم (م)', backNone:'مفيش بواقي فوق الطول ده.', scrap:'هالك تحت الطول ده', proj:'المشروع / العميل',
+  repT:'دراسة طلب بكر الكابلات وخطة التقطيع', basis:['الطريقة: Mixed-Integer Programming (HiGHS) لكل مقاس: كل كابل من بكرة واحدة من غير وصلات، وأقل تكلفة بكر.','المطلوب لكل كابل = طول المسار × (١ + الاحتياطي) + ٢ × الزيادة لكل طرف، مقرّب لفوق.','بواقي المخزن بتتحسب بصفر وبتتستخدم الأول.','المقارنة مع أمين مخزن شاطر: أكبر بكرة بالترتيب من الأطول، وكل بكرة بتصغر لأرخص طول يشيل قطعها.','الأطوال والأسعار مدخلات — راجعها على عرض المورد. الأطوال من الـ layout لازم تتراجع في الموقع قبل التقطيع.']},
  en:{short:'Cable Drums',title:'Cable Drums & Cut Plan',
   intro:'Upload your cable schedule. Get the cheapest drum order and a cut plan per run, with no splices, before you buy. Exact optimisation on your device — nothing is uploaded.',
   st:['1 Cables','2 Drums & prices','3 Result'],
@@ -120,9 +124,11 @@ var D={
   cut:'Cut plan', cutp:'Each run is cut whole from one drum — no splices. Green frame = store remnant.', used:'Cut runs', left:'Left on drum',
   order:'Order', dlo:'Download order (CSV)', dlc:'Download cut plan (CSV)', talk:'Use it on my project (WhatsApp)', again:'Edit inputs',
   note:'Need per run = route length × (1 + spare) + 2 × allowance, rounded up. Prices are inputs — check them against the quote.',
-  foot:'solved in your browser (HiGHS, MIT licence)', waTxt:'TrueLoop - Cable drums study for my project'}};
+  foot:'solved in your browser (HiGHS, MIT licence)', waTxt:'TrueLoop - Cable drums study for my project',
+  backH:'Back to store (reusable remnants)', reuse:'Shortest reusable length (m)', backNone:'No remnant above this length.', scrap:'scrap below this length', proj:'Project / client',
+  repT:'Cable drum order and cut plan study', basis:['Method: mixed-integer programming (HiGHS) per cable size: each run from one drum with no splices, lowest drum cost.','Need per run = route length × (1 + spare) + 2 × allowance per end, rounded up.','Store remnants cost zero and are used first.','Compared with a careful storekeeper: biggest drum, longest runs first, each drum then shortened to the cheapest length that holds its cuts.','Lengths and prices are inputs — check them against the supplier quote; layout lengths must be checked on site before cutting.']}};
 
-var S={step:1,rows:[],map:{tag:-1,size:-1,len:-1},header:0,settings:{allowance_m:2,spare_pct:5},currency:'',drums:{},stock:[],result:null,error:'',busy:null,plan:null,sample:false};
+var S={reuse:50,project:'',step:1,rows:[],map:{tag:-1,size:-1,len:-1},header:0,settings:{allowance_m:2,spare_pct:5},currency:'',drums:{},stock:[],result:null,error:'',busy:null,plan:null,sample:false};
 var x=function(){return D[TL.lang]||D.ar;}, esc=function(s){return TL.esc(String(s==null?'':s));};
 var N=function(s){return '<span class="n">'+esc(s)+'</span>';}, f0=function(n){return Math.round(n).toLocaleString('en-US');};
 var num=function(v){var y=typeof v==='number'?v:parseFloat(String(v).replace(/,/g,'').replace(/[^\d.\-]/g,''));return isFinite(y)?y:NaN;};
@@ -219,7 +225,7 @@ function dlCuts(){var rows=[['size','drum','source','drum_id','drum_m','run_tag'
 /* ---------- views ---------- */
 function steps(){
   var ok1=runs().list.length>0,ok3=!!S.result;
-  return '<div class="steps">'+x().st.map(function(s,i){var n=i+1,can=n===1||(n===2&&ok1)||(n===3&&ok3);
+  return '<div class="steps no-print">'+x().st.map(function(s,i){var n=i+1,can=n===1||(n===2&&ok1)||(n===3&&ok3);
     return '<button type="button" data-step="'+n+'" class="'+(S.step===n?'on':(n<S.step||(n===3&&ok3))?'done':'')+'"'+(can?'':' disabled')+'>'+s+(n<S.step?' ✓':'')+'</button>';}).join('')+'</div>';
 }
 function step1(){
@@ -232,7 +238,7 @@ function step1(){
   return '<div class="two"><div style="display:grid;gap:10px">'+
     '<label class="drop" id="drop"><b>'+t.up+'</b><span class="tag">'+t.choose+'</span><input id="file" type="file" accept=".xlsx,.csv,.txt,.tsv" hidden></label>'+
     '<span class="muted">'+t.orpaste+'</span><textarea id="paste" placeholder="PC-M-01&#9;4Cx4 Cu XLPE/SWA&#9;85"></textarea>'+
-    '<div class="row"><button type="button" data-act="sample">'+t.sample+'</button></div></div>'+
+    '<div class="row"><button type="button" data-act="sample">'+t.sample+'</button></div><label>'+t.proj+'<input type="text" data-proj="1" value="'+esc(S.project)+'"></label></div>'+
     '<section class="card">'+(S.rows.length?'<h2>'+t.map+'</h2><div class="maps">'+
       '<label>'+t.ctag+sel('tag')+'</label><label>'+t.csize+sel('size')+'</label><label>'+t.clen+sel('len')+'</label>'+
       '<label>'+t.allow+'<input type="number" min="0" step="0.5" data-set="allowance_m" value="'+esc(S.settings.allowance_m)+'"></label>'+
@@ -281,14 +287,23 @@ function step3(){
     '<section class="card"><div class="row"><h3>'+t.cut+'</h3><select data-act="plan" style="width:auto;max-width:100%">'+R.sizes.map(function(s){return '<option'+(s.size===P.size?' selected':'')+'>'+esc(s.size)+'</option>';}).join('')+'</select></div>'+
       '<p class="muted">'+t.cutp+'</p><div class="drums">'+tracks+'</div>'+
       '<div class="key"><span><i style="background:var(--water)"></i>'+t.used+'</span><span><i style="background:var(--crit-bg)"></i>'+t.left+'</span></div></section></div>'+
-    '<section class="card"><h3>'+t.order+'</h3><div class="order">'+order+'</div><p class="muted">'+t.note+'</p></section>'+
-    '<div class="row"><button type="button" class="pri" data-act="dlo">'+t.dlo+'</button><button type="button" data-act="dlc">'+t.dlc+'</button>'+
+    '<section class="card"><h3>'+t.order+'</h3><div class="order">'+order+'</div><p class="muted">'+t.note+'</p></section>'+back()+
+    '<div class="row no-print"><button type="button" class="pri" data-act="dlo">'+t.dlo+'</button><button type="button" data-act="dlc">'+t.dlc+'</button>'+
     '<a class="back" href="'+WA+encodeURIComponent(t.waTxt+' - '+f0(save)+cur)+'" target="_blank" rel="noopener">'+t.talk+'</a>'+
     '<button type="button" class="lnk" data-step="2">'+t.again+'</button></div>';
 }
+function back(){
+  var t=x(),min=num(S.reuse)||0,list=[],scrap=0;
+  S.result.sizes.forEach(function(s){s.plan.forEach(function(b){if(b.left>=min&&b.left>0)list.push({size:s.size,drum:'#'+b.n+' · '+(b.kind==='stock'?b.id:b.cap+' m'),left:b.left});else scrap+=b.left;});});
+  return '<section class="card"><div class="row"><h3>'+t.backH+'</h3><label style="width:170px">'+t.reuse+'<input type="number" min="0" data-reuse="1" value="'+esc(S.reuse)+'"></label></div>'+
+    (list.length?'<div class="tbl"><table><tr><th>'+t.size+'</th><th>'+t.cut+'</th><th class="r">m</th></tr>'+list.map(function(r){return '<tr><td>'+esc(r.size)+'</td><td>'+N(r.drum)+'</td><td class="r">'+N(f0(r.left))+'</td></tr>';}).join('')+'</table></div>':'<p class="muted">'+t.backNone+'</p>')+
+    '<p class="muted">'+N(f0(scrap)+' m')+' '+t.scrap+'</p></section>';
+}
+function report(){var t=x();return '<section class="rep"><b>TrueLoop · Optimise — '+t.repT+'</b><br>'+esc(S.project||'')+' · '+new Date().toISOString().slice(0,10)+
+  '<ul>'+t.basis.map(function(b){return '<li>'+esc(b)+'</li>';}).join('')+'</ul></section>';}
 function render(){
   var app=TL.$('app'),ae=document.activeElement,fk=ae&&ae.dataset&&Object.keys(ae.dataset)[0],fv=fk&&ae.dataset[fk];
-  app.innerHTML=steps()+(S.step===1?step1():S.step===2?step2():step3())+(S.error?'<div class="msg bad">'+esc(S.error)+'</div>':'');
+  app.innerHTML=report()+steps()+(S.step===1?step1():S.step===2?step2():step3())+(S.error?'<div class="msg bad">'+esc(S.error)+'</div>':'');
   if(fk){var el=app.querySelector('[data-'+fk+'="'+CSS.escape(fv)+'"]');if(el&&el.focus)el.focus();}
 }
 
@@ -316,6 +331,8 @@ app.addEventListener('change',function(e){var d=e.target.dataset;
 app.addEventListener('input',function(e){var d=e.target.dataset;
   if(e.target.id==='paste'){var v=e.target.value;if(v.trim()){setRows(parseText(v));var p=TL.$('paste');if(p){p.value=v;p.focus();}}}
   else if(d.cur)S.currency=e.target.value.trim();
+  else if(d.proj)S.project=e.target.value;
+  else if(d.reuse){S.reuse=e.target.value;render();}
   else if(d.set){S.settings[d.set]=e.target.value;S.result=null;}
   else if(d.drum){var q=d.drum.split('|');S.drums[q[0]][+q[1]][q[2]]=e.target.value;S.result=null;if(q[2]==='price_per_m')S.sample=false;}
   else if(d.stock&&e.target.tagName!=='SELECT'){var q2=d.stock.split('|');S.stock[+q2[0]][q2[1]]=e.target.value;S.result=null;}
@@ -326,6 +343,7 @@ app.addEventListener('drop',function(e){var z=e.target.closest('#drop');if(z){e.
 
 TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'cable-drums',onLang:render});
 TL.$('verTxt').textContent='v'+VER;
+TL.$('printBtn').onclick=function(){window.print();};
 TL.applyLang();
 render();
 })();

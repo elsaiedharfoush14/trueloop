@@ -6,7 +6,16 @@
   "SWRO permeate": 905.0,
   "Treated groundwater": 95.0
  },
- "opt_doses": {
-  "Lime + CO2": 35.47
+ "current_ix": {
+  "LSI": 0.195,
+  "Larson": 2.327
+ },
+ "opt_ix": {
+  "LSI": 0.077,
+  "Larson": 4.265
+ },
+ "larson_2_33": {
+  "opt_cost_m3": 1.4855,
+  "larson": 2.33
  }
 }

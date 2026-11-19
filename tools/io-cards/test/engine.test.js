@@ -10,6 +10,6 @@ const ENGINE = require(path.join(DIR, 'engine.js'));
     return { status: r.Status, cols: Object.fromEntries(Object.entries(r.Columns).map(([k, v]) => [k, v.Primal])) }; };
   const t0 = Date.now(), r = await ENGINE.solve(SAMPLE, solveLP);
   console.log(`solved in ${Date.now() - t0} ms, ${r.status}`);
-  require('./checks.js')(r, EXP, check, SAMPLE, ENGINE);
+  await require('./checks.js')(r, EXP, check, SAMPLE, ENGINE, solveLP);
   console.log(ok ? 'ALL OK' : 'SOME FAILED'); process.exit(ok ? 0 : 1);
 })();

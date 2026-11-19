@@ -1,13 +1,25 @@
 {
- "source": "claude-kit design-optimizer/tools/io_cards.py on examples/io_cards_case.json (2026-11-19)",
  "manual": {
-  "cost": 7700,
-  "modules": 8,
+  "cost": 9100,
+  "modules": 9,
   "clash": 24
  },
  "opt": {
-  "cost": 6850,
-  "modules": 6,
+  "cost": 8250,
+  "modules": 7,
   "clash": 0
+ },
+ "source": "claude-kit design-optimizer/tools/io_cards.py on examples/io_cards_case.json (2026-11-19)",
+ "no_groups": {
+  "manual": {
+   "cost": 9100,
+   "modules": 9,
+   "clash": 0
+  },
+  "opt": {
+   "cost": 8250,
+   "modules": 7,
+   "clash": 0
+  }
  }
 }

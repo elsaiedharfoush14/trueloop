@@ -15,7 +15,12 @@ const ROOT = path.join(__dirname, '..', '..', '..'), PORT = 8769, OUT = process.
     let t = await pg.textContent('#app');
     check('1.377 SAR/m3 optimised, 9.0 % (= Python)', t.includes('1.377 SAR/m³') && t.includes('9.0 %'));
     check('905 m3/h permeate + 95 groundwater', /905/.test(t) && /95/.test(t));
+    check('Larson warning shown (2.33 -> 4.26)', t.includes('4.26') && t.includes('Larson'));
+    await pg.click('[data-act="lsame"]'); await pg.waitForTimeout(1200); t = await pg.textContent('#app');
+    check('same-as-now Larson -> 1.485 SAR/m3 (= Python 1.48545)', t.includes('1.485 SAR/m³'));
     await pg.screenshot({ path: path.join(OUT, 'blend_result.png'), fullPage: true });
+    await pg.pdf({ path: path.join(OUT, 'blend_report.pdf') });
+    await pg.fill('[data-p="lm"]', '');
     await pg.fill('[data-p="M"]', '0'); await pg.click('[data-act="solve"]'); await pg.waitForSelector('.save');
     t = await pg.textContent('#app');
     check('margin 0 % -> 1.332 SAR/m3 (Python, no margin)', t.includes('1.332 SAR/m³'));

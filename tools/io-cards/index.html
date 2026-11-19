@@ -57,12 +57,14 @@ textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:8
 @media (max-width:720px){.two{grid-template-columns:1fr}.maps{grid-template-columns:1fr 1fr}
  .save{grid-template-columns:1fr 1fr;padding:16px;gap:12px}.save .hl{grid-column:1/-1;order:-1}.save .big{font-size:1.9rem}.save .v{font-size:1.15rem}
  .kpis{grid-template-columns:1fr}}
+@media print{.card{break-inside:auto}.save,.kpi,.mod,.drum,tr{break-inside:avoid}.x,.lnk,.drop,textarea,.tag{display:none!important}.rep{margin-bottom:8px}}
 </style>
 </head>
 <body>
 <div class="bar"><div class="bar-in">
   <a class="home" id="homeLink" href="../../app/"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop · <span data-t="short"></span></span></a>
   <span class="offline" id="offBadge" hidden></span>
+  <button class="tb" id="printBtn" type="button" data-t="print"></button>
   <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
   <span id="toast" class="toast" role="status"></span>
 </div></div>
@@ -84,7 +86,7 @@ textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:8
 <script>
 (function(){
 'use strict';
-var VER='2026.11.19.1', WA='https://wa.me/966560861304?text=';
+var VER='2026.11.19.2', WA='https://wa.me/966560861304?text=';
 var D={
  ar:{short:'كروت الـ I/O',title:'توزيع الـ I/O على كروت الـ PLC',
   intro:'الصق قايمة الإشارات، وخد أرخص خلطة كروت بالـ spare المطلوب، والأساسي والاحتياطي على كروت مختلفة، وقايمة القنوات جاهزة. الحساب بالـ Optimization في الموبايل عندك.',
@@ -102,7 +104,10 @@ var D={
   clashT:'أمثلة من التوزيع اليدوي: كارت واحد لو باظ يوقف الأساسي والاحتياطي', rackT:'الكروت بعد التحسين', used:'مستخدم', spareW:'spare',
   dl:'نزّل قايمة القنوات (CSV)', talk:'عايزها على مشروعي (واتساب)', again:'عدّل المدخلات', fixedTag:'ثابت',
   note:'الـ spare محسوب لكل نوع على المحطة كلها: القنوات المتركبة ≥ المستخدم × (١ + الـ spare). القواعد والكتالوج مدخلات — راجعهم على مواصفة المشروع.',
-  foot:'الحساب في المتصفح (HiGHS برخصة MIT)', waTxt:'TrueLoop - PLC I/O card study for my project', slot:'Slot'},
+  foot:'الحساب في المتصفح (HiGHS برخصة MIT)', waTxt:'TrueLoop - PLC I/O card study for my project', slot:'Slot',
+  sep:'الأساسي والاحتياطي على كروت مختلفة', proj:'المشروع / العميل', notype:function(l){return 'أنواع مالهاش كارت في الكتالوج: '+l+' — ضيف كارت ليها في الخطوة ٢.';},
+  typesH:'الأنواع: DI وDO وAI وAO، وأي نوع تاني زي RTD أو DI-230V أو DO-RELAY طالما فيه كارت في الكتالوج بنفس الاسم.',
+  repT:'دراسة توزيع الـ I/O على كروت الـ PLC', basis:['الطريقة: Mixed-Integer Programming (HiGHS): أقل تكلفة كروت، وبعدها أقل خلط للمناطق على الكارت.','الـ spare لكل نوع على المحطة: القنوات المتركبة ≥ المستخدم × (١ + الـ spare).','الأساسي والاحتياطي: الإشارات اللي تاجها بيفرق في حرف A/B/C بس (P-101A-RUN / P-101B-RUN) مش بتتحط على نفس الكارت.','أقصى عدد كروت على الـ rack حسب الـ CPU (S7-1200: 8). الـ I/O اللي على الـ CPU محسوب ثابت.','الكتالوج والأسعار مدخلات — راجعها على عرض المورد ومواصفة المشروع.']},
  en:{short:'I/O Cards',title:'PLC I/O Card Allocation',
   intro:'Paste the I/O list and get the cheapest card mix with the spare you need, duty and standby signals on different cards, and the channel list. Exact optimisation on your device.',
   st:['1 I/O list','2 Cards & prices','3 Result'],
@@ -119,10 +124,13 @@ var D={
   clashT:'Examples from the manual layout: one card failure stops duty and standby', rackT:'Cards after optimisation', used:'used', spareW:'spare',
   dl:'Download channel list (CSV)', talk:'Use it on my project (WhatsApp)', again:'Edit inputs', fixedTag:'fixed',
   note:'Spare is per type over the plant: installed channels ≥ used × (1 + spare). Rules and catalogue are inputs — check them against the project spec.',
-  foot:'solved in your browser (HiGHS, MIT licence)', waTxt:'TrueLoop - PLC I/O card study for my project', slot:'Slot'}};
+  foot:'solved in your browser (HiGHS, MIT licence)', waTxt:'TrueLoop - PLC I/O card study for my project', slot:'Slot',
+  sep:'Duty and standby on different cards', proj:'Project / client', notype:function(l){return 'Types with no card in the catalogue: '+l+' — add a card for them in step 2.';},
+  typesH:'Types: DI, DO, AI, AO and any other such as RTD, DI-230V or DO-RELAY, as long as a catalogue card has a column with that name.',
+  repT:'PLC I/O card allocation study', basis:['Method: mixed-integer programming (HiGHS): lowest card cost, then the fewest areas mixed on a card.','Spare per type over the plant: installed channels ≥ used × (1 + spare).','Duty / standby: signals whose tags differ only by A/B/C (P-101A-RUN / P-101B-RUN) never share a card.','Max modules on the rack per the CPU (S7-1200: 8). CPU onboard I/O counted as fixed.','Catalogue and prices are inputs — check them against the supplier quote and the project spec.']}};
 
-var TY=IOEngine.TYPES;
-var S={step:1,rows:[],header:0,map:{tag:-1,type:-1,desc:-1,area:-1,grp:-1},catalog:[],spare:20,maxmod:8,currency:'',result:null,error:'',busy:false,sample:false};
+var S={step:1,rows:[],header:0,map:{tag:-1,type:-1,desc:-1,area:-1,grp:-1},catalog:[],spare:20,maxmod:8,currency:'',sep:true,project:'',result:null,error:'',busy:false,sample:false};
+function TY(){var t=IOEngine.typesOf(signals().list);S.catalog.forEach(function(c){Object.keys(c.ch).forEach(function(k){if(t.indexOf(k)<0)t.push(k);});});return t;}
 var x=function(){return D[TL.lang]||D.ar;}, esc=function(s){return TL.esc(String(s==null?'':s));};
 var N=function(s){return '<span class="n">'+esc(s)+'</span>';};
 var cell=function(r,i){return i<0||r[i]==null?'':String(r[i]).trim();};
@@ -147,16 +155,16 @@ function signals(){
   });
   return {list:out,skipped:skipped};
 }
-function defaults(){S.catalog=JSON.parse(JSON.stringify(IO_SAMPLE.catalog));S.spare=IO_SAMPLE.spare_pct;S.maxmod=IO_SAMPLE.max_modules;S.currency=IO_SAMPLE.currency;S.sample=true;}
+function defaults(){S.catalog=JSON.parse(JSON.stringify(IO_SAMPLE.catalog));S.spare=IO_SAMPLE.spare_pct;S.maxmod=IO_SAMPLE.max_modules;S.currency=IO_SAMPLE.currency;S.sep=IO_SAMPLE.separate_groups!==false;S.sample=true;}
 function loadSample(){
   var c=IO_SAMPLE;S.rows=[['Tag','Type','Description','Area']].concat(c.signals.map(function(s){return [s.tag,s.type,s.desc,s.area];}));
   S.header=1;S.map={tag:0,type:1,desc:2,area:3,grp:-1};defaults();S.result=null;S.error='';render();
 }
 function caseObj(){
-  var cat=S.catalog.map(function(c){var ch={};TY.forEach(function(t){var v=TLO.num(c.ch[t]);if(v>0)ch[t]=v;});
+  var cat=S.catalog.map(function(c){var ch={};TY().forEach(function(t){var v=TLO.num(c.ch[t]);if(v>0)ch[t]=v;});
     var o={name:c.name||'Card',ch:ch,price:TLO.num(c.price)||0};if(TLO.num(c.fixed)>0)o.fixed=Math.round(TLO.num(c.fixed));if(TLO.num(c.max_qty)>0)o.max_qty=Math.round(TLO.num(c.max_qty));return o;})
     .filter(function(c){return Object.keys(c.ch).length;});
-  return {signals:signals().list,catalog:cat,spare_pct:TLO.num(S.spare)||0,max_modules:TLO.num(S.maxmod)>0?Math.round(TLO.num(S.maxmod)):0};
+  return {signals:signals().list,catalog:cat,spare_pct:TLO.num(S.spare)||0,max_modules:TLO.num(S.maxmod)>0?Math.round(TLO.num(S.maxmod)):0,separate_groups:S.sep};
 }
 function solve(){
   S.error='';S.busy=true;render();
@@ -171,31 +179,34 @@ function dl(){
 
 function steps(){
   var ok1=signals().list.length>0,ok3=!!S.result;
-  return '<div class="steps">'+x().st.map(function(s,i){var n=i+1,can=n===1||(n===2&&ok1)||(n===3&&ok3);
+  return '<div class="steps no-print">'+x().st.map(function(s,i){var n=i+1,can=n===1||(n===2&&ok1)||(n===3&&ok3);
     return '<button type="button" data-step="'+n+'" class="'+(S.step===n?'on':(n<S.step||(n===3&&ok3))?'done':'')+'"'+(can?'':' disabled')+'>'+s+(n<S.step?' ✓':'')+'</button>';}).join('')+'</div>';
 }
 function step1(){
   var t=x(),r=signals(),hdr=S.rows[S.header-1]||S.rows[0]||[];
   var cols=hdr.map(function(h,i){return S.header?(String(h)||'#'+(i+1)):'#'+(i+1);});
   var sel=function(k){return '<select data-map="'+k+'"><option value="-1">'+t.none+'</option>'+cols.map(function(c,i){return '<option value="'+i+'"'+(S.map[k]===i?' selected':'')+'>'+esc(c)+'</option>';}).join('')+'</select>';};
-  var cnt=TY.map(function(ty){return ty+' '+r.list.filter(function(s){return s.type===ty;}).length;}).join(' · ');
-  var g=r.list.length?IOEngine.prep(r.list).filter(function(s){return s.grp;}).map(function(s){return s.grp;}).filter(function(v,i,a){return a.indexOf(v)===i;}).length:0;
+  var tys=IOEngine.typesOf(r.list),cnt=tys.map(function(ty){return ty+' '+r.list.filter(function(s){return s.type===ty;}).length;}).filter(function(v){return !/ 0$/.test(v);}).join(' · ');
+  var nocard=tys.filter(function(ty){return r.list.some(function(s){return s.type===ty;})&&!S.catalog.some(function(c){return TLO.num(c.ch[ty])>0;});});
+  var g=r.list.length?IOEngine.prep(r.list,S.sep).filter(function(s){return s.grp;}).map(function(s){return s.grp;}).filter(function(v,i,a){return a.indexOf(v)===i;}).length:0;
   return '<div class="two"><div style="display:grid;gap:10px">'+
     '<label class="drop" id="drop"><b>'+t.up+'</b><span class="tag">'+t.choose+'</span><input id="file" type="file" accept=".xlsx,.csv,.txt,.tsv" hidden></label>'+
     '<span class="muted">'+t.orpaste+'</span><textarea id="paste" placeholder="P-101A-RUN&#9;DI&#9;Lift pump A running&#9;LIFT"></textarea>'+
     '<div class="row"><button type="button" data-act="sample">'+t.sample+'</button></div></div>'+
     '<section class="card">'+(S.rows.length?'<h2>'+t.map+'</h2><div class="maps">'+
       '<label>'+t.ctag+sel('tag')+'</label><label>'+t.ctype+sel('type')+'</label><label>'+t.cdesc+sel('desc')+'</label><label>'+t.carea+sel('area')+'</label><label>'+t.cgrp+sel('grp')+'</label></div>'+
-      '<b>'+t.found(N(r.list.length),N(cnt),r.skipped,N(g))+'</b><p class="muted">'+t.grpHelp+'</p>'
+      '<b>'+t.found(N(r.list.length),N(cnt),r.skipped,N(g))+'</b>'+(nocard.length&&S.catalog.length?'<div class="msg warn">'+t.notype(N(nocard.join(', ')))+'</div>':'')+
+      '<label class="row" style="gap:8px"><input type="checkbox" data-sep="1" style="width:auto"'+(S.sep?' checked':'')+'> '+t.sep+'</label><p class="muted">'+t.grpHelp+' '+t.typesH+'</p>'+
+      '<label>'+t.proj+'<input type="text" data-set="project" value="'+esc(S.project)+'"></label>'
       :'<p class="muted">'+t.nodata+'</p>')+'</section></div>'+
     '<div class="row"><button type="button" class="pri" data-step="2"'+(r.list.length?'':' disabled')+'>'+t.next+'</button></div>';
 }
 function step2(){
   var t=x();
-  var head='<tr><th>'+t.cname+'</th>'+TY.map(function(ty){return '<th>'+ty+'</th>';}).join('')+'<th>'+t.cprice+'</th><th>'+t.cfixed+'</th><th>'+t.cmax+'</th><th></th></tr>';
+  var TT=TY(),head='<tr><th>'+t.cname+'</th>'+TT.map(function(ty){return '<th>'+ty+'</th>';}).join('')+'<th>'+t.cprice+'</th><th>'+t.cfixed+'</th><th>'+t.cmax+'</th><th></th></tr>';
   var rows=S.catalog.map(function(c,i){
     var inp=function(k,v,cls){return '<td class="'+(cls||'sm')+'"><input '+(k==='name'?'type="text"':'type="number" min="0"')+' data-cat="'+i+'|'+k+'" value="'+esc(v==null?'':v)+'" aria-label="'+esc(k)+'"></td>';};
-    return '<tr>'+inp('name',c.name,'nm')+TY.map(function(ty){return inp('ch.'+ty,c.ch[ty]);}).join('')+inp('price',c.price)+inp('fixed',c.fixed)+inp('max_qty',c.max_qty)+
+    return '<tr>'+inp('name',c.name,'nm')+TT.map(function(ty){return inp('ch.'+ty,c.ch[ty]);}).join('')+inp('price',c.price)+inp('fixed',c.fixed)+inp('max_qty',c.max_qty)+
       '<td><button type="button" class="x" aria-label="remove" data-rmcat="'+i+'">×</button></td></tr>';}).join('');
   return '<p class="muted">'+t.chelp+'</p>'+(S.sample?'<div class="msg warn">'+t.budget+'</div>':'')+
     '<div class="row" style="align-items:end"><label style="width:130px">'+t.spare+'<input type="number" min="0" data-set="spare" value="'+esc(S.spare)+'"></label>'+
@@ -221,12 +232,14 @@ function step3(){
     '<div class="kpis">'+k(t.kmod,m.modules,o.modules,true,mm&&m.modules>mm?t.over+' ('+mm+') ← '+t.man:'')+k(t.kclash,m.clash,o.clash,o.clash===0,'')+k(t.karea,m.mix,o.mix,o.mix<=m.mix,'')+'</div>'+
     (clashes.length?'<section class="card"><h3>'+t.clashT+'</h3><div class="cl">'+clashes.slice(0,6).map(function(c){return '<span>'+t.slot+' '+N(c.card)+' · '+esc(c.name)+': '+N(c.tags.join(' + '))+'</span>';}).join('')+'</div></section>':'')+
     '<section class="card"><h3>'+t.rackT+'</h3><div class="rack">'+mods+'</div><p class="muted">'+t.note+'</p></section>'+
-    '<div class="row"><button type="button" class="pri" data-act="dl">'+t.dl+'</button>'+
+    '<div class="row no-print"><button type="button" class="pri" data-act="dl">'+t.dl+'</button>'+
     '<a class="back" href="'+WA+encodeURIComponent(t.waTxt)+'" target="_blank" rel="noopener">'+t.talk+'</a><button type="button" class="lnk" data-step="2">'+t.again+'</button></div>';
 }
+function report(){var t=x();return '<section class="rep"><b>TrueLoop · Optimise — '+t.repT+'</b><br>'+esc(S.project||'')+' · '+new Date().toISOString().slice(0,10)+
+  ' · spare '+esc(S.spare)+' % · max '+esc(S.maxmod)+'<ul>'+t.basis.map(function(b){return '<li>'+esc(b)+'</li>';}).join('')+'</ul></section>';}
 function render(){
   var app=TL.$('app'),ae=document.activeElement,fk=ae&&ae.dataset&&Object.keys(ae.dataset)[0],fv=fk&&ae.dataset[fk];
-  app.innerHTML=steps()+(S.step===1?step1():S.step===2?step2():step3())+(S.error?'<div class="msg bad">'+esc(S.error)+'</div>':'');
+  app.innerHTML=report()+steps()+(S.step===1?step1():S.step===2?step2():step3())+(S.error?'<div class="msg bad">'+esc(S.error)+'</div>':'');
   if(fk){var el=app.querySelector('[data-'+fk+'="'+CSS.escape(fv)+'"]');if(el&&el.focus)el.focus();}
 }
 var app=TL.$('app');
@@ -242,6 +255,7 @@ app.addEventListener('click',function(e){
 app.addEventListener('change',function(e){var d=e.target.dataset;
   if(e.target.id==='file'&&e.target.files[0])TLO.readFile(e.target.files[0]).then(setRows).catch(function(err){S.error='File: '+err.message;render();});
   else if(d.map){S.map[d.map]=+e.target.value;render();}
+  else if(d.sep){S.sep=e.target.checked;S.result=null;render();}
 });
 app.addEventListener('input',function(e){var d=e.target.dataset;
   if(e.target.id==='paste'){var v=e.target.value;if(v.trim()){setRows(TLO.parseText(v));var p=TL.$('paste');if(p){p.value=v;p.focus();}}}
@@ -253,6 +267,7 @@ app.addEventListener('dragleave',function(e){var z=e.target.closest('#drop');if(
 app.addEventListener('drop',function(e){var z=e.target.closest('#drop');if(z){e.preventDefault();if(e.dataTransfer.files[0])TLO.readFile(e.dataTransfer.files[0]).then(setRows).catch(function(err){S.error='File: '+err.message;render();});}});
 TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'io-cards',onLang:render});
 TL.$('verTxt').textContent='v'+VER;
+TL.$('printBtn').onclick=function(){window.print();};
 TL.applyLang();
 render();
 })();

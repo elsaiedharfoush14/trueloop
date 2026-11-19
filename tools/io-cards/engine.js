@@ -6,30 +6,34 @@
 })(this, function () {
   'use strict';
   var TYPES = ['DI', 'DO', 'AI', 'AO'];
+  function typesOf(sigs) {   // DI, DO, AI, AO, then any other type (RTD, DI-230V ...) - same as io_cards.py types_of
+    var extra = sigs.map(function (s) { return s.type; }).filter(function (t, i, a) { return TYPES.indexOf(t) < 0 && a.indexOf(t) === i; }).sort();
+    return TYPES.concat(extra);
+  }
   var GROUP_RE = /^(.*?\d+)([A-D])(\b|[-_./ ].*)$/;
-  function normType(t) {
-    t = String(t || '').toUpperCase().replace(/[^A-Z]/g, '');
+  function normType(raw) {
+    var t = String(raw || '').toUpperCase().replace(/[^A-Z]/g, '');
     if (/^(DI|DIN|DIGITALIN|DIGITALINPUT|BI)$/.test(t)) return 'DI';
     if (/^(DO|DQ|DOUT|DIGITALOUT|DIGITALOUTPUT|BO)$/.test(t)) return 'DO';
     if (/^(AI|AIN|ANALOGIN|ANALOGINPUT)$/.test(t)) return 'AI';
     if (/^(AO|AQ|AOUT|ANALOGOUT|ANALOGOUTPUT)$/.test(t)) return 'AO';
-    return '';
+    return String(raw || '').toUpperCase().replace(/\s+/g, '').replace(/[^A-Z0-9\-]/g, '');   // RTD, DI-230V ... (needs a card with it)
   }
   function groupOf(s) {
     if (s.group) return s.group;
     var m = GROUP_RE.exec(s.tag);
     return m ? m[1] + '*' + m[3] + '|' + s.type : null;
   }
-  function prep(signals) {
+  function prep(signals, separate) {
     var sigs = signals.map(function (s) { return Object.assign({}, s, { type: s.type.toUpperCase(), area: s.area || '-' }); });
     var cnt = {};
-    sigs.forEach(function (s) { s.grp = groupOf(s); if (s.grp) cnt[s.grp] = (cnt[s.grp] || 0) + 1; });
+    sigs.forEach(function (s) { s.grp = separate === false ? null : groupOf(s); if (s.grp) cnt[s.grp] = (cnt[s.grp] || 0) + 1; });
     sigs.forEach(function (s) { if (s.grp && cnt[s.grp] < 2) s.grp = null; });
     return sigs;
   }
   function need(sigs, c) {
     var sp = (c.spare_pct || 0) / 100, o = {};
-    TYPES.forEach(function (t) { o[t] = Math.ceil(sigs.filter(function (s) { return s.type === t; }).length * (1 + sp) - 1e-9); });
+    typesOf(sigs).forEach(function (t) { o[t] = Math.ceil(sigs.filter(function (s) { return s.type === t; }).length * (1 + sp) - 1e-9); });
     return o;
   }
   function fixedCards(cat) {
@@ -39,7 +43,7 @@
   }
   function manual(sigs, c) {
     var cards = fixedCards(c.catalog), nt = need(sigs, c);
-    TYPES.forEach(function (t) {
+    typesOf(sigs).forEach(function (t) {
       var ts = sigs.filter(function (s) { return s.type === t; });
       if (!ts.length) return;
       var single = c.catalog.filter(function (k) { return !k.fixed && Object.keys(k.ch).length === 1 && k.ch[t]; });
@@ -101,7 +105,7 @@
       zv.filter(function (x) { return x.j === j; }).forEach(function (x) { cons.push(' az' + x.v + ': ' + x.v + ' - ' + yv[areas.indexOf(gs[x.i].area) + '_' + j] + ' <= 0'); });
       if (j && !k.fx && !cand[j - 1].fx && k.name === cand[j - 1].name) cons.push(' sym' + j + ': u' + j + ' - u' + (j - 1) + ' <= 0');
     });
-    TYPES.forEach(function (t) {
+    typesOf(sigs).forEach(function (t) {
       if (!nt[t]) return;
       var terms = cand.map(function (k, j) { return k.ch[t] ? '+ ' + k.ch[t] + ' u' + j : null; }).filter(Boolean);
       if (!terms.length) throw new Error('no card in the catalog has ' + t);
@@ -146,7 +150,7 @@
   }
   /* solve(case, solveLP) -> {manual, opt, status, ...}; solveLP(lp) -> Promise<{status, cols}> */
   function solve(c, solveLP) {
-    var sigs = prep(c.signals), mc = manual(sigs, c), m = build(sigs, c);
+    var sigs = prep(c.signals, c.separate_groups), mc = manual(sigs, c), m = build(sigs, c);
     return solveLP(m.lp).then(function (r) {
       if (!/optimal|limit/i.test(r.status) || !Object.keys(r.cols || {}).length) throw new Error('no card mix meets the rules: ' + r.status + ' (max modules too low?)');
       var oc = read(m, r.cols);
@@ -154,5 +158,5 @@
         status: /optimal/i.test(r.status) ? 'OPTIMAL' : 'FEASIBLE (time limit)', groups: sigs.filter(function (s) { return s.grp; }).map(function (s) { return s.grp; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).length };
     });
   }
-  return { TYPES: TYPES, normType: normType, prep: prep, need: need, manual: manual, build: build, read: read, stats: stats, assignRows: assignRows, solve: solve };
+  return { TYPES: TYPES, typesOf: typesOf, normType: normType, prep: prep, need: need, manual: manual, build: build, read: read, stats: stats, assignRows: assignRows, solve: solve };
 });

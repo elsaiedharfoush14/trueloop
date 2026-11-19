@@ -42,12 +42,14 @@
 .chip.ok{background:var(--good-bg);color:var(--good)}.chip.bad{background:var(--crit-bg);color:var(--crit)}.chip.edge{background:var(--warn-bg);color:var(--warn)}
 td.r,th.r{text-align:end;white-space:nowrap}
 @media (max-width:720px){.save{grid-template-columns:1fr 1fr;padding:16px;gap:12px}.save .hl{grid-column:1/-1;order:-1}.save .big{font-size:1.7rem}.save .v{font-size:1.15rem}.plan{grid-template-columns:1fr}}
+@media print{.card{break-inside:auto}.save,.kpi,.mod,.drum,tr{break-inside:avoid}.x,.lnk,.drop,textarea,.tag{display:none!important}.rep{margin-bottom:8px}}
 </style>
 </head>
 <body>
 <div class="bar"><div class="bar-in">
   <a class="home" id="homeLink" href="../../app/"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop · <span data-t="short"></span></span></a>
   <span class="offline" id="offBadge" hidden></span>
+  <button class="tb" id="printBtn" type="button" data-t="print"></button>
   <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
   <span id="toast" class="toast" role="status"></span>
 </div></div>
@@ -68,7 +70,7 @@ td.r,th.r{text-align:end;white-space:nowrap}
 <script>
 (function(){
 'use strict';
-var VER='2026.11.19.1', WA='https://wa.me/966560861304?text=';
+var VER='2026.11.19.2', WA='https://wa.me/966560861304?text=';
 var D={
  ar:{short:'خلطة المنتج',title:'خلطة مياه المنتج والـ remineralization',
   intro:'المصادر (permeate، مياه جوفية معالجة…) والكيماويات والمواصفة ← أرخص خلطة وجرعة تحقق المواصفة وبعيدة عن الحدود بهامش أمان. الحساب بالـ Optimization في الموبايل عندك.',
@@ -83,6 +85,10 @@ var D={
   qualH:'جودة المنتج', st_ok:'تمام', st_bad:'برا المواصفة', st_edge:'على الهامش',
   infeas:'مفيش خلطة تحقق المواصفة بالمصادر والجرعات دي. وسّع حد الجرعة، أو زوّد مصدر، أو راجع المواصفة، أو قلّل هامش الأمان.',
   note:'الـ pH والـ LSI / CCPP مش في النموذج الخطي: احسبهم للخلطة الجديدة قبل ما تغيّر الـ setpoints. أي مصدر بيتخلط لازم يكون معالج ومعتمد للشرب.',
+  ph:'pH التشغيل', temp:'الحرارة (°C)', lmax:'أقصى Larson (فاضي = من غير حد)', lsame:'زي التشغيل الحالي', proj:'المشروع / العميل',
+  ixH:'الثبات والتآكل (بعد الحل)', lsiL:'LSI (الهدف ≥ 0)', larL:'Larson-Skold', lsi_ok:'مستقرة', lsi_bad:'عدوانية (بتآكل)', lar_ok:'قليل', lar_edge:'متوسط', lar_bad:'عالي على الحديد',
+  larWarn:function(a,b){return 'الخلطة الأرخص بترفع مؤشر التآكل Larson من '+a+' لـ '+b+'. لو المواسير حديد أو زهر، حط حد أقصى للـ Larson (مثلاً زي التشغيل الحالي) وشوف التوفير اللي فاضل.';},
+  repT:'دراسة خلطة مياه المنتج', basis:['الطريقة: Linear Programming (HiGHS): جودة المنتج = متوسط المصادر بالفلو + تأثير كل جرعة.','الهامش: الحل جوه كل حد في المواصفة بنسبة هامش الأمان.','الجير + CO₂: كل 1 mg/L جير يزود Ca 0.541 والقلوية 1.351 (as CaCO3) والـ TDS 2.19، وتكلفة 1.19 كجم CO₂ محسوبة معاه.','LSI (Carrier) عند الـ pH والحرارة المدخلين، وLarson-Skold بالـ meq/L. الـ pH بعد الإضافة والـ CCPP محتاجين حساب stabilisation كامل.','التحاليل والأسعار مدخلات من العميل — النتايج مسؤوليتها على صحة المدخلات.'],
   talk:'عايزها على محطتي (واتساب)', dl:'نزّل النتيجة (CSV)', foot:'الحساب في المتصفح (HiGHS برخصة MIT)', waTxt:'TrueLoop - Product water blend study for my plant', rm:'شيل'},
  en:{short:'Product Blend',title:'Product Water Blend & Remineralisation',
   intro:'Sources (permeate, treated groundwater…), chemicals and the spec → the cheapest blend and doses that meet the spec with a safety margin from every limit. Exact optimisation on your device.',
@@ -97,6 +103,10 @@ var D={
   qualH:'Product quality', st_ok:'OK', st_bad:'off spec', st_edge:'at the margin',
   infeas:'No blend meets the spec with these sources and doses. Raise a dose limit, add a source, check the spec or lower the margin.',
   note:'pH and LSI / CCPP are not in the linear model: check them for the new blend before changing set points. Every blended source must be treated and approved for drinking water.',
+  ph:'Operating pH', temp:'Temperature (°C)', lmax:'Max Larson (empty = no limit)', lsame:'Same as now', proj:'Project / client',
+  ixH:'Stability and corrosion (after the solve)', lsiL:'LSI (target ≥ 0)', larL:'Larson-Skold', lsi_ok:'stable', lsi_bad:'aggressive', lar_ok:'low', lar_edge:'moderate', lar_bad:'high for steel / iron',
+  larWarn:function(a,b){return 'The cheaper blend raises the Larson corrosion index from '+a+' to '+b+'. For steel or cast-iron pipes, set a Larson limit (e.g. same as now) and see the saving that is left.';},
+  repT:'Product water blend study', basis:['Method: linear programming (HiGHS): product quality = flow-weighted sources + the effect of each dose.','Margin: the plan stays inside every spec limit by the safety margin.','Lime + CO2: per 1 mg/L lime, Ca +0.541, alkalinity +1.351 (as CaCO3), TDS +2.19; the 1.19 kg CO2 per kg lime is in its cost.','LSI (Carrier form) at the entered pH and temperature; Larson-Skold in meq/L. pH after dosing and CCPP need the full stabilisation calculation.','Analyses and prices are client inputs; results are only as good as these inputs.'],
   talk:'Use it on my plant (WhatsApp)', dl:'Download the result (CSV)', foot:'solved in your browser (HiGHS, MIT licence)', waTxt:'TrueLoop - Product water blend study for my plant', rm:'remove'}};
 
 var C=null, R=null, err='', busy=false, sample=true;
@@ -118,11 +128,12 @@ function sheet(){
       K.map(function(k,j){return '<td class="chem">'+inp('ke.'+j+'.'+pi,k.effect[p])+'</td>';}).join('')+
       '<td class="spec">'+inp('lo.'+pi,sp[0])+'</td><td class="spec">'+inp('hi.'+pi,sp[1])+'</td><td><button type="button" class="x" data-rm="p.'+pi+'" aria-label="'+t.rm+'">×</button></td></tr>';}).join('');
   return '<section class="card"><div class="row"><label style="width:150px">'+t.prod+inp('Q',C.product_m3h)+'</label><label style="width:150px">'+t.margin+inp('M',C.margin_pct==null?5:C.margin_pct)+'</label>'+
-    '<label style="width:110px">'+t.cur+inp('cur',C.currency,'','text')+'</label><button type="button" data-act="reset">'+t.sample+'</button></div>'+
+    '<label style="width:110px">'+t.cur+inp('cur',C.currency,'','text')+'</label><label style="width:110px">'+t.ph+inp('ph',C.ph)+'</label><label style="width:120px">'+t.temp+inp('tc',C.temp_c)+'</label>'+
+    '<label style="width:210px">'+t.lmax+inp('lm',C.larson_max)+'</label><label style="flex:1 1 200px">'+t.proj+inp('proj',C.project,'','text')+'</label><button type="button" class="no-print" data-act="reset">'+t.sample+'</button></div>'+
     (sample?'<div class="msg warn">'+t.budget+'</div>':'')+
     '<div class="sheet tbl"><table>'+hdr+rows+'</table></div><p class="muted" style="font-size:.78rem">'+t.rQ+'</p>'+
-    '<div class="row"><button type="button" class="lnk" data-act="addSrc">'+t.addSrc+'</button><button type="button" class="lnk" data-act="addChem">'+t.addChem+'</button><button type="button" class="lnk" data-act="addParam">'+t.addParam+'</button></div></section>'+
-    '<div class="row"><button type="button" class="pri" data-act="solve"'+(busy?' disabled':'')+'>'+t.solve+'</button>'+(busy?'<span class="muted">'+t.solving+'</span>':'')+'</div>';
+    '<div class="row no-print"><button type="button" class="lnk" data-act="addSrc">'+t.addSrc+'</button><button type="button" class="lnk" data-act="addChem">'+t.addChem+'</button><button type="button" class="lnk" data-act="addParam">'+t.addParam+'</button></div></section>'+
+    '<div class="row no-print"><button type="button" class="pri" data-act="solve"'+(busy?' disabled':'')+'>'+t.solve+'</button>'+(busy?'<span class="muted">'+t.solving+'</span>':'')+'</div>';
 }
 function status(p,v){var sp=C.spec[p]||[null,null],m=(num(C.margin_pct)||0)/100,lo=sp[0],hi=sp[1];
   if((lo!=null&&v<lo-1e-6)||(hi!=null&&v>hi+1e-6))return 'bad';
@@ -143,17 +154,29 @@ function results(){
     '<div><small>'+t.opt+'</small><div class="v">'+N(TLO.fx(oc,3)+cur+t.perm3)+'</div></div>'+
     '<div class="hl"><small>'+t.sav+'</small><div class="big">'+N(TLO.fx(sv,3)+cur+t.perm3+' ('+(cc?(sv/cc*100).toFixed(1):'0')+' %)')+'</div><span class="yr">'+t.year(N(TLO.f0(yr)+cur))+'</span></div></div>'+
     '<section class="card"><h3>'+t.planH+'</h3>'+mix+'<div class="plan">'+tbl([t.flowsH,t.man,t.opt],fr)+tbl([t.dosesH+' (mg/L)',t.man,t.opt],dr)+'</div></section>'+
-    '<section class="card"><h3>'+t.qualH+'</h3>'+tbl([t.paramH,t.specH,t.man,t.opt],qr)+'<div class="msg warn">'+t.note+'</div></section>'+
-    '<div class="row"><button type="button" class="pri" data-act="dl">'+t.dl+'</button><a class="back" href="'+WA+encodeURIComponent(t.waTxt)+'" target="_blank" rel="noopener">'+t.talk+'</a></div>';
+    '<section class="card"><h3>'+t.qualH+'</h3>'+tbl([t.paramH,t.specH,t.man,t.opt],qr)+'</section>'+ixs()+'<div class="msg warn">'+t.note+'</div>'+
+    '<div class="row no-print"><button type="button" class="pri" data-act="dl">'+t.dl+'</button><a class="back" href="'+WA+encodeURIComponent(t.waTxt)+'" target="_blank" rel="noopener">'+t.talk+'</a></div>';
 }
+function ixs(){
+  var t=x(),a=R.current.ix||{},b=R.opt.ix||{},f2=function(v){return v==null?'—':TLO.fx(v,2);};
+  var lc=function(v){return v==null?'':'<span class="chip '+(v>=0?'ok':'bad')+'">'+(v>=0?t.lsi_ok:t.lsi_bad)+'</span>';};
+  var rc=function(v){return v==null?'':'<span class="chip '+(v<0.8?'ok':v<=1.2?'edge':'bad')+'">'+(v<0.8?t.lar_ok:v<=1.2?t.lar_edge:t.lar_bad)+'</span>';};
+  var rows='<tr><td>'+t.lsiL+'</td><td class="r">'+N(f2(a.LSI))+' '+lc(a.LSI)+'</td><td class="r">'+N(f2(b.LSI))+' '+lc(b.LSI)+'</td></tr>'+
+    '<tr><td>'+t.larL+(C.larson_max!==''&&C.larson_max!=null?' (≤ '+esc(C.larson_max)+')':'')+'</td><td class="r">'+N(f2(a.Larson))+' '+rc(a.Larson)+'</td><td class="r">'+N(f2(b.Larson))+' '+rc(b.Larson)+'</td></tr>';
+  var warn=a.Larson!=null&&b.Larson>a.Larson*1.15?'<div class="msg warn">'+t.larWarn(N(f2(a.Larson)),N(f2(b.Larson)))+' <button type="button" class="lnk no-print" data-act="lsame">'+t.lsame+' ('+N(f2(a.Larson))+')</button></div>':'';
+  return '<section class="card"><h3>'+t.ixH+'</h3><div class="tbl"><table><tr><th></th><th class="r">'+t.man+'</th><th class="r">'+t.opt+'</th></tr>'+rows+'</table></div>'+warn+'</section>';
+}
+function report(){var t=x();return '<section class="rep"><b>TrueLoop · Optimise — '+t.repT+'</b><br>'+esc(C.project||'')+' · '+new Date().toISOString().slice(0,10)+
+  '<ul>'+t.basis.map(function(b){return '<li>'+esc(b)+'</li>';}).join('')+'</ul></section>';}
 function render(){
   var app=TL.$('app'),ae=document.activeElement,fv=ae&&ae.dataset&&ae.dataset.p;
   var t=x(),sum=C.sources.reduce(function(a,s){return a+(num(C.current.flows[s.name])||0);},0);
-  app.innerHTML=sheet()+(Math.abs(sum-C.product_m3h)>0.5?'<div class="msg warn">'+t.curSum(N(TLO.f0(sum)),N(TLO.f0(C.product_m3h)))+'</div>':'')+(err?'<div class="msg bad">'+esc(err)+'</div>':'')+results();
+  app.innerHTML=report()+sheet()+(Math.abs(sum-C.product_m3h)>0.5?'<div class="msg warn">'+t.curSum(N(TLO.f0(sum)),N(TLO.f0(C.product_m3h)))+'</div>':'')+(err?'<div class="msg bad">'+esc(err)+'</div>':'')+results();
   if(fv){var el=app.querySelector('[data-p="'+CSS.escape(fv)+'"]');if(el){el.focus();try{var l=el.value.length;el.setSelectionRange&&el.type==='text'&&el.setSelectionRange(l,l);}catch(e){}}}
 }
 function clean(){   // numbers from the inputs, current values keyed by name
   var c=JSON.parse(JSON.stringify(C));c.product_m3h=num(c.product_m3h)||0;c.margin_pct=num(c.margin_pct)||0;
+  c.ph=num(c.ph);if(isNaN(c.ph))delete c.ph;c.temp_c=num(c.temp_c);if(isNaN(c.temp_c))delete c.temp_c;c.larson_max=num(c.larson_max);if(!(c.larson_max>0))delete c.larson_max;
   c.sources.forEach(function(s){s.cost_m3=num(s.cost_m3)||0;s.max_m3h=num(s.max_m3h);if(!(s.max_m3h>=0))delete s.max_m3h;c.params.forEach(function(p){s.q[p]=num(s.q[p])||0;});});
   c.chemicals.forEach(function(k){k.cost_kg=num(k.cost_kg)||0;k.max_mgL=num(k.max_mgL);if(!(k.max_mgL>=0))delete k.max_mgL;c.params.forEach(function(p){k.effect[p]=num(k.effect[p])||0;});});
   Object.keys(c.spec).forEach(function(p){if(c.params.indexOf(p)<0){delete c.spec[p];return;}var a=num(c.spec[p][0]),b=num(c.spec[p][1]);c.spec[p]=[isNaN(a)?null:a,isNaN(b)?null:b];if(c.spec[p][0]==null&&c.spec[p][1]==null)delete c.spec[p];});
@@ -169,7 +192,8 @@ function solve(){
 }
 function setPath(p,v){
   var a=p.split('.');
-  if(a[0]==='Q')C.product_m3h=v;else if(a[0]==='M')C.margin_pct=v;else if(a[0]==='cur')C.currency=v;
+  if(a[0]==='ph')C.ph=v;else if(a[0]==='tc')C.temp_c=v;else if(a[0]==='lm')C.larson_max=v;else if(a[0]==='proj')C.project=v;
+  else if(a[0]==='Q')C.product_m3h=v;else if(a[0]==='M')C.margin_pct=v;else if(a[0]==='cur')C.currency=v;
   else if(a[0]==='s'){var s=C.sources[+a[1]];if(a[2]==='name'){var old=s.name;s.name=v;C.current.flows[v]=C.current.flows[old];delete C.current.flows[old];}else s[a[2]]=v;}
   else if(a[0]==='k'){var k=C.chemicals[+a[1]];if(a[2]==='name'){var o=k.name;k.name=v;C.current.doses[v]=C.current.doses[o];delete C.current.doses[o];}else k[a[2]]=v;}
   else if(a[0]==='cf')C.current.flows[C.sources[+a[1]].name]=v;
@@ -187,6 +211,7 @@ app.addEventListener('click',function(e){
   var el=e.target.closest('[data-act],[data-rm]');if(!el||el.disabled)return;var d=el.dataset;
   if(d.act==='solve')solve();
   else if(d.act==='reset'){reset();render();}
+  else if(d.act==='lsame'){C.larson_max=Number(R.current.ix.Larson.toFixed(2));solve();}
   else if(d.act==='dl'){var rows=[['item','unit','current','optimised']];
     C.sources.forEach(function(s){rows.push([s.name,'m3/h',C.current.flows[s.name]||0,(R.opt.flows[s.name]||0).toFixed(1)]);});
     C.chemicals.forEach(function(k){rows.push([k.name,'mg/L',C.current.doses[k.name]||0,(R.opt.doses[k.name]||0).toFixed(2)]);});
@@ -204,6 +229,7 @@ app.addEventListener('click',function(e){
 reset();
 TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'blend',onLang:render});
 TL.$('verTxt').textContent='v'+VER;
+TL.$('printBtn').onclick=function(){window.print();};
 TL.applyLang();
 render();
 })();
