@@ -1,7 +1,7 @@
-/* Runs HiGHS off the main thread. Message {id, lp, timeLimit} -> {id, status, cols} or {id, error}. */
-importScripts('vendor/highs.js');
+/* Shared HiGHS worker for the Optimise tools (new Worker('../../assets/highs/worker.js')). Runs HiGHS off the main thread. Message {id, lp, timeLimit} -> {id, status, cols} or {id, error}. */
+importScripts('highs.js');
 let solver = null;
-const load = () => (solver = Module({ locateFile: f => 'vendor/' + f }));
+const load = () => (solver = Module({ locateFile: f => f }));
 load();
 onmessage = async e => {
   const { id, lp, timeLimit } = e.data;

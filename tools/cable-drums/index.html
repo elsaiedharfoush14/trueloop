@@ -74,7 +74,7 @@ td.r,th.r{text-align:end;white-space:nowrap}
 </main>
 <script src="../../assets/tl-core.js"></script>
 <script src="engine.js"></script>
-<script src="xlsx-lite.js"></script>
+<script src="../../assets/xlsx-lite.js"></script>
 <script src="sample.js"></script>
 <script>
 (function(){
@@ -176,7 +176,7 @@ function onFile(file){
 /* ---------- solver (Web Worker) ---------- */
 var worker=null,jobId=0,pending={};
 function solveLP(lp){
-  if(!worker){worker=new Worker('worker.js');worker.onmessage=function(e){var p=pending[e.data.id];delete pending[e.data.id];if(e.data.error)p.reject(new Error(e.data.error));else p.resolve(e.data);};}
+  if(!worker){worker=new Worker('../../assets/highs/worker.js');worker.onmessage=function(e){var p=pending[e.data.id];delete pending[e.data.id];if(e.data.error)p.reject(new Error(e.data.error));else p.resolve(e.data);};}
   var id=++jobId;
   return new Promise(function(res,rej){pending[id]={resolve:res,reject:rej};worker.postMessage({id:id,lp:lp,timeLimit:20});});
 }

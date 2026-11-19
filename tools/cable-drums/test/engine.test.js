@@ -1,11 +1,11 @@
 // Engine check: engine.js + vendored HiGHS == the Python reference (test/expected.json) on the sample.
 // Run from the repo root:  node tools/cable-drums/test/engine.test.js
 const path = require('path'), DIR = path.join(__dirname, '..');
-const Engine = require(path.join(DIR, 'engine.js')), HiGHS = require(path.join(DIR, 'vendor', 'highs.js'));
+const Engine = require(path.join(DIR, 'engine.js')), HiGHS = require(path.join(DIR, '..', '..', 'assets', 'highs', 'highs.js'));
 const SAMPLE = require(path.join(DIR, 'sample.js')), EXP = require('./expected.json');
 (async () => {
   let ok = true; const check = (n, c, i) => { console.log((c ? 'OK   ' : 'FAIL ') + n + (i ? '  ' + i : '')); ok = ok && c; };
-  const h = await HiGHS({ locateFile: f => path.join(DIR, 'vendor', f) });
+  const h = await HiGHS({ locateFile: f => path.join(DIR, '..', '..', 'assets', 'highs', f) });
   const t0 = Date.now();
   const r = await Engine.solve(SAMPLE, async lp => {
     const s = h.solve(lp, { time_limit: 20, mip_rel_gap: 0 });

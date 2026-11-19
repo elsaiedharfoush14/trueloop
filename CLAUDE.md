@@ -13,6 +13,10 @@ Live: https://elsaiedharfoush14.github.io/trueloop/ — GitHub Pages from `main`
 - `tools/cable-drums/` (Optimise): cable schedule -> drum order + cut plan, exact solver in the browser (`engine.js` = claude-kit
   `design-optimizer/tools/cable_drums.py`, HiGHS WebAssembly in `vendor/`, own `.xlsx` reader). Tests before release:
   `node tools/cable-drums/test/engine.test.js` and `node tools/cable-drums/test/e2e.js` (both ALL OK). Spec `docs/specs/2026-11-19-cable-drums.md`.
+- `tools/io-cards/` (Optimise): I/O list -> cheapest PLC card mix (spare per type, duty/standby on different cards, max modules)
+  + channel list; `tools/blend/` (Optimise): product water blend + lime/CO2 remineralisation at lowest cost with a safety margin
+  (pH / LSI not in the model). Engines = claude-kit `design-optimizer/tools/io_cards.py` / `blend.py`. Each: `test/engine.test.js` + `test/e2e.js`.
+- Shared for Optimise tools: `assets/highs/` (HiGHS WebAssembly + `worker.js`), `assets/xlsx-lite.js`, `assets/tl-opt.js`.
 - Every tool he builds is listed in claude-kit `skills/hub/REGISTRY.md` (one registry); new engineer tools go here as `tools/<id>/`.
 - `assets/tl-cloud.js` — TrueLoop Field cloud phase 1 (BETA, `?beta=1`): Google sign-in, projects → sites → runs, offline sync on Firebase `trueloop-field`. Spec `docs/specs/2026-11-14-field-cloud-phase1.md`, rules `docs/firestore.rules`.
 - Tool UI language: Egyptian Arabic (field staff) + English toggle; site cards: formal Arabic.

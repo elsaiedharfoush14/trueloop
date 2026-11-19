@@ -1,0 +1,12 @@
+{
+ "source": "claude-kit design-optimizer/tools/blend.py on examples/blend_case.json (2026-11-19)",
+ "current_cost_m3": 1.5134,
+ "opt_cost_m3": 1.3767,
+ "opt_flows": {
+  "SWRO permeate": 905.0,
+  "Treated groundwater": 95.0
+ },
+ "opt_doses": {
+  "Lime + CO2": 35.47
+ }
+}

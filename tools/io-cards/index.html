@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TrueLoop · PLC I/O Cards</title>
+<meta name="description" content="Paste the I/O list and get the cheapest PLC card mix with spare, duty and standby signals on different cards, and the channel list. Exact optimisation in your browser.">
+<meta name="theme-color" content="#071b2b">
+<link rel="manifest" href="../../app/manifest.webmanifest">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../app/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../assets/tl.css">
+<style>
+.n{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps button{border-radius:99px;padding:5px 12px;font-size:.82rem;border-color:var(--line);color:var(--muted);background:var(--card)}
+.steps button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.steps button.done{color:var(--good);border-color:var(--good-bg)}
+.steps button:disabled{opacity:.5;cursor:not-allowed}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;background:var(--card);display:grid;gap:8px;justify-items:center;cursor:pointer}
+.drop.over{border-color:var(--water);background:var(--soft)}
+textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:var(--f-mono);font-size:.82rem;background:var(--soft);color:var(--ink);direction:ltr}
+.maps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.lnk{border:0;padding:0}
+.x{border:0;padding:2px 6px;font-size:1.1rem;color:var(--muted)}
+.cat input{padding:6px 7px;font-size:.85rem}
+.cat td{padding:4px 5px}
+.cat td.nm{min-width:150px}
+.cat td.sm{width:68px}
+.save{background:var(--navy);color:#fff;border-radius:14px;padding:20px 22px;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:18px;align-items:center}
+.save small{display:block;font-size:.75rem;color:#9fb4c8;margin-bottom:4px}
+.save .v{font-size:1.5rem;font-weight:700;font-family:var(--f-display)}
+.save .v.m{color:#9fb4c8;text-decoration:line-through;text-decoration-thickness:2px}
+.save .big{font-size:2.2rem;font-weight:700;color:var(--aqua);line-height:1.05;font-family:var(--f-display)}
+.save .pv{display:inline-block;margin-top:8px;font-size:.75rem;background:rgba(29,181,122,.2);color:#6fe3b0;padding:3px 9px;border-radius:6px}
+.save .pv.w{background:rgba(255,178,30,.2);color:#ffcb66}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:4px}
+.kpi small{color:var(--muted);font-size:.78rem}
+.kpi b{font-family:var(--f-display);font-size:1.3rem}
+.kpi em{font-style:normal;font-size:.78rem}
+.ok{color:var(--good)}.bad{color:var(--crit)}
+.rack{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.mod{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--soft);display:grid;gap:6px;align-content:start;min-width:0}
+.mod.fx{border-style:dashed}
+.mod h4{margin:0;font-size:.82rem;font-family:var(--f-display)}
+.mod .slot{font-size:.7rem;color:var(--muted);font-family:var(--f-mono)}
+.chb{display:grid;grid-template-columns:28px 1fr auto;gap:6px;align-items:center;font-size:.72rem}
+.chb .tr{height:10px;border-radius:5px;background:var(--line);overflow:hidden;display:flex}
+.chb .tr b{background:var(--water)}
+.areas{font-size:.7rem;color:var(--muted)}
+.cl{display:grid;gap:4px;font-size:.82rem}
+@media (max-width:720px){.two{grid-template-columns:1fr}.maps{grid-template-columns:1fr 1fr}
+ .save{grid-template-columns:1fr 1fr;padding:16px;gap:12px}.save .hl{grid-column:1/-1;order:-1}.save .big{font-size:1.9rem}.save .v{font-size:1.15rem}
+ .kpis{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <a class="home" id="homeLink" href="../../app/"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop · <span data-t="short"></span></span></a>
+  <span class="offline" id="offBadge" hidden></span>
+  <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
+  <span id="toast" class="toast" role="status"></span>
+</div></div>
+<main class="wrap">
+  <a class="back" id="backLink" href="../../"></a>
+  <header class="top">
+    <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div class="t"><div class="brand"><b><span class="lt">True</span>Loop</b> · Optimise</div>
+      <h1 data-t="title"></h1><p class="muted" data-t="intro"></p></div>
+  </header>
+  <div id="app" style="display:grid;gap:16px"></div>
+  <p class="foot">TrueLoop · PLC I/O Cards · <span id="verTxt"></span> · <span data-t="foot"></span></p>
+</main>
+<script src="../../assets/tl-core.js"></script>
+<script src="../../assets/xlsx-lite.js"></script>
+<script src="../../assets/tl-opt.js"></script>
+<script src="engine.js"></script>
+<script src="sample.js"></script>
+<script>
+(function(){
+'use strict';
+var VER='2026.11.19.1', WA='https://wa.me/966560861304?text=';
+var D={
+ ar:{short:'كروت الـ I/O',title:'توزيع الـ I/O على كروت الـ PLC',
+  intro:'الصق قايمة الإشارات، وخد أرخص خلطة كروت بالـ spare المطلوب، والأساسي والاحتياطي على كروت مختلفة، وقايمة القنوات جاهزة. الحساب بالـ Optimization في الموبايل عندك.',
+  st:['١ قايمة الإشارات','٢ الكروت والأسعار','٣ النتيجة'],
+  up:'اسحب قايمة الـ I/O هنا (.xlsx أو .csv)', choose:'اختار ملف', orpaste:'أو الصق من Excel (التاج، النوع، الوصف، المنطقة):', sample:'حمّل بيانات مثال',
+  map:'الأعمدة', ctag:'التاج', ctype:'النوع (DI/DO/AI/AO)', cdesc:'الوصف', carea:'المنطقة / اللوحة', cgrp:'مجموعة (اختياري)', none:'—',
+  found:function(n,c,k,g){return n+' إشارة ('+c+')'+(k?' · '+k+' صف اتشال (ناقص تاج أو نوعه مش DI/DO/AI/AO)':'')+' · '+g+' مجموعة أساسي/احتياطي اتعرفت لوحدها';},
+  grpHelp:'المجموعة بتتعرف من التاج: P-101A-RUN و P-101B-RUN = نفس الإشارة لطلمبتين، فمش هيتحطوا على نفس الكارت.',
+  next:'التالي: الكروت والأسعار ←', nodata:'لسه مفيش إشارات. ارفع ملف أو الصق صفوف أو حمّل المثال.',
+  chelp:'الكروت اللي ينفع تستخدمها وسعر كل واحد. «ثابت» = موجود دايماً (زي الـ I/O اللي على الـ CPU). كروت مختلطة زي DI/DQ بتدي فرصة توفير.',
+  cname:'الكارت', cprice:'السعر', cfixed:'ثابت', cmax:'أقصى عدد', addcard:'+ كارت', spare:'Spare (%)', maxmod:'أقصى عدد كروت على الـ rack', cur:'العملة',
+  budget:'أسعار المثال تقديرية (BUDGET) — حط بدلها عرض سعر المورد.', solve:'احسب ←', back2:'→ رجوع', solving:'بيحسب…',
+  man:'يدوي (كارت لكل نوع، بالترتيب)', opt:'بعد التحسين', sav:'التوفير', proven:'✓ OPTIMAL — مثبت إنه الأرخص بالقواعد دي', partial:'أحسن حل في الوقت المحدد (مش مثبت)',
+  kmod:'عدد الكروت', kclash:'أساسي واحتياطي على نفس الكارت', karea:'مناطق مختلطة على الكروت', over:'أكتر من حد الـ rack',
+  clashT:'أمثلة من التوزيع اليدوي: كارت واحد لو باظ يوقف الأساسي والاحتياطي', rackT:'الكروت بعد التحسين', used:'مستخدم', spareW:'spare',
+  dl:'نزّل قايمة القنوات (CSV)', talk:'عايزها على مشروعي (واتساب)', again:'عدّل المدخلات', fixedTag:'ثابت',
+  note:'الـ spare محسوب لكل نوع على المحطة كلها: القنوات المتركبة ≥ المستخدم × (١ + الـ spare). القواعد والكتالوج مدخلات — راجعهم على مواصفة المشروع.',
+  foot:'الحساب في المتصفح (HiGHS برخصة MIT)', waTxt:'TrueLoop - PLC I/O card study for my project', slot:'Slot'},
+ en:{short:'I/O Cards',title:'PLC I/O Card Allocation',
+  intro:'Paste the I/O list and get the cheapest card mix with the spare you need, duty and standby signals on different cards, and the channel list. Exact optimisation on your device.',
+  st:['1 I/O list','2 Cards & prices','3 Result'],
+  up:'Drop your I/O list here (.xlsx or .csv)', choose:'Choose file', orpaste:'or paste from Excel (tag, type, description, area):', sample:'Load sample data',
+  map:'Columns', ctag:'Tag', ctype:'Type (DI/DO/AI/AO)', cdesc:'Description', carea:'Area / panel', cgrp:'Group (optional)', none:'—',
+  found:function(n,c,k,g){return n+' signals ('+c+')'+(k?' · '+k+' rows skipped (no tag or type not DI/DO/AI/AO)':'')+' · '+g+' duty/standby groups found';},
+  grpHelp:'Groups come from the tag: P-101A-RUN and P-101B-RUN are the same signal on two pumps, so they never share a card.',
+  next:'Next: cards & prices →', nodata:'No signals yet. Upload a file, paste rows or load the sample.',
+  chelp:'The cards you can use and their price. "Fixed" = always there (like the CPU onboard I/O). Mixed cards such as DI/DQ give room to save.',
+  cname:'Card', cprice:'Price', cfixed:'Fixed', cmax:'Max qty', addcard:'+ card', spare:'Spare (%)', maxmod:'Max modules on the rack', cur:'Currency',
+  budget:'Sample prices are BUDGET figures — replace them with your supplier quote.', solve:'Solve →', back2:'← Back', solving:'Solving…',
+  man:'Manual (one card per type, in list order)', opt:'Optimised', sav:'Saving', proven:'✓ OPTIMAL — proven cheapest under these rules', partial:'Best found in the time limit (not proven)',
+  kmod:'Modules', kclash:'Duty and standby on one card', karea:'Areas mixed on cards', over:'over the rack limit',
+  clashT:'Examples from the manual layout: one card failure stops duty and standby', rackT:'Cards after optimisation', used:'used', spareW:'spare',
+  dl:'Download channel list (CSV)', talk:'Use it on my project (WhatsApp)', again:'Edit inputs', fixedTag:'fixed',
+  note:'Spare is per type over the plant: installed channels ≥ used × (1 + spare). Rules and catalogue are inputs — check them against the project spec.',
+  foot:'solved in your browser (HiGHS, MIT licence)', waTxt:'TrueLoop - PLC I/O card study for my project', slot:'Slot'}};
+
+var TY=IOEngine.TYPES;
+var S={step:1,rows:[],header:0,map:{tag:-1,type:-1,desc:-1,area:-1,grp:-1},catalog:[],spare:20,maxmod:8,currency:'',result:null,error:'',busy:false,sample:false};
+var x=function(){return D[TL.lang]||D.ar;}, esc=function(s){return TL.esc(String(s==null?'':s));};
+var N=function(s){return '<span class="n">'+esc(s)+'</span>';};
+var cell=function(r,i){return i<0||r[i]==null?'':String(r[i]).trim();};
+
+function detect(rows){
+  for(var h=0;h<Math.min(rows.length,15);h++){
+    var r=rows[h].map(String),type=TLO.findCol(r,/^(type|i\/?o ?type|signal type|io|نوع)/i);
+    if(type<0)continue;
+    var tag=TLO.findCol(r,/tag|signal|point|رقم|تاج/i,[type]);
+    return {header:h+1,map:{tag:tag,type:type,desc:TLO.findCol(r,/desc|service|وصف/i,[type,tag]),area:TLO.findCol(r,/area|panel|location|zone|منطقة|لوحة/i,[type,tag]),grp:TLO.findCol(r,/^group|مجموعة/i,[type,tag])}};
+  }
+  return {header:0,map:{tag:0,type:1,desc:2,area:3,grp:-1}};
+}
+function setRows(rows){var d=detect(rows);S.rows=rows;S.header=d.header;S.map=d.map;S.result=null;S.error='';if(!S.catalog.length)defaults();render();}
+function signals(){
+  var out=[],skipped=0;
+  S.rows.slice(S.header).forEach(function(r){
+    var tag=cell(r,S.map.tag),raw=cell(r,S.map.type),t=IOEngine.normType(raw);
+    if(!tag&&!raw)return;
+    if(!tag||!t){skipped++;return;}
+    var s={tag:tag,type:t,desc:cell(r,S.map.desc),area:cell(r,S.map.area)||'-'};var g=cell(r,S.map.grp);if(g)s.group=g;out.push(s);
+  });
+  return {list:out,skipped:skipped};
+}
+function defaults(){S.catalog=JSON.parse(JSON.stringify(IO_SAMPLE.catalog));S.spare=IO_SAMPLE.spare_pct;S.maxmod=IO_SAMPLE.max_modules;S.currency=IO_SAMPLE.currency;S.sample=true;}
+function loadSample(){
+  var c=IO_SAMPLE;S.rows=[['Tag','Type','Description','Area']].concat(c.signals.map(function(s){return [s.tag,s.type,s.desc,s.area];}));
+  S.header=1;S.map={tag:0,type:1,desc:2,area:3,grp:-1};defaults();S.result=null;S.error='';render();
+}
+function caseObj(){
+  var cat=S.catalog.map(function(c){var ch={};TY.forEach(function(t){var v=TLO.num(c.ch[t]);if(v>0)ch[t]=v;});
+    var o={name:c.name||'Card',ch:ch,price:TLO.num(c.price)||0};if(TLO.num(c.fixed)>0)o.fixed=Math.round(TLO.num(c.fixed));if(TLO.num(c.max_qty)>0)o.max_qty=Math.round(TLO.num(c.max_qty));return o;})
+    .filter(function(c){return Object.keys(c.ch).length;});
+  return {signals:signals().list,catalog:cat,spare_pct:TLO.num(S.spare)||0,max_modules:TLO.num(S.maxmod)>0?Math.round(TLO.num(S.maxmod)):0};
+}
+function solve(){
+  S.error='';S.busy=true;render();
+  var c=caseObj();
+  IOEngine.solve(c,TLO.solveLP).then(function(r){S.result=r;S.step=3;}).catch(function(e){S.error=e.message;}).then(function(){S.busy=false;render();});
+}
+function dl(){
+  var rows=[['slot','card','type','channel','tag','description','area','group']];
+  IOEngine.assignRows(S.result.opt.cards).forEach(function(r){var s=r.sig;rows.push([r.slot,r.card,r.type,r.ch,s?s.tag:'SPARE',s?s.desc:'',s?s.area:'',s&&s.grp?s.grp:'']);});
+  TLO.download('io_channels.csv',rows);
+}
+
+function steps(){
+  var ok1=signals().list.length>0,ok3=!!S.result;
+  return '<div class="steps">'+x().st.map(function(s,i){var n=i+1,can=n===1||(n===2&&ok1)||(n===3&&ok3);
+    return '<button type="button" data-step="'+n+'" class="'+(S.step===n?'on':(n<S.step||(n===3&&ok3))?'done':'')+'"'+(can?'':' disabled')+'>'+s+(n<S.step?' ✓':'')+'</button>';}).join('')+'</div>';
+}
+function step1(){
+  var t=x(),r=signals(),hdr=S.rows[S.header-1]||S.rows[0]||[];
+  var cols=hdr.map(function(h,i){return S.header?(String(h)||'#'+(i+1)):'#'+(i+1);});
+  var sel=function(k){return '<select data-map="'+k+'"><option value="-1">'+t.none+'</option>'+cols.map(function(c,i){return '<option value="'+i+'"'+(S.map[k]===i?' selected':'')+'>'+esc(c)+'</option>';}).join('')+'</select>';};
+  var cnt=TY.map(function(ty){return ty+' '+r.list.filter(function(s){return s.type===ty;}).length;}).join(' · ');
+  var g=r.list.length?IOEngine.prep(r.list).filter(function(s){return s.grp;}).map(function(s){return s.grp;}).filter(function(v,i,a){return a.indexOf(v)===i;}).length:0;
+  return '<div class="two"><div style="display:grid;gap:10px">'+
+    '<label class="drop" id="drop"><b>'+t.up+'</b><span class="tag">'+t.choose+'</span><input id="file" type="file" accept=".xlsx,.csv,.txt,.tsv" hidden></label>'+
+    '<span class="muted">'+t.orpaste+'</span><textarea id="paste" placeholder="P-101A-RUN&#9;DI&#9;Lift pump A running&#9;LIFT"></textarea>'+
+    '<div class="row"><button type="button" data-act="sample">'+t.sample+'</button></div></div>'+
+    '<section class="card">'+(S.rows.length?'<h2>'+t.map+'</h2><div class="maps">'+
+      '<label>'+t.ctag+sel('tag')+'</label><label>'+t.ctype+sel('type')+'</label><label>'+t.cdesc+sel('desc')+'</label><label>'+t.carea+sel('area')+'</label><label>'+t.cgrp+sel('grp')+'</label></div>'+
+      '<b>'+t.found(N(r.list.length),N(cnt),r.skipped,N(g))+'</b><p class="muted">'+t.grpHelp+'</p>'
+      :'<p class="muted">'+t.nodata+'</p>')+'</section></div>'+
+    '<div class="row"><button type="button" class="pri" data-step="2"'+(r.list.length?'':' disabled')+'>'+t.next+'</button></div>';
+}
+function step2(){
+  var t=x();
+  var head='<tr><th>'+t.cname+'</th>'+TY.map(function(ty){return '<th>'+ty+'</th>';}).join('')+'<th>'+t.cprice+'</th><th>'+t.cfixed+'</th><th>'+t.cmax+'</th><th></th></tr>';
+  var rows=S.catalog.map(function(c,i){
+    var inp=function(k,v,cls){return '<td class="'+(cls||'sm')+'"><input '+(k==='name'?'type="text"':'type="number" min="0"')+' data-cat="'+i+'|'+k+'" value="'+esc(v==null?'':v)+'" aria-label="'+esc(k)+'"></td>';};
+    return '<tr>'+inp('name',c.name,'nm')+TY.map(function(ty){return inp('ch.'+ty,c.ch[ty]);}).join('')+inp('price',c.price)+inp('fixed',c.fixed)+inp('max_qty',c.max_qty)+
+      '<td><button type="button" class="x" aria-label="remove" data-rmcat="'+i+'">×</button></td></tr>';}).join('');
+  return '<p class="muted">'+t.chelp+'</p>'+(S.sample?'<div class="msg warn">'+t.budget+'</div>':'')+
+    '<div class="row" style="align-items:end"><label style="width:130px">'+t.spare+'<input type="number" min="0" data-set="spare" value="'+esc(S.spare)+'"></label>'+
+    '<label style="width:220px">'+t.maxmod+'<input type="number" min="0" data-set="maxmod" value="'+esc(S.maxmod)+'"></label>'+
+    '<label style="width:120px">'+t.cur+'<input type="text" maxlength="6" data-set="currency" value="'+esc(S.currency)+'"></label></div>'+
+    '<section class="card"><div class="tbl cat"><table>'+head+rows+'</table></div><button type="button" class="lnk" data-act="addcat">'+t.addcard+'</button></section>'+
+    '<div class="row"><button type="button" data-step="1">'+t.back2+'</button><button type="button" class="pri" data-act="solve"'+(S.busy?' disabled':'')+'>'+t.solve+'</button>'+(S.busy?'<span class="muted">'+t.solving+'</span>':'')+'</div>';
+}
+function step3(){
+  var t=x(),R=S.result,m=R.manual.s,o=R.opt.s,cur=S.currency?' '+S.currency:'',save=m.cost-o.cost,mm=caseObj().max_modules;
+  var pct=m.cost?(save/m.cost*100).toFixed(1):'0';
+  var k=function(l,a,b,good,extra){return '<div class="kpi"><small>'+l+'</small><b>'+N(b)+' <span class="muted" style="font-size:.85rem">← '+N(a)+'</span></b><em class="'+(good?'ok':'bad')+'">'+(extra||'')+'</em></div>';};
+  var clashes=[];R.manual.cards.forEach(function(c,ci){var by={};c.sig.forEach(function(s){if(s.grp)(by[s.grp]=by[s.grp]||[]).push(s.tag);});
+    Object.keys(by).forEach(function(g){if(by[g].length>1)clashes.push({card:ci,name:c.name,tags:by[g]});});});
+  var mods=R.opt.cards.map(function(c,slot){
+    var bars=Object.keys(c.ch).map(function(ty){var u=c.sig.filter(function(s){return s.type===ty;}).length;
+      return '<div class="chb"><span class="n">'+ty+'</span><span class="tr"><b style="width:'+(u/c.ch[ty]*100)+'%"></b></span><span class="n">'+u+'/'+c.ch[ty]+'</span></div>';}).join('');
+    var ar=c.sig.map(function(s){return s.area;}).filter(function(v,i,a){return a.indexOf(v)===i;});
+    return '<div class="mod'+(c.fixed?' fx':'')+'"><span class="slot">'+t.slot+' '+slot+(c.fixed?' · '+t.fixedTag:'')+'</span><h4>'+esc(c.name)+'</h4>'+bars+'<span class="areas">'+esc(ar.join(' · '))+'</span></div>';}).join('');
+  return '<div class="save"><div><small>'+t.man+'</small><div class="v m">'+N(TLO.f0(m.cost)+cur)+'</div></div>'+
+    '<div><small>'+t.opt+'</small><div class="v">'+N(TLO.f0(o.cost)+cur)+'</div></div>'+
+    '<div class="hl"><small>'+t.sav+'</small><div class="big">'+N(TLO.f0(save)+cur+' ('+pct+' %)')+'</div><span class="pv'+(R.status==='OPTIMAL'?'':' w')+'">'+(R.status==='OPTIMAL'?t.proven:t.partial)+'</span></div></div>'+
+    '<div class="kpis">'+k(t.kmod,m.modules,o.modules,true,mm&&m.modules>mm?t.over+' ('+mm+') ← '+t.man:'')+k(t.kclash,m.clash,o.clash,o.clash===0,'')+k(t.karea,m.mix,o.mix,o.mix<=m.mix,'')+'</div>'+
+    (clashes.length?'<section class="card"><h3>'+t.clashT+'</h3><div class="cl">'+clashes.slice(0,6).map(function(c){return '<span>'+t.slot+' '+N(c.card)+' · '+esc(c.name)+': '+N(c.tags.join(' + '))+'</span>';}).join('')+'</div></section>':'')+
+    '<section class="card"><h3>'+t.rackT+'</h3><div class="rack">'+mods+'</div><p class="muted">'+t.note+'</p></section>'+
+    '<div class="row"><button type="button" class="pri" data-act="dl">'+t.dl+'</button>'+
+    '<a class="back" href="'+WA+encodeURIComponent(t.waTxt)+'" target="_blank" rel="noopener">'+t.talk+'</a><button type="button" class="lnk" data-step="2">'+t.again+'</button></div>';
+}
+function render(){
+  var app=TL.$('app'),ae=document.activeElement,fk=ae&&ae.dataset&&Object.keys(ae.dataset)[0],fv=fk&&ae.dataset[fk];
+  app.innerHTML=steps()+(S.step===1?step1():S.step===2?step2():step3())+(S.error?'<div class="msg bad">'+esc(S.error)+'</div>':'');
+  if(fk){var el=app.querySelector('[data-'+fk+'="'+CSS.escape(fv)+'"]');if(el&&el.focus)el.focus();}
+}
+var app=TL.$('app');
+app.addEventListener('click',function(e){
+  var el=e.target.closest('[data-step],[data-act],[data-rmcat]');if(!el||el.disabled||el.tagName==='SELECT')return;var d=el.dataset;
+  if(d.step){S.step=+d.step;S.error='';render();}
+  else if(d.act==='sample')loadSample();
+  else if(d.act==='solve')solve();
+  else if(d.act==='dl')dl();
+  else if(d.act==='addcat'){S.catalog.push({name:'',ch:{},price:''});render();}
+  else if(d.rmcat){S.catalog.splice(+d.rmcat,1);render();}
+});
+app.addEventListener('change',function(e){var d=e.target.dataset;
+  if(e.target.id==='file'&&e.target.files[0])TLO.readFile(e.target.files[0]).then(setRows).catch(function(err){S.error='File: '+err.message;render();});
+  else if(d.map){S.map[d.map]=+e.target.value;render();}
+});
+app.addEventListener('input',function(e){var d=e.target.dataset;
+  if(e.target.id==='paste'){var v=e.target.value;if(v.trim()){setRows(TLO.parseText(v));var p=TL.$('paste');if(p){p.value=v;p.focus();}}}
+  else if(d.set){S[d.set]=e.target.value;S.result=null;}
+  else if(d.cat){var q=d.cat.split('|'),c=S.catalog[+q[0]];if(q[1].indexOf('ch.')===0)c.ch[q[1].slice(3)]=e.target.value;else c[q[1]]=e.target.value;S.result=null;if(q[1]==='price')S.sample=false;}
+});
+app.addEventListener('dragover',function(e){var z=e.target.closest('#drop');if(z){e.preventDefault();z.classList.add('over');}});
+app.addEventListener('dragleave',function(e){var z=e.target.closest('#drop');if(z)z.classList.remove('over');});
+app.addEventListener('drop',function(e){var z=e.target.closest('#drop');if(z){e.preventDefault();if(e.dataTransfer.files[0])TLO.readFile(e.dataTransfer.files[0]).then(setRows).catch(function(err){S.error='File: '+err.message;render();});}});
+TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'io-cards',onLang:render});
+TL.$('verTxt').textContent='v'+VER;
+TL.applyLang();
+render();
+})();
+</script>
+</body>
+</html>

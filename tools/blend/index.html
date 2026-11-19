@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TrueLoop · Product Water Blend</title>
+<meta name="description" content="Cheapest blend of permeate and other sources plus remineralisation that meets the product water spec with a design margin. Exact optimisation in your browser.">
+<meta name="theme-color" content="#071b2b">
+<link rel="manifest" href="../../app/manifest.webmanifest">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../app/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../assets/tl.css">
+<style>
+.n{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.lnk{border:0;padding:0}
+.x{border:0;padding:0 4px;font-size:1rem;color:var(--muted)}
+.sheet{overflow-x:auto}
+.sheet table{min-width:640px}
+.sheet th,.sheet td{padding:4px 5px;vertical-align:middle}
+.sheet input{padding:5px 6px;font-size:.84rem;min-width:62px}
+.sheet input.hd{font-weight:600;min-width:120px}
+.sheet td.lab{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.sheet td.lab b{color:var(--ink);font-size:.85rem}
+.sheet tr.sep td{border-top:2px solid var(--line)}
+.sheet .src{background:color-mix(in srgb,var(--water) 7%,transparent)}
+.sheet .chem{background:color-mix(in srgb,var(--bolt) 10%,transparent)}
+.sheet .spec{background:color-mix(in srgb,var(--leaf) 9%,transparent)}
+.save{background:var(--navy);color:#fff;border-radius:14px;padding:20px 22px;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:18px;align-items:center}
+.save small{display:block;font-size:.75rem;color:#9fb4c8;margin-bottom:4px}
+.save .v{font-size:1.5rem;font-weight:700;font-family:var(--f-display)}
+.save .v.m{color:#9fb4c8;text-decoration:line-through;text-decoration-thickness:2px}
+.save .big{font-size:2rem;font-weight:700;color:var(--aqua);line-height:1.1;font-family:var(--f-display)}
+.save .yr{display:block;margin-top:6px;font-size:.8rem;color:#cfe0ee}
+.mix{display:flex;height:30px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.mix span{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;white-space:nowrap;overflow:hidden;min-width:0}
+.mix span:nth-child(1){background:var(--water)}.mix span:nth-child(2){background:var(--aqua);color:#071b2b}.mix span:nth-child(3){background:var(--leaf)}.mix span:nth-child(4){background:var(--bolt);color:#071b2b}
+.plan{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chip{font-size:.72rem;font-weight:600;padding:1px 8px;border-radius:99px;white-space:nowrap}
+.chip.ok{background:var(--good-bg);color:var(--good)}.chip.bad{background:var(--crit-bg);color:var(--crit)}.chip.edge{background:var(--warn-bg);color:var(--warn)}
+td.r,th.r{text-align:end;white-space:nowrap}
+@media (max-width:720px){.save{grid-template-columns:1fr 1fr;padding:16px;gap:12px}.save .hl{grid-column:1/-1;order:-1}.save .big{font-size:1.7rem}.save .v{font-size:1.15rem}.plan{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <a class="home" id="homeLink" href="../../app/"><svg class="mk" aria-hidden="true"><use href="#mark"/></svg><span class="nm"><span class="lt">True</span>Loop · <span data-t="short"></span></span></a>
+  <span class="offline" id="offBadge" hidden></span>
+  <span class="seg" role="group" aria-label="Language"><button type="button" id="lnAr">ع</button><button type="button" id="lnEn">EN</button></span>
+  <span id="toast" class="toast" role="status"></span>
+</div></div>
+<main class="wrap">
+  <a class="back" id="backLink" href="../../"></a>
+  <header class="top">
+    <svg role="img" aria-label="TrueLoop logo"><use href="#mark"/></svg>
+    <div class="t"><div class="brand"><b><span class="lt">True</span>Loop</b> · Optimise</div>
+      <h1 data-t="title"></h1><p class="muted" data-t="intro"></p></div>
+  </header>
+  <div id="app" style="display:grid;gap:16px"></div>
+  <p class="foot">TrueLoop · Product Water Blend · <span id="verTxt"></span> · <span data-t="foot"></span></p>
+</main>
+<script src="../../assets/tl-core.js"></script>
+<script src="../../assets/tl-opt.js"></script>
+<script src="engine.js"></script>
+<script src="sample.js"></script>
+<script>
+(function(){
+'use strict';
+var VER='2026.11.19.1', WA='https://wa.me/966560861304?text=';
+var D={
+ ar:{short:'خلطة المنتج',title:'خلطة مياه المنتج والـ remineralization',
+  intro:'المصادر (permeate، مياه جوفية معالجة…) والكيماويات والمواصفة ← أرخص خلطة وجرعة تحقق المواصفة وبعيدة عن الحدود بهامش أمان. الحساب بالـ Optimization في الموبايل عندك.',
+  prod:'المنتج (م³/س)', margin:'هامش الأمان (%)', cur:'العملة', sample:'رجّع بيانات المثال',
+  budget:'بيانات المثال تجريبية: التحاليل والأسعار [TBC] — حط تحاليل وأسعار محطتك. تكلفة المصدر = التكلفة الحدية للمتر (طاقة + كيماويات).',
+  srcH:'المصادر', chemH:'الكيماويات', specH:'المواصفة', paramH:'البارامتر', unitH:'الوحدة',
+  rCost:'التكلفة (/م³ · /كجم)', rMax:'أقصى (م³/س · mg/L)', rCur:'التشغيل الحالي (م³/س · mg/L)', rQ:'التحليل / التأثير لكل 1 mg/L', smin:'أدنى', smax:'أقصى',
+  addSrc:'+ مصدر', addChem:'+ كيماوي', addParam:'+ بارامتر', solve:'احسب أرخص خلطة ←', solving:'بيحسب…',
+  curSum:function(a,b){return 'مجموع التشغيل الحالي '+a+' م³/س والمنتج '+b+' م³/س — التكلفة الحالية محسوبة على المنتج.';},
+  man:'التشغيل الحالي', opt:'بعد التحسين', sav:'التوفير', perm3:'/م³', year:function(v){return 'حوالي '+v+' في السنة على الفلو ده';},
+  notMet:'الحالي مش محقق المواصفة', planH:'الخطة', flowsH:'الفلو من كل مصدر', dosesH:'الجرعات',
+  qualH:'جودة المنتج', st_ok:'تمام', st_bad:'برا المواصفة', st_edge:'على الهامش',
+  infeas:'مفيش خلطة تحقق المواصفة بالمصادر والجرعات دي. وسّع حد الجرعة، أو زوّد مصدر، أو راجع المواصفة، أو قلّل هامش الأمان.',
+  note:'الـ pH والـ LSI / CCPP مش في النموذج الخطي: احسبهم للخلطة الجديدة قبل ما تغيّر الـ setpoints. أي مصدر بيتخلط لازم يكون معالج ومعتمد للشرب.',
+  talk:'عايزها على محطتي (واتساب)', dl:'نزّل النتيجة (CSV)', foot:'الحساب في المتصفح (HiGHS برخصة MIT)', waTxt:'TrueLoop - Product water blend study for my plant', rm:'شيل'},
+ en:{short:'Product Blend',title:'Product Water Blend & Remineralisation',
+  intro:'Sources (permeate, treated groundwater…), chemicals and the spec → the cheapest blend and doses that meet the spec with a safety margin from every limit. Exact optimisation on your device.',
+  prod:'Product (m³/h)', margin:'Safety margin (%)', cur:'Currency', sample:'Reset to sample data',
+  budget:'Sample data: analyses and prices are examples [TBC] — enter your plant’s. Source cost = marginal cost per m³ (energy + chemicals).',
+  srcH:'Sources', chemH:'Chemicals', specH:'Spec', paramH:'Parameter', unitH:'Unit',
+  rCost:'Cost (/m³ · /kg)', rMax:'Max (m³/h · mg/L)', rCur:'Running now (m³/h · mg/L)', rQ:'Analysis / effect per 1 mg/L', smin:'Min', smax:'Max',
+  addSrc:'+ source', addChem:'+ chemical', addParam:'+ parameter', solve:'Find the cheapest blend →', solving:'Solving…',
+  curSum:function(a,b){return 'Current flows add up to '+a+' m³/h and the product is '+b+' m³/h — current cost is per product m³.';},
+  man:'Running now', opt:'Optimised', sav:'Saving', perm3:'/m³', year:function(v){return 'about '+v+' a year at this flow';},
+  notMet:'current setting misses the spec', planH:'Plan', flowsH:'Flow from each source', dosesH:'Doses',
+  qualH:'Product quality', st_ok:'OK', st_bad:'off spec', st_edge:'at the margin',
+  infeas:'No blend meets the spec with these sources and doses. Raise a dose limit, add a source, check the spec or lower the margin.',
+  note:'pH and LSI / CCPP are not in the linear model: check them for the new blend before changing set points. Every blended source must be treated and approved for drinking water.',
+  talk:'Use it on my plant (WhatsApp)', dl:'Download the result (CSV)', foot:'solved in your browser (HiGHS, MIT licence)', waTxt:'TrueLoop - Product water blend study for my plant', rm:'remove'}};
+
+var C=null, R=null, err='', busy=false, sample=true;
+var x=function(){return D[TL.lang]||D.ar;}, esc=function(s){return TL.esc(String(s==null?'':s));};
+var N=function(s){return '<span class="n">'+esc(s)+'</span>';}, num=TLO.num;
+function reset(){C=JSON.parse(JSON.stringify(BLEND_SAMPLE));R=null;err='';sample=true;}
+function inp(path,v,cls,type){return '<input class="'+(cls||'')+'" type="'+(type||'number')+'" step="any" data-p="'+path+'" value="'+esc(v==null?'':v)+'" aria-label="'+esc(path)+'">';}
+function sheet(){
+  var t=x(),S=C.sources,K=C.chemicals;
+  var hdr='<tr><th>'+t.paramH+'</th><th>'+t.unitH+'</th>'+S.map(function(s,i){return '<th class="src">'+inp('s.'+i+'.name',s.name,'hd','text')+(S.length>1?'<button type="button" class="x" data-rm="s.'+i+'" aria-label="'+t.rm+'">×</button>':'')+'</th>';}).join('')+
+    K.map(function(k,j){return '<th class="chem">'+inp('k.'+j+'.name',k.name,'hd','text')+'<button type="button" class="x" data-rm="k.'+j+'" aria-label="'+t.rm+'">×</button></th>';}).join('')+'<th class="spec">'+t.smin+'</th><th class="spec">'+t.smax+'</th><th></th></tr>';
+  var meta=function(lab,fs,fk){return '<tr><td class="lab" colspan="2"><b>'+lab+'</b></td>'+S.map(function(s,i){return '<td class="src">'+fs(s,i)+'</td>';}).join('')+K.map(function(k,j){return '<td class="chem">'+fk(k,j)+'</td>';}).join('')+'<td class="spec"></td><td class="spec"></td><td></td></tr>';};
+  var rows=meta(t.rCost,function(s,i){return inp('s.'+i+'.cost_m3',s.cost_m3);},function(k,j){return inp('k.'+j+'.cost_kg',k.cost_kg);})+
+    meta(t.rMax,function(s,i){return inp('s.'+i+'.max_m3h',s.max_m3h);},function(k,j){return inp('k.'+j+'.max_mgL',k.max_mgL);})+
+    meta(t.rCur,function(s,i){return inp('cf.'+i,C.current.flows[s.name]);},function(k,j){return inp('cd.'+j,C.current.doses[k.name]);});
+  rows+=C.params.map(function(p,pi){var sp=C.spec[p]||[null,null];
+    return '<tr'+(pi===0?' class="sep"':'')+'><td>'+inp('pn.'+pi,p,'hd','text')+'</td><td class="lab">'+esc((C.units||{})[p]||'mg/L')+'</td>'+
+      S.map(function(s,i){return '<td class="src">'+inp('sq.'+i+'.'+pi,s.q[p])+'</td>';}).join('')+
+      K.map(function(k,j){return '<td class="chem">'+inp('ke.'+j+'.'+pi,k.effect[p])+'</td>';}).join('')+
+      '<td class="spec">'+inp('lo.'+pi,sp[0])+'</td><td class="spec">'+inp('hi.'+pi,sp[1])+'</td><td><button type="button" class="x" data-rm="p.'+pi+'" aria-label="'+t.rm+'">×</button></td></tr>';}).join('');
+  return '<section class="card"><div class="row"><label style="width:150px">'+t.prod+inp('Q',C.product_m3h)+'</label><label style="width:150px">'+t.margin+inp('M',C.margin_pct==null?5:C.margin_pct)+'</label>'+
+    '<label style="width:110px">'+t.cur+inp('cur',C.currency,'','text')+'</label><button type="button" data-act="reset">'+t.sample+'</button></div>'+
+    (sample?'<div class="msg warn">'+t.budget+'</div>':'')+
+    '<div class="sheet tbl"><table>'+hdr+rows+'</table></div><p class="muted" style="font-size:.78rem">'+t.rQ+'</p>'+
+    '<div class="row"><button type="button" class="lnk" data-act="addSrc">'+t.addSrc+'</button><button type="button" class="lnk" data-act="addChem">'+t.addChem+'</button><button type="button" class="lnk" data-act="addParam">'+t.addParam+'</button></div></section>'+
+    '<div class="row"><button type="button" class="pri" data-act="solve"'+(busy?' disabled':'')+'>'+t.solve+'</button>'+(busy?'<span class="muted">'+t.solving+'</span>':'')+'</div>';
+}
+function status(p,v){var sp=C.spec[p]||[null,null],m=(num(C.margin_pct)||0)/100,lo=sp[0],hi=sp[1];
+  if((lo!=null&&v<lo-1e-6)||(hi!=null&&v>hi+1e-6))return 'bad';
+  if((lo!=null&&v<lo*(1+m)-1e-6)||(hi!=null&&v>hi*(1-m)+1e-6))return 'edge';return 'ok';}
+function results(){
+  var t=x(),cur=C.currency?' '+C.currency:'';
+  if(!R)return '';
+  if(!R.opt)return '<div class="msg bad">'+t.infeas+'</div>';
+  var cc=R.current.cost.total,oc=R.opt.cost.total,sv=cc-oc,Q=C.product_m3h,yr=sv*Q*24*365;
+  var flows=C.sources.map(function(s){return {n:s.name,v:R.opt.flows[s.name]||0};});
+  var mix='<div class="mix">'+flows.filter(function(f){return f.v>0.05;}).map(function(f){return '<span style="width:'+(f.v/Q*100)+'%" title="'+esc(f.n)+'">'+esc(f.n)+' · '+TLO.f0(f.v)+'</span>';}).join('')+'</div>';
+  var tbl=function(head,rows){return '<div class="tbl"><table><tr>'+head.map(function(h,i){return '<th'+(i?' class="r"':'')+'>'+h+'</th>';}).join('')+'</tr>'+rows.join('')+'</table></div>';};
+  var fr=flows.map(function(f){return '<tr><td>'+esc(f.n)+'</td><td class="r">'+N(TLO.f0(C.current.flows[f.n]||0))+'</td><td class="r">'+N(TLO.f0(f.v))+'</td></tr>';});
+  var dr=C.chemicals.map(function(k){return '<tr><td>'+esc(k.name)+'</td><td class="r">'+N(TLO.fx(C.current.doses[k.name]||0,1))+'</td><td class="r">'+N(TLO.fx(R.opt.doses[k.name]||0,1))+'</td></tr>';});
+  var qr=C.params.filter(function(p){return C.spec[p];}).map(function(p){var sp=C.spec[p],a=R.current.q[p],b=R.opt.q[p],sa=status(p,a),sb=status(p,b);
+    return '<tr><td>'+esc(p)+'</td><td class="r">'+N((sp[0]==null?'':sp[0])+' – '+(sp[1]==null?'':sp[1]))+'</td><td class="r">'+N(TLO.fx(a,1))+' <span class="chip '+sa+'">'+t['st_'+sa]+'</span></td><td class="r">'+N(TLO.fx(b,1))+' <span class="chip '+sb+'">'+t['st_'+sb]+'</span></td></tr>';});
+  return '<div class="save"><div><small>'+t.man+(R.current.bad.length?' · '+t.notMet:'')+'</small><div class="v m">'+N(TLO.fx(cc,3)+cur+t.perm3)+'</div></div>'+
+    '<div><small>'+t.opt+'</small><div class="v">'+N(TLO.fx(oc,3)+cur+t.perm3)+'</div></div>'+
+    '<div class="hl"><small>'+t.sav+'</small><div class="big">'+N(TLO.fx(sv,3)+cur+t.perm3+' ('+(cc?(sv/cc*100).toFixed(1):'0')+' %)')+'</div><span class="yr">'+t.year(N(TLO.f0(yr)+cur))+'</span></div></div>'+
+    '<section class="card"><h3>'+t.planH+'</h3>'+mix+'<div class="plan">'+tbl([t.flowsH,t.man,t.opt],fr)+tbl([t.dosesH+' (mg/L)',t.man,t.opt],dr)+'</div></section>'+
+    '<section class="card"><h3>'+t.qualH+'</h3>'+tbl([t.paramH,t.specH,t.man,t.opt],qr)+'<div class="msg warn">'+t.note+'</div></section>'+
+    '<div class="row"><button type="button" class="pri" data-act="dl">'+t.dl+'</button><a class="back" href="'+WA+encodeURIComponent(t.waTxt)+'" target="_blank" rel="noopener">'+t.talk+'</a></div>';
+}
+function render(){
+  var app=TL.$('app'),ae=document.activeElement,fv=ae&&ae.dataset&&ae.dataset.p;
+  var t=x(),sum=C.sources.reduce(function(a,s){return a+(num(C.current.flows[s.name])||0);},0);
+  app.innerHTML=sheet()+(Math.abs(sum-C.product_m3h)>0.5?'<div class="msg warn">'+t.curSum(N(TLO.f0(sum)),N(TLO.f0(C.product_m3h)))+'</div>':'')+(err?'<div class="msg bad">'+esc(err)+'</div>':'')+results();
+  if(fv){var el=app.querySelector('[data-p="'+CSS.escape(fv)+'"]');if(el){el.focus();try{var l=el.value.length;el.setSelectionRange&&el.type==='text'&&el.setSelectionRange(l,l);}catch(e){}}}
+}
+function clean(){   // numbers from the inputs, current values keyed by name
+  var c=JSON.parse(JSON.stringify(C));c.product_m3h=num(c.product_m3h)||0;c.margin_pct=num(c.margin_pct)||0;
+  c.sources.forEach(function(s){s.cost_m3=num(s.cost_m3)||0;s.max_m3h=num(s.max_m3h);if(!(s.max_m3h>=0))delete s.max_m3h;c.params.forEach(function(p){s.q[p]=num(s.q[p])||0;});});
+  c.chemicals.forEach(function(k){k.cost_kg=num(k.cost_kg)||0;k.max_mgL=num(k.max_mgL);if(!(k.max_mgL>=0))delete k.max_mgL;c.params.forEach(function(p){k.effect[p]=num(k.effect[p])||0;});});
+  Object.keys(c.spec).forEach(function(p){if(c.params.indexOf(p)<0){delete c.spec[p];return;}var a=num(c.spec[p][0]),b=num(c.spec[p][1]);c.spec[p]=[isNaN(a)?null:a,isNaN(b)?null:b];if(c.spec[p][0]==null&&c.spec[p][1]==null)delete c.spec[p];});
+  Object.keys(c.current.flows).forEach(function(k){c.current.flows[k]=num(c.current.flows[k])||0;});
+  Object.keys(c.current.doses).forEach(function(k){c.current.doses[k]=num(c.current.doses[k])||0;});
+  return c;
+}
+function solve(){
+  err='';busy=true;render();
+  var c=clean();
+  if(!(c.product_m3h>0)){err=x().prod+' > 0';busy=false;return render();}
+  BlendEngine.solve(c,TLO.solveLP).then(function(r){R=r;}).catch(function(e){err=e.message;}).then(function(){busy=false;render();});
+}
+function setPath(p,v){
+  var a=p.split('.');
+  if(a[0]==='Q')C.product_m3h=v;else if(a[0]==='M')C.margin_pct=v;else if(a[0]==='cur')C.currency=v;
+  else if(a[0]==='s'){var s=C.sources[+a[1]];if(a[2]==='name'){var old=s.name;s.name=v;C.current.flows[v]=C.current.flows[old];delete C.current.flows[old];}else s[a[2]]=v;}
+  else if(a[0]==='k'){var k=C.chemicals[+a[1]];if(a[2]==='name'){var o=k.name;k.name=v;C.current.doses[v]=C.current.doses[o];delete C.current.doses[o];}else k[a[2]]=v;}
+  else if(a[0]==='cf')C.current.flows[C.sources[+a[1]].name]=v;
+  else if(a[0]==='cd')C.current.doses[C.chemicals[+a[1]].name]=v;
+  else if(a[0]==='sq')C.sources[+a[1]].q[C.params[+a[2]]]=v;
+  else if(a[0]==='ke')C.chemicals[+a[1]].effect[C.params[+a[2]]]=v;
+  else if(a[0]==='lo'||a[0]==='hi'){var pp=C.params[+a[1]];C.spec[pp]=C.spec[pp]||[null,null];C.spec[pp][a[0]==='lo'?0:1]=v===''?null:v;}
+  else if(a[0]==='pn'){var oldp=C.params[+a[1]];if(!v||v===oldp)return;C.params[+a[1]]=v;
+    C.sources.forEach(function(s){s.q[v]=s.q[oldp];delete s.q[oldp];});C.chemicals.forEach(function(k){k.effect[v]=k.effect[oldp];delete k.effect[oldp];});
+    if(C.spec[oldp]){C.spec[v]=C.spec[oldp];delete C.spec[oldp];}if(C.units&&C.units[oldp]){C.units[v]=C.units[oldp];delete C.units[oldp];}}
+}
+var app=TL.$('app');
+app.addEventListener('input',function(e){var p=e.target.dataset.p;if(!p)return;setPath(p,e.target.value);R=null;if(/cost/.test(p))sample=false;});
+app.addEventListener('click',function(e){
+  var el=e.target.closest('[data-act],[data-rm]');if(!el||el.disabled)return;var d=el.dataset;
+  if(d.act==='solve')solve();
+  else if(d.act==='reset'){reset();render();}
+  else if(d.act==='dl'){var rows=[['item','unit','current','optimised']];
+    C.sources.forEach(function(s){rows.push([s.name,'m3/h',C.current.flows[s.name]||0,(R.opt.flows[s.name]||0).toFixed(1)]);});
+    C.chemicals.forEach(function(k){rows.push([k.name,'mg/L',C.current.doses[k.name]||0,(R.opt.doses[k.name]||0).toFixed(2)]);});
+    C.params.forEach(function(p){rows.push([p,(C.units||{})[p]||'mg/L',R.current.q[p].toFixed(2),R.opt.q[p].toFixed(2)]);});
+    rows.push(['cost per m3',C.currency||'',R.current.cost.total.toFixed(4),R.opt.cost.total.toFixed(4)]);TLO.download('product_blend.csv',rows);}
+  else if(d.act==='addSrc'){var n='Source '+(C.sources.length+1);C.sources.push({name:n,cost_m3:0,max_m3h:0,q:{}});C.current.flows[n]=0;R=null;render();}
+  else if(d.act==='addChem'){var m='Chemical '+(C.chemicals.length+1);C.chemicals.push({name:m,cost_kg:0,max_mgL:0,effect:{}});C.current.doses[m]=0;R=null;render();}
+  else if(d.act==='addParam'){var q='P'+(C.params.length+1);C.params.push(q);R=null;render();}
+  else if(d.rm){var a=d.rm.split('.'),i=+a[1];
+    if(a[0]==='s'){delete C.current.flows[C.sources[i].name];C.sources.splice(i,1);}
+    else if(a[0]==='k'){delete C.current.doses[C.chemicals[i].name];C.chemicals.splice(i,1);}
+    else if(a[0]==='p'){var pp=C.params[i];C.params.splice(i,1);delete C.spec[pp];}
+    R=null;render();}
+});
+reset();
+TL.init({root:'../../',dict:D,title:'title',ver:VER,id:'blend',onLang:render});
+TL.$('verTxt').textContent='v'+VER;
+TL.applyLang();
+render();
+})();
+</script>
+</body>
+</html>

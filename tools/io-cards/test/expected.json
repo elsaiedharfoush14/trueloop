@@ -1,0 +1,13 @@
+{
+ "source": "claude-kit design-optimizer/tools/io_cards.py on examples/io_cards_case.json (2026-11-19)",
+ "manual": {
+  "cost": 7700,
+  "modules": 8,
+  "clash": 24
+ },
+ "opt": {
+  "cost": 6850,
+  "modules": 6,
+  "clash": 0
+ }
+}
